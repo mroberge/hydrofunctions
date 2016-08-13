@@ -5,32 +5,39 @@ def first():
     print("This is the first function.")
     return True
 
+
 if __name__ == '__main__':
-    """
-    #sys.exit(unittest.main())
-    # sys.exit(nosetests)
-    import os
     import subprocess
-    return_code = subprocess.call("echo Hello World", shell=True)
-    print(return_code)
+    import sys
+    from contextlib import contextmanager
+    import os
 
-    print(subprocess.Popen("echo Hello World", shell=True, stdout=subprocess.PIPE).stdout.read())
-    # print os.popen("echo Hello World").read()
-    print(subprocess.Popen("nosetests", shell=True, stdout=subprocess.PIPE).stdout.read())
-    stream = os.popen("nosetests")
-    print(str(stream))
 
-    return_code = subprocess.call("nosetests", shell=True)
-    print(return_code) # returns 1 for failure.
-    # run_cmd()  ## This requires that you end with ctrl-C
-    # import pytest
-    # pytest.main()
-    """
-    # import nose
-    # nose.run()
+    def run_cmd():
+        print("Press Cntl-C to exit this command")
+        cmd = "nose2"
+        ## run it ##
+        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
 
-    import nose2
-    #nose2.main(verbosity=2)
-    # nose2.main(defaultTest="..")
-    nose2.main()
-    #nose2.discover.
+        ## But do not wait till netstat finish, start displaying output immediately ##
+        while True:
+            out = p.stderr.read(1)
+            if out == '' and p.poll() != None:
+                break
+            if out != '':
+                sys.stdout.write(out)
+                sys.stdout.flush()
+
+
+    @contextmanager
+    def cd(newdir):
+        prevdir = os.getcwd()
+        os.chdir(os.path.expanduser(newdir))
+        try:
+            yield
+        finally:
+            os.chdir(prevdir)
+
+
+    with cd('..'):
+        run_cmd()  ## This requires that you end with ctrl-C
