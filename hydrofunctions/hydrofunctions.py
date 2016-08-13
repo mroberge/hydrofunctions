@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import exceptions
 
 
 def first():
@@ -6,6 +7,10 @@ def first():
     return True
 
 
+def raiseit():
+    raise exceptions.HydroNoDataError
+
+"""
 if __name__ == '__main__':
     import subprocess
     import sys
@@ -41,3 +46,4 @@ if __name__ == '__main__':
 
     with cd('..'):
         run_cmd()  ## This requires that you end with ctrl-C
+"""
