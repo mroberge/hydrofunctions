@@ -84,6 +84,9 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
 
    To get flake8 and tox, just pip install them into your virtualenv.
 
+    $ pip install flake8
+    $ pip install tox
+
 6. Commit your changes and push your branch to GitHub::
 
     $ git add .
