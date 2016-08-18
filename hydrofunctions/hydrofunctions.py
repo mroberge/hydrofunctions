@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import exceptions
+from hydrofunctions import exceptions
 
 
 def first():
