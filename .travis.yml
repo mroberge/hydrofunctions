@@ -22,6 +22,7 @@ deploy:
     repo: mroberge/hydrofunctions
     tags: true
 env:
+- TOXENV=py27
 - TOXENV=py35
 - TOXENV=py34
 - TOXENV=py33
