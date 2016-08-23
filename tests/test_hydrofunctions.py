@@ -7,9 +7,7 @@ test_hydrofunctions
 
 Tests for `hydrofunctions` module.
 """
-
-
-import sys
+from __future__ import absolute_import, print_function
 import unittest
 
 from hydrofunctions import hydrofunctions

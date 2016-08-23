@@ -16,6 +16,8 @@
 
 https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 """
+from __future__ import absolute_import, print_function
+
 
 def second():
     return 2

@@ -4,6 +4,7 @@ Created on Fri Aug 12 21:55:04 2016
 
 test_exceptions.py
 """
+from __future__ import absolute_import, print_function
 import unittest
 
 from hydrofunctions import exceptions
@@ -29,7 +30,3 @@ class TestExceptions(unittest.TestCase):
 
 
 
-
-if __name__ == '__main__':
-    import nose2
-    nose2.main(verbosity=2)
