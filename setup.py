@@ -12,8 +12,7 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'numpy',
     'pandas',
-    'requests',
-    '__future__'
+    'requests'
 ]
 
 test_requirements = [
