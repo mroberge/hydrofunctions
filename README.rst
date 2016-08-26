@@ -9,7 +9,9 @@ HydroFunctions
 .. image:: https://img.shields.io/travis/mroberge/hydrofunctions.svg
         :target: https://travis-ci.org/mroberge/hydrofunctions
 
-
+.. image:: https://readthedocs.org/projects/hydrofunctions/badge/?version=latest
+        :target: https://hydrofunctions.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
 
 
 A suite of convenience functions for exploring water data in IPython.
