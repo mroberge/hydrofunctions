@@ -12,6 +12,7 @@ and returning the expected data.
 These tests have all been commented out so that they will not be included in
 the normal test suite.
 """
+from __future__ import absolute_import, print_function
 from hydrofunctions import hydrofunctions as hf
 
 

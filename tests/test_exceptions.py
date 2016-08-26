@@ -26,7 +26,3 @@ class TestExceptions(unittest.TestCase):
 
     def test_exception(self):
         self.assertRaises(exceptions.HydroNoDataError, hydrof.raiseit)
-
-
-
-

@@ -21,7 +21,8 @@ A suite of convenience functions for exploring water data in IPython.
 Features
 --------
 
-* NO features yet!  Please stay tuned!
+* Retrieves stream gauge data from the USGS NWIS service
+* Still under development! More features to come!
 
 Credits
 ---------

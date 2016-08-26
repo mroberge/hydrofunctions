@@ -34,6 +34,7 @@ class TestHydrofunctions(unittest.TestCase):
 
     @mock.patch('requests.get')
     def test_get_nwis_calls_correct_url(self, mock_get):
+
         """Thanks to
         http://engineroom.trackmaven.com/blog/making-a-mockery-of-python/
         """
