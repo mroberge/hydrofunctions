@@ -54,5 +54,7 @@ class TestHydrofunctions(unittest.TestCase):
         mock_get.assert_called_once_with(expected_url, params=expected_params, headers=expected_headers)
         self.assertEqual(actual, expected)
 
+""" This breaks tox testing in py2.7
 if __name__ == "__main__":
     unittest.main()
+"""
