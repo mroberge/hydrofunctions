@@ -15,9 +15,7 @@ def raiseit():
 
 def get_nwis(site, service, start_date, end_date):
     """
-    compose a data request object for the USGS NWIS,
-    send it to make_request(),
-    then deal with the returned error or json.
+    request stream gauge data from the USGS NWIS.
 
     Parameters
     ----------
@@ -32,7 +30,11 @@ def get_nwis(site, service, start_date, end_date):
 
     Returns
     -------
-    the json response
+    a response object.
+        response.url: the url we requested data from.
+        response.status_code:
+        response.json: the content translated as json
+        response.ok: "True" when we get a '200'
 
     Raises
     ------
@@ -59,13 +61,11 @@ def get_nwis(site, service, start_date, end_date):
     url = 'http://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'
     response = requests.get(url, params=values, headers=header)
+    # requests will raise a 'ConnectionError' if the connection is refused
+    # or if we are disconnected from the internet.
+    # I think that is appropriate, so I don't want to handle this error.
+
+    # TODO: where should all unhelpful ('404' etc) responses be handled?
     return response
 
-"""
-    data = urllib.parse.urlencode(values)  # data is a string now. don't encode
-    url = 'http://waterservices.usgs.gov/nwis/'
-    url = url + service + '/?' + data
-    req = urllib.request.Request(url, headers=header)
 
-    return req
-"""
