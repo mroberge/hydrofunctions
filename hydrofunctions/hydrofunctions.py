@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+
+"""
 from __future__ import absolute_import, print_function
 import requests
 from hydrofunctions import exceptions
@@ -14,31 +17,27 @@ def raiseit():
 
 
 def get_nwis(site, service, start_date, end_date):
-    """
-    request stream gauge data from the USGS NWIS.
+    """request stream gauge data from the USGS NWIS.
 
-    Parameters
-    ----------
-    site: string
-        a valid site is 01585200
-    service: string
-        can either be 'iv' or 'dv' for instantaneous or daily data.
-    start_date: string
-       should take on the form yyyy-mm-dd
-    end_date: string
-        should take on the form yyyy-mm-dd
+    Args:
+        site (str):
+            a valid site is 01585200
+        service (str):
+            can either be 'iv' or 'dv' for instantaneous or daily data.
+        start_date (str):
+           should take on the form yyyy-mm-dd
+        end_date (str):
+            should take on the form yyyy-mm-dd
 
-    Returns
-    -------
-    a response object.
-        response.url: the url we requested data from.
-        response.status_code:
-        response.json: the content translated as json
-        response.ok: "True" when we get a '200'
+    Returns:
+        a response object.
+            response.url: the url we requested data from.
+            response.status_code:
+            response.json: the content translated as json
+            response.ok: "True" when we get a '200'
 
-    Raises
-    ------
-    ConnectionError  due to connection problems like refused connection or DNS
+    Raises:
+        ConnectionError  due to connection problems like refused connection or DNS
 
     The specification for this service is located here:
     http://waterservices.usgs.gov/rest/IV-Service.html

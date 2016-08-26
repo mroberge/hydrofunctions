@@ -4,7 +4,7 @@
 
     Use this module to store all exceptions defined in this package.
 
-    Use the errors like this:
+    Use the errors like this::
 
     try:
         #some code here that might return no data
@@ -43,6 +43,8 @@ class HydroEncodeError(HydroException):
 
 
 """
+example code::
+
 try:
     #bunch of code from your package
 except HydroException:

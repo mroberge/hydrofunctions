@@ -82,7 +82,7 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
     $ python setup.py test or py.test or nose2
     $ tox
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+   To get flake8 and tox, just pip install them into your virtualenv.::
 
     $ pip install flake8
     $ pip install tox
