@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to HydroFunctions's documentation!
-======================================
+==========================================
 
 Contents:
 
@@ -15,7 +15,9 @@ Contents:
    installation
    usage
    contributing
-   authorshistory
+   authors
+   history
+   modules
 
 Indices and tables
 ==================

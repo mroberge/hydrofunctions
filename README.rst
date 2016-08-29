@@ -13,22 +13,18 @@ HydroFunctions
         :target: https://hydrofunctions.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/mroberge/hydrofunctions/shield.svg
-     :target: https://pyup.io/repos/github/mroberge/hydrofunctions/
-     :alt: Updates
-
 
 A suite of convenience functions for exploring water data in IPython.
 
 
 * Free software: MIT license
-* Documentation: https://hydrofunctions.readthedocs.io.
 
 
 Features
 --------
 
-* TODO
+* Retrieves stream gauge data from the USGS NWIS service
+* Still under development! More features to come!
 
 Credits
 ---------

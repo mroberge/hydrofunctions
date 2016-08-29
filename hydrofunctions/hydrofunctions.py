@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+
+"""
+from __future__ import absolute_import, print_function
+import requests
+from hydrofunctions import exceptions
 
 
 def first():
@@ -6,38 +12,59 @@ def first():
     return True
 
 
-if __name__ == '__main__':
-    import subprocess
-    import sys
-    from contextlib import contextmanager
-    import os
+def raiseit():
+    raise exceptions.HydroNoDataError
 
 
-    def run_cmd():
-        print("Press Cntl-C to exit this command")
-        cmd = "nose2"
-        ## run it ##
-        p = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
+def get_nwis(site, service, start_date, end_date):
+    """request stream gauge data from the USGS NWIS.
 
-        ## But do not wait till netstat finish, start displaying output immediately ##
-        while True:
-            out = p.stderr.read(1)
-            if out == '' and p.poll() != None:
-                break
-            if out != '':
-                sys.stdout.write(out)
-                sys.stdout.flush()
+    Args:
+        site (str):
+            a valid site is 01585200
+        service (str):
+            can either be 'iv' or 'dv' for instantaneous or daily data.
+        start_date (str):
+           should take on the form yyyy-mm-dd
+        end_date (str):
+            should take on the form yyyy-mm-dd
+
+    Returns:
+        a response object.
+            response.url: the url we requested data from.
+            response.status_code:
+            response.json: the content translated as json
+            response.ok: "True" when we get a '200'
+
+    Raises:
+        ConnectionError  due to connection problems like refused connection or DNS
+
+    The specification for this service is located here:
+    http://waterservices.usgs.gov/rest/IV-Service.html
+    """
+
+    header = {
+        'Accept-encoding': 'gzip',
+        'max-age': '120'
+        }
+
+    values = {
+        'format': 'json,1.1',
+        'sites': site,
+        'parameterCd': '00060',  # represents stream discharge.
+        # 'period': 'P10D' # This is the format for requesting data for a period before today
+        'startDT': start_date,
+        'endDT': end_date
+        }
+
+    url = 'http://waterservices.usgs.gov/nwis/'
+    url = url + service + '/?'
+    response = requests.get(url, params=values, headers=header)
+    # requests will raise a 'ConnectionError' if the connection is refused
+    # or if we are disconnected from the internet.
+    # I think that is appropriate, so I don't want to handle this error.
+
+    # TODO: where should all unhelpful ('404' etc) responses be handled?
+    return response
 
 
-    @contextmanager
-    def cd(newdir):
-        prevdir = os.getcwd()
-        os.chdir(os.path.expanduser(newdir))
-        try:
-            yield
-        finally:
-            os.chdir(prevdir)
-
-
-    with cd('..'):
-        run_cmd()  ## This requires that you end with ctrl-C

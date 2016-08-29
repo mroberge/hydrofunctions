@@ -7,12 +7,11 @@ test_hydrofunctions
 
 Tests for `hydrofunctions` module.
 """
-
-
-import sys
+from __future__ import absolute_import, print_function
+from unittest import mock
 import unittest
 
-from hydrofunctions import hydrofunctions
+from hydrofunctions import hydrofunctions as hf
 
 
 class TestHydrofunctions(unittest.TestCase):
@@ -30,38 +29,31 @@ class TestHydrofunctions(unittest.TestCase):
 
     def test_first_returns_true(self):
         expected = True
-        actual = hydrofunctions.first()
+        actual = hf.first()
         self.assertEqual(expected, actual, msg="first() did not return True.")
 
+    @mock.patch('requests.get')
+    def test_get_nwis_calls_correct_url(self, mock_get):
+
+        """Thanks to
+        http://engineroom.trackmaven.com/blog/making-a-mockery-of-python/
+        """
+
+        site = 'A'
+        service = 'B'
+        start = 'C'
+        end = 'D'
+
+        expected_url = 'http://waterservices.usgs.gov/nwis/B/?'
+        expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
+        expected_params = {'format': 'json,1.1', 'sites': 'A', 'endDT': 'D', 'startDT': 'C', 'parameterCd': '00060'}
+        expected = 'mock data'
+
+        mock_get.return_value = expected
+        actual = hf.get_nwis(site, service, start, end)
+        mock_get.assert_called_once_with(expected_url, params=expected_params, headers=expected_headers)
+        self.assertEqual(actual, expected)
 
 
-
-
-if __name__ == '__main__':
-    """
-    #sys.exit(unittest.main())
-    # sys.exit(nosetests)
-    import os
-    import subprocess
-    return_code = subprocess.call("echo Hello World", shell=True)
-    print(return_code)
-
-    print(subprocess.Popen("echo Hello World", shell=True, stdout=subprocess.PIPE).stdout.read())
-    # print os.popen("echo Hello World").read()
-    print(subprocess.Popen("nosetests", shell=True, stdout=subprocess.PIPE).stdout.read())
-    stream = os.popen("nosetests")
-    print(str(stream))
-    """
-    # return_code = subprocess.call("nosetests", shell=True)
-    # print(return_code) # returns 1 for failure.
-
-
-    # run_cmd()  ## This requires that you end with ctrl-C
-    # import pytest
-    # pytest.main()
-
-    # import nose
-    # nose.run()
-
-    import nose2
-    nose2.main(verbosity=2)
+if __name__ == "__main__":
+    unittest.main()
