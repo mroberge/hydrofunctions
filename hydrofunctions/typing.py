@@ -23,8 +23,8 @@ def check_NWIS_station_id(input):
     if isinstance(input, str):
         return True
     else:
-        raise TypeError("NWIS station id should be a string, often in the" +
-                        "form of an eight digit number enclosed in quotes")
+        raise TypeError("NWIS station id should be a string, often in the \
+                        form of an eight digit number enclosed in quotes")
 
 
 def check_datestr(input):
@@ -34,5 +34,5 @@ def check_datestr(input):
     if isinstance(input, str) and datestr.match(input):
         return True
     else:
-        raise TypeError('dates should be in the form of "YYYY-MM-DD" ' +
-                        "enclosed in quotes")
+        raise TypeError('dates should be in the form of "YYYY-MM-DD" \
+                        enclosed in quotes. Actual: {}'.format(input))
