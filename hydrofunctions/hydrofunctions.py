@@ -7,11 +7,6 @@ import requests
 from hydrofunctions import exceptions
 
 
-def first():
-    print("This is the first function.")
-    return True
-
-
 def raiseit():
     raise exceptions.HydroNoDataError
 

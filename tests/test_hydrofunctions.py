@@ -16,26 +16,11 @@ from hydrofunctions import hydrofunctions as hf
 
 class TestHydrofunctions(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def test_000_something(self):
-        pass
-        print("test000")
-        assert True
-
-    def test_first_returns_true(self):
-        expected = True
-        actual = hf.first()
-        self.assertEqual(expected, actual, msg="first() did not return True.")
-
     @mock.patch('requests.get')
     def test_get_nwis_calls_correct_url(self, mock_get):
 
-        """Thanks to
+        """
+        Thanks to
         http://engineroom.trackmaven.com/blog/making-a-mockery-of-python/
         """
 
@@ -55,5 +40,5 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertEqual(actual, expected)
 
 
-if __name__ == "__main__":
-    unittest.main()
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

@@ -13,16 +13,8 @@ from hydrofunctions import hydrofunctions as hydrof
 
 class TestExceptions(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-    def test_001_something(self):
-        pass
-        print("test001")
-        assert True
-
     def test_exception(self):
         self.assertRaises(exceptions.HydroNoDataError, hydrof.raiseit)
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

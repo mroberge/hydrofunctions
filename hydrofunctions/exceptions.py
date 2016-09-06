@@ -19,10 +19,6 @@ https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packa
 from __future__ import absolute_import, print_function
 
 
-def second():
-    return 2
-
-
 class HydroException(Exception):
     """
         This is the base class for all exceptions created for the
