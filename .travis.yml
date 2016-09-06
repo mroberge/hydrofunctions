@@ -18,7 +18,7 @@ deploy:
       R1NuRDVkWTJnNUlTUkEzTjI0Um9IaWhBdHFUVTZBeHBiUDNDSnozY0Y4aTYvclNpcC9sNVZhUlE9
   user: mroberge
   true:
-    condition: $TOXENV == py27
+    condition: $TOXENV == py35
     repo: mroberge/hydrofunctions
     tags: true
 env:
