@@ -29,9 +29,9 @@ def check_NWIS_station_id(input):
 
 def check_datestr(input):
     # Use a regular expression to ensure in form of yyyy-mm-dd
-    pattern = r"[1-2]\d\d\d-[0-1]\d-[0-3]\d"
+    pattern = r"[1-2]\d\d\d-[0-1]\d-[0-3]\d\Z"
     datestr = re.compile(pattern)
-    if isinstance(input, str) and datestr.fullmatch(input):
+    if isinstance(input, str) and datestr.match(input):
         return True
     else:
         raise TypeError('dates should be in the form of "YYYY-MM-DD" ' +
