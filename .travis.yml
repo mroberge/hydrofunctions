@@ -25,7 +25,7 @@ env:
 - TOXENV=py35
 - TOXENV=py34
 - TOXENV=py33
-install: pip install -U tox
+install: travis_wait pip install -U tox
 language: python
 python: 3.5
 script: tox -e ${TOXENV}
