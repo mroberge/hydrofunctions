@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, findpackages
+from setuptools import setup, find_packages
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -27,7 +27,7 @@ setup(
     author="Martin Roberge",
     author_email='mroberge.whois@gmail.com',
     url='https://github.com/mroberge/hydrofunctions',
-    packages=findpackages(),
+    packages=find_packages(),
     package_dir={'hydrofunctions':
                  'hydrofunctions'},
     include_package_data=True,
