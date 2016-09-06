@@ -12,10 +12,11 @@ from __future__ import absolute_import, print_function
 class Station(object):
     """A class for organizing stream gauge data for a single site."""
 
-    def __init__(self, site="", service="dv", start_date=None, end_date=None):
+    def __init__(self, site=None, service="dv", start_date=None, end_date=None):
         self.site = site
         self.service = service
         self.start_date = start_date
         self.end_date = end_date
 
-
+    def fetch(self):
+        get_nwis(self.site, self.service, self.start_date, self.end_date)

@@ -16,9 +16,9 @@ class TestStation(unittest.TestCase):
         actual = station.Station()
         self.assertIsInstance(actual, station.Station)
 
-    def test_station_site_defaults_to_empty_str(self):
+    def test_station_site_defaults_to_None(self):
         actual = station.Station()
-        self.assertEqual(actual.site, "")
+        self.assertIsNone(actual.site)
 
     def test_station_site_sets(self):
         expected = "0123"
