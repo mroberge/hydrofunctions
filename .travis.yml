@@ -17,7 +17,7 @@ deploy:
       RWFHYWZVbUQrajhuN2E3U0xOSUtodzZJMURwNzNWdklWVjJ0NCs3VnZIMmt0NFk3NFNSdU90RXlO
       R1NuRDVkWTJnNUlTUkEzTjI0Um9IaWhBdHFUVTZBeHBiUDNDSnozY0Y4aTYvclNpcC9sNVZhUlE9
   user: mroberge
-  true:
+  on:
     condition: $TOXENV == py35
     repo: mroberge/hydrofunctions
     tags: true
