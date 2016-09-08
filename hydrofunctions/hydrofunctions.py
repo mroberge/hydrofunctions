@@ -4,6 +4,8 @@
 """
 from __future__ import absolute_import, print_function
 import requests
+import numpy as np
+import pandas as pd
 from hydrofunctions import exceptions
 
 
@@ -63,3 +65,27 @@ def get_nwis(site, service, start_date, end_date):
     return response
 
 
+def extract_nwis_dict(response_obj):
+    nwis_dict = response_obj.json()
+
+    return nwis_dict
+
+
+def extract_nwis_df(response_obj):
+    nwis_dict = response_obj.json()
+
+    # strip header and all metadata.
+    ts = nwis_dict['value']['timeSeries']
+    if ts == []:
+        print('NWIS does not have data for this request')
+        return ts
+    data = nwis_dict['value']['timeSeries'][0]['values'][0]['value']
+
+    DF = pd.DataFrame(data, columns=['dateTime', 'value'])
+    DF.index = pd.to_datetime(DF.pop('dateTime'))
+    DF.value = DF.value.astype(float)
+    # DF.index.name = None
+    DF.index.name = 'datetime'
+    DF.replace(to_replace='-999999', value=np.nan)
+
+    return DF
