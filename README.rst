@@ -24,6 +24,7 @@ Features
 --------
 
 * Retrieves stream gauge data from the USGS NWIS service
+* Extracts into a Pandas dataframe or dict
 * Still under development! More features to come!
 
 Credits
