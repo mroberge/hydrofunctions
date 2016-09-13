@@ -56,6 +56,10 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
+    @unittest.skip("What happens if NWIS returns valid response with no data?")
+    def test_extract_nwis_df_is_empty(self):
+        # See line 80 in hydrofunctions
+        pass
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

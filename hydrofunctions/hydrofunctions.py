@@ -77,6 +77,8 @@ def extract_nwis_df(response_obj):
     # strip header and all metadata.
     ts = nwis_dict['value']['timeSeries']
     if ts == []:
+        # What to do if there is no data? For now, we print.
+        # Later, do we raise an exception?
         print('NWIS does not have data for this request')
         return ts
     data = nwis_dict['value']['timeSeries'][0]['values'][0]['value']
