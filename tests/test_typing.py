@@ -14,23 +14,23 @@ from hydrofunctions import typing
 
 class TestTyping(unittest.TestCase):
 
-    def test_check_NWIS_station_id_accepts_str(self):
+    def test_typing_check_NWIS_station_id_accepts_str(self):
         actual = typing.check_NWIS_station_id("any string")
         self.assertTrue(actual)
 
-    def test_check_NWIS_station_id_raises_TypeError(self):
+    def test_typing_check_NWIS_station_id_raises_TypeError(self):
         not_string = 5
         self.assertRaises(TypeError, typing.check_NWIS_station_id, not_string)
 
-    def test_check_datestr_raises_TypeError(self):
+    def test_typing_check_datestr_raises_TypeError(self):
         not_string = 5
         self.assertRaises(TypeError, typing.check_datestr, not_string)
 
-    def test_check_datestr_accepts_good_date(self):
+    def test_typing_check_datestr_returns_true_for_good_date(self):
         actual = typing.check_datestr("2002-03-03")
         self.assertTrue(actual)
 
-    def test_check_datestr_rejects_bad_date(self):
+    def test_typing_check_datestr_rejects_bad_date(self):
         # pattern = r"[1-2]\d\d\d-[0-1]\d-[0-3]\d"
         bad1 = "3002-03-03"
         bad2 = "0000-03-03"

@@ -34,7 +34,8 @@ def get_nwis(site, service, start_date, end_date):
             response.ok: "True" when we get a '200'
 
     Raises:
-        ConnectionError  due to connection problems like refused connection or DNS
+        ConnectionError  due to connection problems like refused connection
+            or DNS Error.
 
     The specification for this service is located here:
     http://waterservices.usgs.gov/rest/IV-Service.html
