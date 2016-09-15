@@ -16,7 +16,7 @@ requirements = [
 ]
 
 test_requirements = [
-    'nose2'
+    # 'nose2' doesn't add any extra functionality for me right now.
 ]
 
 setup(
