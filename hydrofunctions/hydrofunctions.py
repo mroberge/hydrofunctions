@@ -6,6 +6,8 @@ from __future__ import absolute_import, print_function
 import requests
 import numpy as np
 import pandas as pd
+# Change to relative import: from . import exceptions
+# https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from hydrofunctions import exceptions
 
 
