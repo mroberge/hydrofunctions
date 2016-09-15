@@ -9,10 +9,6 @@ import pandas as pd
 from hydrofunctions import exceptions
 
 
-def raiseit():
-    raise exceptions.HydroNoDataError
-
-
 def get_nwis(site, service, start_date, end_date):
     """request stream gauge data from the USGS NWIS.
 
@@ -78,10 +74,24 @@ def extract_nwis_df(response_obj):
     # strip header and all metadata.
     ts = nwis_dict['value']['timeSeries']
     if ts == []:
-        # What to do if there is no data? For now, we print.
-        # Later, do we raise an exception?
-        print('NWIS does not have data for this request')
-        return ts
+        # raise a HydroNoDataError if NWIS returns an empty set.
+        #
+        # Ideally, an empty set exception would be raised when the request
+        # is first returned, but I do it here so that the data doesn't get
+        # extracted twice.
+        # TODO: raise this exception earlier??
+        #
+        # ** Interactive sessions should have an error raised.
+        #
+        # **Automated systems should catch these errors and deal with them.
+        # In this case, if NWIS returns an empty set, then the request
+        # needs to be reconsidered. The request was valid somehow, but
+        # there is no data being collected.
+
+        # TODO: this if clause needs to be tested.
+        raise exceptions.HydroNoDataError("The NWIS reports that it does not \
+                                            have any data for this request.")
+
     data = nwis_dict['value']['timeSeries'][0]['values'][0]['value']
 
     DF = pd.DataFrame(data, columns=['dateTime', 'value'])

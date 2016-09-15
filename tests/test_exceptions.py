@@ -8,7 +8,10 @@ from __future__ import absolute_import, print_function
 import unittest
 
 from hydrofunctions import exceptions
-from hydrofunctions import hydrofunctions as hydrof
+
+
+def raiseHydroNoDataError():
+    raise exceptions.HydroNoDataError("Error!!")
 
 
 class TestExceptions(unittest.TestCase):
