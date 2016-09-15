@@ -21,7 +21,7 @@ test_requirements = [
 
 setup(
     name='hydrofunctions',
-    version='0.1.2',
+    version='0.1.3',
     description="A suite of convenience functions for exploring water data in IPython.",
     long_description=readme + '\n\n' + history,
     author="Martin Roberge",
