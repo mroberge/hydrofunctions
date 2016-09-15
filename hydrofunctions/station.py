@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep  5 21:11:36 2016
-
-@author: Marty
-
-
 station.py
+
+This module contains the Station class, which is used for organizing and
+managing data for a single USGS stream gauge.
 """
 from __future__ import absolute_import, print_function
 from hydrofunctions import typing

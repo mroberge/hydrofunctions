@@ -111,8 +111,20 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+# The new default is alabaster.
+# The old default is now 'classic'.
+# more themes: http://www.sphinx-doc.org/en/stable/theming.html
+html_theme = 'alabaster'
 
+html_theme_options = {
+    'github_user': 'mroberge',
+    'github_repo': 'hydrofunctions',
+    'github_button': True,
+    'github_banner': True,
+    'travis_button': True,
+    'fixed_sidebar': True,
+    'analytics_id': 'UA-73178522-4'
+}
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
 # documentation.
@@ -154,6 +166,14 @@ html_static_path = ['_static']
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
+
+# This will add links to all of the documents in the sidebar.
+html_sidebars = {'**': [
+    'globaltoc.html',
+    'relations.html',
+    'sourcelink.html',
+    'searchbox.html',
+    ],}
 
 # Additional templates that should be rendered to pages, maps page names
 # to template names.

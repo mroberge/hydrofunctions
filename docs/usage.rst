@@ -1,8 +1,10 @@
 =====
 Usage
 =====
+Using hydrofunctions in a project
+---------------------------------
 
-To use HydroFunctions in a project::
+First, import hydrofunctions into your project::
 
     >>> from hydrofunctions import hydrofunctions as hf
 
@@ -11,25 +13,28 @@ To use HydroFunctions in a project::
     >>> end = '2015-05-15'
     >>> response = hf.get_nwis(site, 'dv', start, end)
 
-Use the response object::
+Examine the response object::
 
     >>> response.ok
     True
+
     >>> response.status_code
     200
+
     >>> response.text
     '{"name":"ns1:timeSeriesResponseType","declaredType":"org.cuahsi.waterml.TimeSeriesResponseType" .... }
 
-.. code-block:: python
+List all of the different attributes and methods with dir()::
+
     >>> dir(response)
-will list the different attributes and methods.
 
 Functions that use the response object
+--------------------------------------
 
 Extract a dict from the response::
 
-    >>>my_dict = hf.extract_nwis_dict(response)
-    >>>my_dict
+    >>> my_dict = hf.extract_nwis_dict(response)
+    >>> my_dict
     {'declaredType': 'org.cuahsi.waterml.TimeSeriesResponseType',
      'globalScope': True,
      ...
@@ -37,8 +42,8 @@ Extract a dict from the response::
 
 Extract a Pandas dataframe from the response::
 
-    >>>my_data_frame = hf.extract_nwis_df(response)
-    >>>my_data_frame
+    >>> my_data_frame = hf.extract_nwis_df(response)
+    >>> my_data_frame
                 value
     datetime
     2015-05-10  133.0

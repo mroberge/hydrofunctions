@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
+hydrofunctions.py
 
+This module contains the main functions used in an interactive session.
 """
 from __future__ import absolute_import, print_function
 import requests
@@ -12,7 +14,7 @@ from hydrofunctions import exceptions
 
 
 def get_nwis(site, service, start_date, end_date):
-    """request stream gauge data from the USGS NWIS.
+    """Request stream gauge data from the USGS NWIS.
 
     Args:
         site (str):
@@ -26,14 +28,27 @@ def get_nwis(site, service, start_date, end_date):
 
     Returns:
         a response object.
-            response.url: the url we requested data from.
-            response.status_code:
-            response.json: the content translated as json
-            response.ok: "True" when we get a '200'
+
+            * response.url: the url we requested data from.
+            * response.status_code:
+            * response.json: the content translated as json
+            * response.ok: "True" when we get a '200'
 
     Raises:
         ConnectionError  due to connection problems like refused connection
-            or DNS Error.
+        or DNS Error.
+
+    Example::
+
+        >>> from hydrofunctions import hydrofunctions as hf
+        >>> response = hf.get_nwis('01585200', 'dv', '2012-06-01', '2012-07-01')
+
+        >>> response
+        <respones [200]>
+        >>> response.ok
+        True
+        >>> response.json()
+        *JSON ensues*
 
     The specification for this service is located here:
     http://waterservices.usgs.gov/rest/IV-Service.html
@@ -65,12 +80,23 @@ def get_nwis(site, service, start_date, end_date):
 
 
 def extract_nwis_dict(response_obj):
+    """Returns a dict object from an NWIS response object.
+    """
     nwis_dict = response_obj.json()
 
     return nwis_dict
 
 
 def extract_nwis_df(response_obj):
+    """Returns a Pandas dataframe from an NWIS response object.
+
+    Returns:
+        a pandas dataframe.
+
+    Raises:
+        HydroNoDataError  when the request is valid, but NWIS has no data for
+            the parameters provided in the request.
+    """
     nwis_dict = response_obj.json()
 
     # strip header and all metadata.
