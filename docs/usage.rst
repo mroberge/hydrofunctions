@@ -6,7 +6,7 @@ Using hydrofunctions in a project
 
 First, import hydrofunctions into your project::
 
-    >>> from hydrofunctions import hydrofunctions as hf
+    >>> import hydrofunctions as hf
 
     >>> site = '01582500'
     >>> start = '2015-05-10'
@@ -21,8 +21,8 @@ Examine the response object::
     >>> response.status_code
     200
 
-    >>> response.text
-    '{"name":"ns1:timeSeriesResponseType","declaredType":"org.cuahsi.waterml.TimeSeriesResponseType" .... }
+    >>> response.json()
+    {'name':'ns1:timeSeriesResponseType','declaredType':'org.cuahsi.waterml.TimeSeriesResponseType' .... }
 
 List all of the different attributes and methods with dir()::
 

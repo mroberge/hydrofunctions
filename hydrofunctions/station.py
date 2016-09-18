@@ -6,8 +6,8 @@ This module contains the Station class, which is used for organizing and
 managing data for a single USGS stream gauge.
 """
 from __future__ import absolute_import, print_function
-from hydrofunctions import typing
-from hydrofunctions import hydrofunctions as hf
+from . import typing
+from . import hydrofunctions as hf
 
 
 class Station(object):

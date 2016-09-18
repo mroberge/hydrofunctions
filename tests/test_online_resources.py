@@ -9,17 +9,21 @@ test_online_resources.py
 This module can be used to check whether various online data servers are up
 and returning the expected data.
 
-These tests have all been commented out so that they will not be included in
+These tests have all been named so that they will not be included in
 the normal test suite.
+
+Nose2 will find these tests, but unittest will not. The continuous integration
+and setup.py will use unittests, and therefore won't find this test.
 """
 from __future__ import absolute_import, print_function
 from hydrofunctions import hydrofunctions as hf
 
 
-def will_get_nwis_return_response():
-    """The name of this function should not start with test_ or else nose2
-    will find it and run it every time the test suite is run. This is a
-    resource test only!
+def test_will_get_nwis_return_response():
+    """This test should not be run as a part of the normal test suite.
+    This is a resource test only!
+    Nose2 will find it.
+    Unittest will not.
     """
 
     expected = 200
@@ -29,4 +33,4 @@ def will_get_nwis_return_response():
     print('NWIS is up and running!')
 
 if __name__ == "__main__":
-    will_get_nwis_return_response()
+    test_will_get_nwis_return_response()
