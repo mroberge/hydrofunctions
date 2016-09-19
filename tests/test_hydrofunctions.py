@@ -13,7 +13,7 @@ import unittest
 
 import pandas as pd
 
-from hydrofunctions import hydrofunctions as hf
+import hydrofunctions as hf
 
 
 class TestHydrofunctions(unittest.TestCase):
@@ -60,6 +60,7 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         # See line 78 in hydrofunctions
         pass
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
