@@ -1,6 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+
+
+
+import sys
+from unittest.mock import MagicMock
+
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['pygtk', 'gtk', 'gobject', 'argparse', 'numpy', 'pandas']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+
+
+
+
+
+
+
+
+
+
+
+
 # hydrofunctions documentation build configuration file, created by
 # sphinx-quickstart on Tue Jul  9 22:26:36 2013.
 #
@@ -304,14 +329,4 @@ texinfo_documents = [
 #    relying extensively on C modules. So I need to mock these out.
 #
 ####################Added Stuff Below ################################
-import sys
-from unittest.mock import MagicMock
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return Mock()
-
-MOCK_MODULES = ['pygtk', 'gtk', 'gobject', 'argparse', 'numpy', 'pandas']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
