@@ -3,6 +3,17 @@
 #
 
 
+#####################################
+#
+#   This section was suggested by ReadTheDocs here:
+#   http://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
+#
+#    Apparently, they try to do a complete build of your project, but they
+#    choke when they try to import and build numpy and pandas, due to these
+#    relying extensively on C modules. So I need to mock these out.
+#
+####################Added Stuff Below ################################
+
 
 import sys
 from unittest.mock import MagicMock
@@ -15,16 +26,7 @@ class Mock(MagicMock):
 MOCK_MODULES = ['pygtk', 'gtk', 'gobject', 'argparse', 'numpy', 'pandas']
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
-
-
-
-
-
-
-
-
-
-
+################ Added Stuff Above ###################################
 
 # hydrofunctions documentation build configuration file, created by
 # sphinx-quickstart on Tue Jul  9 22:26:36 2013.
@@ -318,15 +320,4 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
-
-#####################################
-#
-#   This section was suggested by ReadTheDocs here:
-#   http://read-the-docs.readthedocs.io/en/latest/faq.html#i-get-import-errors-on-libraries-that-depend-on-c-modules
-#
-#    Apparently, they try to do a complete build of your project, but they
-#    choke when they try to import and build numpy and pandas, due to these
-#    relying extensively on C modules. So I need to mock these out.
-#
-####################Added Stuff Below ################################
 
