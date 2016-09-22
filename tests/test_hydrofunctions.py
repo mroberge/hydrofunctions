@@ -13,13 +13,13 @@ import unittest
 
 import pandas as pd
 
-from hydrofunctions import hydrofunctions as hf
+import hydrofunctions as hf
 
 
 class TestHydrofunctions(unittest.TestCase):
 
     @mock.patch('requests.get')
-    def test_get_nwis_calls_correct_url(self, mock_get):
+    def test_hf_get_nwis_calls_correct_url(self, mock_get):
 
         """
         Thanks to
@@ -43,18 +43,23 @@ class TestHydrofunctions(unittest.TestCase):
                                          headers=expected_headers)
         self.assertEqual(actual, expected)
 
-    def test_extract_nwis_dict(self):
+    def test_hf_extract_nwis_dict(self):
         # I need to make a response fixture to test this out!!
         test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_dict(test)
         self.assertIs(type(actual), dict, msg="Did not return a dict")
 
-    def test_extract_nwis_df(self):
+    def test_hf_extract_nwis_df(self):
         # I need to make a response fixture to test this out!!
         test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_df(test)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
+
+    @unittest.skip("What happens if NWIS returns valid response with no data?")
+    def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
+        # See line 78 in hydrofunctions
+        pass
 
 
 if __name__ == '__main__':

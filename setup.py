@@ -16,12 +16,12 @@ requirements = [
 ]
 
 test_requirements = [
-    'nose2'
+    # 'nose2' doesn't add any extra functionality for me right now.
 ]
 
 setup(
     name='hydrofunctions',
-    version='0.1.2',
+    version='0.1.4',
     description="A suite of convenience functions for exploring water data in IPython.",
     long_description=readme + '\n\n' + history,
     author="Martin Roberge",
