@@ -27,6 +27,53 @@ Features
 * Extracts into a Pandas dataframe or dict
 * Still under development! More features to come!
 
+
+Get Started!
+------------
+
+Hydrofunctions depends upon Pandas and numerous other scientific packages
+for Python. The easiest way to get started is by using
+`Anaconda <https://www.continuum.io/open-source-core-modern-software>`,
+which puts everything you need into
+`one easy download <https://www.continuum.io/downloads>`. Choose
+the version of Anaconda that is right for your operating system, and I would
+advise using Python 3.5.
+
+Once you have Anaconda installed, much of the following will be done from the
+command line. For Windows users, use cmd.exe to do this instead of PowerShell,
+which I've found has a strange interaction with conda.
+
+1) list your available environments::
+
+    conda info -e
+
+2) The active environment will have a star next to it. To activate a different
+environment, type::
+
+    activate name_of_environment
+
+3) Test that you have the correct version of python::
+
+    python --version
+
+4) install git
+
+    conda install git
+
+5) install hydrofunctions using the pip tool::
+
+    pip install git+https://github.com/your_github_name/hydrofunctions.git@master#egg=hydrofunctions
+
+6) You can now run python in one of several environments:
+    -from the command line: `python
+    -from an enhanced command line: 'ipython
+    -in the Spyder IDE: `spyder
+    -or using Jupyter: 'jupyter notebook
+
+7) Use hydrofunctions in your python code this way::
+
+    import hydrofunctions as hf
+
 Credits
 ---------
 
