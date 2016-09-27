@@ -55,6 +55,16 @@ class TestStation(unittest.TestCase):
         actual = second.station_dict['first']
         self.assertEqual(actual, expected)
 
+    def test_station_subclasses_maintain_same_station_dict(self):
+        class Foo(station.Station):
+            pass
+        foo_inst = Foo('foo')
+        station_inst = station.Station('station')
+        self.assertIn('station', foo_inst.station_dict)
+        self.assertIn('foo', station_inst.station_dict)
+        actual = station_inst.station_dict['foo']
+        self.assertIsInstance(actual, Foo)
+
 
 class TestNWIS(unittest.TestCase):
     """Testing the station.NWIS object."""
