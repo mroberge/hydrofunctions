@@ -18,16 +18,16 @@ class TestStation(unittest.TestCase):
         actual = station.Station()
         self.assertIsInstance(actual, station.Station)
 
-    def test_station_id_defaults_to_None(self):
+    def test_station_name_defaults_to_None(self):
         actual = station.Station()
-        self.assertIsNone(actual.id)
+        self.assertIsNone(actual.name)
 
     def test_station_id_sets(self):
-        expected = "0123"
+        expected = "01234567"
         actual = station.Station(expected)
-        another = station.Station("ABC")
-        self.assertEqual(actual.id, expected)
-        self.assertEqual(another.id, "ABC")
+        another = station.Station("23456789")
+        self.assertEqual(actual.name, expected)
+        self.assertEqual(another.name, "23456789")
 
     def test_station_dict_returns_dict(self):
         actual = station.Station('first')
@@ -69,40 +69,58 @@ class TestStation(unittest.TestCase):
 class TestNWIS(unittest.TestCase):
     """Testing the station.NWIS object."""
 
+    @unittest.skip("service no longer defaults to dv.")
     def test_NWIS_service_defaults_to_dv(self):
-        actual = station.NWIS()
-        service = "problem!"
+        name = "01582500"
+        service = "dv"
+        start = "2011-01-01"
+        end = "2011-01-02"
+        actual = station.NWIS(name, service, start, end)
         self.assertEqual(actual.service, "dv")
 
+    @unittest.skip("dates no longer default to None.")
     def test_NWIS_start_defaults_to_None(self):
         actual = station.NWIS()
         self.assertIsNone(actual.start_date)
 
+    @unittest.skip("dates no longer default to None.")
     def test_NWIS_end_defaults_to_None(self):
         actual = station.NWIS()
         self.assertIsNone(actual.end_date)
 
     def test_NWIS_setters_work(self):
-        actual = station.NWIS("A", "B", "C", "D")
+        name = "01582500"
+        service = "dv"
+        start = "2011-01-01"
+        end = "2011-01-02"
+        actual = station.NWIS(name, service, start, end)
         self.assertIsInstance(actual, station.NWIS)
-        self.assertEqual(actual.id, "A")
-        self.assertEqual(actual.service, "B")
-        self.assertEqual(actual.start_date, "C")
-        self.assertEqual(actual.end_date, "D")
+        self.assertEqual(actual.name, name)
+        self.assertEqual(actual.service, service)
+        self.assertEqual(actual.start_date, start)
+        self.assertEqual(actual.end_date, end)
         # self.assertIs(type(actual.fetch), function)
 
-    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
-    def test_NWIS_fetch_calls_get_nwis_correctly(self, mock_get_nwis):
-        actual = station.NWIS("A", "B", "1111-11-11", "1111-11-11")
+    @mock.patch("hydrofunctions.hydrofunctions.request_nwis")
+    def test_NWIS_fetch_calls_request_nwis_correctly(self, mock_request_nwis):
+        name = "01582500"
+        service = "dv"
+        start = "2011-01-01"
+        end = "2011-01-02"
+        actual = station.NWIS(name, service, start, end)
         try_it_out = actual.get_data()
-        mock_get_nwis.assert_called_once_with("A", "B", "1111-11-11", "1111-11-11")
+        mock_request_nwis.assert_called_once_with(name, service, start, end)
 
-    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
-    def test_NWIS_fetch2_calls_get_nwis_correctly(self, mock_get_nwis):
-        actual = station.NWIS("A", "B", "2002-03-03", "2002-03-03")
+    @mock.patch("hydrofunctions.hydrofunctions.request_nwis")
+    def test_NWIS_fetch2_calls_request_nwis_correctly(self, mock_request_nwis):
+        name = "01582500"
+        service = "dv"
+        start = "2011-01-01"
+        end = "2011-01-02"
+        actual = station.NWIS(name, service, start, end)
         try_it_out = actual.get_data()
         # This won't raise TypeError for "C" not matching "yyyy-mm-dd"
-        mock_get_nwis.assert_called_once_with("A", "B", "2002-03-03", "2002-03-03")
+        mock_request_nwis.assert_called_once_with(name, service, start, end)
 
 
 if __name__ == '__main__':

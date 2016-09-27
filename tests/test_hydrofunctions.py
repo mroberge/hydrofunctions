@@ -19,7 +19,7 @@ import hydrofunctions as hf
 class TestHydrofunctions(unittest.TestCase):
 
     @mock.patch('requests.get')
-    def test_hf_get_nwis_calls_correct_url(self, mock_get):
+    def test_hf_request_nwis_calls_correct_url(self, mock_get):
 
         """
         Thanks to
@@ -38,20 +38,20 @@ class TestHydrofunctions(unittest.TestCase):
         expected = 'mock data'
 
         mock_get.return_value = expected
-        actual = hf.get_nwis(site, service, start, end)
+        actual = hf.request_nwis(site, service, start, end)
         mock_get.assert_called_once_with(expected_url, params=expected_params,
                                          headers=expected_headers)
         self.assertEqual(actual, expected)
 
     def test_hf_extract_nwis_dict(self):
-        # I need to make a response fixture to test this out!!
-        test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
+        # TODO: I need to make a response fixture to test this out!!
+        test = hf.request_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_dict(test)
         self.assertIs(type(actual), dict, msg="Did not return a dict")
 
     def test_hf_extract_nwis_df(self):
-        # I need to make a response fixture to test this out!!
-        test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
+        # TODO: I need to make a response fixture to test this out!!
+        test = hf.request_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_df(test)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")

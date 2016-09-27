@@ -33,33 +33,77 @@ class Station(object):
     """
     station_dict = {}
 
-    def __init__(self, id=None):
-        Station.station_dict[id] = self
-        self.id = id
+    def __init__(self, name=None):
+        Station.station_dict[name] = self
+        self.name = name
         # One option is to make it so that you can pass in a get_data function
         # during the creation of an instance.
         self.get_data = None
 
 
 class NWIS(Station):
-    """As class for working with data from the USGS NWIS service."""
+    """A class for working with data from the USGS NWIS service.
+
+    TODO: decide if data should be requested when the object is created
+            or when the user calls get_data().
+
+            Opt 1: request automatically
+                self.response = self.fetchNWIS()
+            ***Opt 2: only request when user asks.
+                self.get_data = self.fetchNWIS
+                This has to be the way, otherwise testing is impossible...?
+
+                now, when the user types myInstance.get_data() it returns the response object.
+
+    TODO: decide how the service, start_date, and end_date should be passed
+        to the instance so that requests can be made from NWIS.
+
+            Opt 1: pass these variables to the instance when it is made. (current option)
+                HerringRun = NWIS("01585200", "dv", "2014-04-01", "2014-06-01")
+            Opt 2: Create a session object that contains the data folder location
+                    and an Analysis object that contains the start & end date.
+                    ??when would the service get passed??
+                        -create both NWISiv and NWISdv classes (this would make it hard to keep both data sets in the same object)
+    """
 
     def __init__(self,
-                 id=None,
+                 name=None,
                  service="dv",
                  start_date=None,
                  end_date=None):
-        self.id = id
+        self.name = name
         self.service = service
         self.start_date = start_date
         self.end_date = end_date
-        # self.get_data = hf.get_nwis(self.site, self.service, self.start_date, self.end_date)
-        self.get_data = self.fetch2
+        self.response = None
+        self.df = hf.extract_nwis_df
 
-    def fetch2(self):
-        """Will request data from NWIS after checking input types."""
-        # raise TypeError if parameters are wrong
-        typing.check_NWIS_station_id(self.id)
-        typing.check_datestr(self.start_date)
-        typing.check_datestr(self.end_date)
-        hf.get_nwis(self.id, self.service, self.start_date, self.end_date)
+        # self.get_data = hf.get_nwis(self.site, self.service,
+        #                             self.start_date, self.end_date)
+        # get_data is the function
+        # get_data() runs the function.
+        # self.get_data = self.fetchNWIS
+
+
+    def get_data(self):
+        self.name = typing.check_NWIS_name(self.name)
+        self.service = typing.check_NWIS_service(self.service)
+        self.start_date = typing.check_datestr(self.start_date)
+        self.end_date = typing.check_datestr(self.end_date)
+        self.response = hf.request_nwis(self.name, self.service,
+                                        self.start_date, self.end_date)
+        # The complete cuahsi json response
+        self.json = self.response.json()
+        print(self.json)
+        # The data in the form of a Pandas dataframe
+        # self.df = hf.extract_nwis_df(self.response)
+
+        return self
+
+
+
+
+    def dataframe(self):
+        """return data as a Pandas dataframe"""
+        pass
+

@@ -20,14 +20,22 @@ Suggested format for these functions:
 import re
 
 
-def check_NWIS_station_id(input):
+def check_NWIS_name(input):
     """Checks that the USGS station id is valid.
     """
     if isinstance(input, str):
-        return True
+        return input
     else:
         raise TypeError("NWIS station id should be a string, often in the \
                         form of an eight digit number enclosed in quotes")
+
+
+def check_NWIS_service(input):
+    """Checks that the service is valid: either iv or dv"""
+    if input == "iv" or input == "dv":
+        return input
+    else:
+        raise TypeError("The NWIS service type accepts 'dv' for daily values, or 'iv' for instantaneous values.")
 
 
 def check_datestr(input):
@@ -37,7 +45,7 @@ def check_datestr(input):
     pattern = r"[1-2]\d\d\d-[0-1]\d-[0-3]\d\Z"
     datestr = re.compile(pattern)
     if isinstance(input, str) and datestr.match(input):
-        return True
+        return input
     else:
         raise TypeError('dates should be in the form of "YYYY-MM-DD" \
                         enclosed in quotes. Actual: {}'.format(input))

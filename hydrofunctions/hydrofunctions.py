@@ -13,7 +13,7 @@ import pandas as pd
 from . import exceptions
 
 
-def get_nwis(site, service, start_date, end_date):
+def request_nwis(site, service, start_date, end_date):
     """Request stream gauge data from the USGS NWIS.
 
     Args:
@@ -121,7 +121,8 @@ def extract_nwis_df(response_obj):
                                             have any data for this request.")
 
     data = nwis_dict['value']['timeSeries'][0]['values'][0]['value']
-
+    # print("inside extract_nwis_df")
+    # print(data)
     DF = pd.DataFrame(data, columns=['dateTime', 'value'])
     DF.index = pd.to_datetime(DF.pop('dateTime'))
     DF.value = DF.value.astype(float)

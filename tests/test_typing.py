@@ -14,13 +14,22 @@ from hydrofunctions import typing
 
 class TestTyping(unittest.TestCase):
 
-    def test_typing_check_NWIS_station_id_accepts_str(self):
-        actual = typing.check_NWIS_station_id("any string")
+    def test_typing_check_NWIS_name_accepts_str(self):
+        actual = typing.check_NWIS_name("any string")
         self.assertTrue(actual)
 
-    def test_typing_check_NWIS_station_id_raises_TypeError(self):
+    def test_typing_check_NWIS_name_raises_TypeError(self):
         not_string = 5
-        self.assertRaises(TypeError, typing.check_NWIS_station_id, not_string)
+        self.assertRaises(TypeError, typing.check_NWIS_name, not_string)
+
+    def test_typing_check_NWIS_service_accepts_iv_and_dv(self):
+        self.assertTrue(typing.check_NWIS_service("iv"))
+        self.assertEqual(typing.check_NWIS_service("iv"), "iv")
+        self.assertTrue(typing.check_NWIS_service("dv"))
+        self.assertEqual(typing.check_NWIS_service("dv"), "dv")
+
+    def test_typing_check_NWIS_service_raises_TypeError(self):
+        self.assertRaises(TypeError, typing.check_NWIS_service("dv"))
 
     def test_typing_check_datestr_raises_TypeError(self):
         not_string = 5

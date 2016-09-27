@@ -47,7 +47,7 @@ __copyright__ = 'Copyright 2016 Martin Roberge'
 
 from .exceptions import HydroNoDataError
 from .hydrofunctions import (
-        get_nwis, extract_nwis_dict, extract_nwis_df
+        request_nwis, extract_nwis_dict, extract_nwis_df
         )
-from .station import Station
-from .typing import check_NWIS_station_id, check_datestr
+from .station import Station, NWIS
+from .typing import check_NWIS_name, check_datestr, check_NWIS_service
