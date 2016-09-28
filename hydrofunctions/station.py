@@ -76,13 +76,8 @@ class NWIS(Station):
         self.start_date = start_date
         self.end_date = end_date
         self.response = None
-        self.df = hf.extract_nwis_df
-
-        # self.get_data = hf.get_nwis(self.site, self.service,
-        #                             self.start_date, self.end_date)
-        # get_data is the function
-        # get_data() runs the function.
-        # self.get_data = self.fetchNWIS
+        self.df = lambda: print("You must call .get_data() before calling .df().")
+        self.json = lambda: print("You must call .get_data() before calling .json().")
 
 
     def get_data(self):
@@ -92,11 +87,16 @@ class NWIS(Station):
         self.end_date = typing.check_datestr(self.end_date)
         self.response = hf.request_nwis(self.name, self.service,
                                         self.start_date, self.end_date)
-        # The complete cuahsi json response
-        self.json = self.response.json()
-        print(self.json)
-        # The data in the form of a Pandas dataframe
+        # set self.json without calling it.
+        self.json = lambda: self.response.json()
+        # set self.df without calling it.
+        self.df = lambda: hf.extract_nwis_df(self.response)
+
+        # Another option might be to do this:
         # self.df = hf.extract_nwis_df(self.response)
+        # This would make myinst.df return a plain df.
+        # Unfortunately, it would be tough to test. you call get_data(), and
+        # it would try to process the mocked response.
 
         return self
 
