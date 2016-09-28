@@ -58,7 +58,7 @@ class NWIS(Station):
     TODO: decide how the service, start_date, and end_date should be passed
         to the instance so that requests can be made from NWIS.
 
-            Opt 1: pass these variables to the instance when it is made. (current option)
+            **Opt 1: pass these variables to the instance when it is made. (current option)
                 HerringRun = NWIS("01585200", "dv", "2014-04-01", "2014-06-01")
             Opt 2: Create a session object that contains the data folder location
                     and an Analysis object that contains the start & end date.

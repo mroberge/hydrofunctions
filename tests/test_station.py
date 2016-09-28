@@ -102,26 +102,25 @@ class TestNWIS(unittest.TestCase):
         # self.assertIs(type(actual.fetch), function)
 
     @mock.patch("hydrofunctions.hydrofunctions.request_nwis")
-    def test_NWIS_fetch_calls_request_nwis_correctly(self, mock_request_nwis):
+    def test_NWIS_get_data_calls_request_nwis_correctly(self, mock_request_nwis):
         name = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
         actual = station.NWIS(name, service, start, end)
         try_it_out = actual.get_data()
+        # try_it_out should be a response object, I think
         mock_request_nwis.assert_called_once_with(name, service, start, end)
 
-    @mock.patch("hydrofunctions.hydrofunctions.request_nwis")
-    def test_NWIS_fetch2_calls_request_nwis_correctly(self, mock_request_nwis):
+      # Now I need to test .df() and .json()
+    @unittest.skip("mock this out.")
+    def test_NWIS_df_returns_df(self):
         name = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
         actual = station.NWIS(name, service, start, end)
-        try_it_out = actual.get_data()
-        # This won't raise TypeError for "C" not matching "yyyy-mm-dd"
-        mock_request_nwis.assert_called_once_with(name, service, start, end)
-
+        actual.get_data().df() #returns a dataframe
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
