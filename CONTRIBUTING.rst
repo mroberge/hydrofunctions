@@ -23,17 +23,13 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-Fix Bugs
-~~~~~~~~
+Fix Bugs & Implement Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Look through the GitHub issues for bugs. Anything tagged with "bug"
-and "help wanted" is open to whoever wants to implement it.
-
-Implement Features
-~~~~~~~~~~~~~~~~~~
-
-Look through the GitHub issues for features. Anything tagged with "enhancement"
-and "help wanted" is open to whoever wants to implement it.
+There are lots of little coding improvements that have been suggested on our issues page. 
+Look through our list for bugs or features that you think you can help with,
+and leave a comment if you think you have a solution. Even if you just make a suggestion, 
+we are thankful for any help that we get!
 
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
@@ -79,10 +75,15 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
 5. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
 
     $ flake8 hydrofunctions tests
-    $ python setup.py test or python -m unittest -v or py.test or nose2
+    $ python setup.py test
+    
+or ``$ python -m unittest -v`` or  ``$ py.test`` or ``$ nose2``
+
+then::
+
     $ tox
 
-   To get flake8 and tox, just pip install them into your virtualenv.::
+To get flake8 and tox, just pip install them into your virtualenv.::
 
     $ pip install flake8
     $ pip install tox
