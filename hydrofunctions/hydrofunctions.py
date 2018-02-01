@@ -42,7 +42,7 @@ def get_nwis(site, service, start_date, end_date, parameterCd='00060'):
 
     Example::
 
-        >>> from hydrofunctions import hydrofunctions as hf
+        >>> import hydrofunctions as hf
         >>> response = hf.get_nwis('01585200', 'dv', '2012-06-01', '2012-07-01')
 
         >>> response
@@ -119,8 +119,8 @@ def extract_nwis_df(response_obj):
         # there is no data being collected.
 
         # TODO: this if clause needs to be tested.
-        raise exceptions.HydroNoDataError("The NWIS reports that it does not \
-                                            have any data for this request.")
+        raise exceptions.HydroNoDataError("The NWIS reports that it does not"
+                                          " have any data for this request.")
 
     data = nwis_dict['value']['timeSeries'][0]['values'][0]['value']
 
@@ -129,6 +129,7 @@ def extract_nwis_df(response_obj):
     DF.value = DF.value.astype(float)
     # DF.index.name = None
     DF.index.name = 'datetime'
-    DF.replace(to_replace='-999999', value=np.nan)
+    # this is never tested
+    DF.replace(to_replace='-999999', value=np.nan, inplace=True)
 
     return DF
