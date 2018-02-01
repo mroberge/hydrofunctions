@@ -70,11 +70,13 @@ class NWIS(Station):
                  name=None,
                  service="dv",
                  start_date=None,
-                 end_date=None):
+                 end_date=None,
+                 parameterCd='00060'):
         self.name = name
         self.service = service
         self.start_date = start_date
         self.end_date = end_date
+        self.parameterCd = parameterCd
         self.response = None
         self.df = lambda: print("You must call .get_data() before calling .df().")
         self.json = lambda: print("You must call .get_data() before calling .json().")
@@ -85,8 +87,9 @@ class NWIS(Station):
         self.service = typing.check_NWIS_service(self.service)
         self.start_date = typing.check_datestr(self.start_date)
         self.end_date = typing.check_datestr(self.end_date)
-        self.response = hf.request_nwis(self.name, self.service,
-                                        self.start_date, self.end_date)
+        self.response = hf.get_nwis(self.name, self.service,
+                                    self.start_date, self.end_date,
+                                    parameterCd=self.parameterCd)
         # set self.json without calling it.
         self.json = lambda: self.response.json()
         # set self.df without calling it.

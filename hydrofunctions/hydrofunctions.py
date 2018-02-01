@@ -13,7 +13,7 @@ import pandas as pd
 from . import exceptions
 
 
-def request_nwis(site, service, start_date, end_date):
+def get_nwis(site, service, start_date, end_date, parameterCd='00060'):
     """Request stream gauge data from the USGS NWIS.
 
     Args:
@@ -25,6 +25,8 @@ def request_nwis(site, service, start_date, end_date):
            should take on the form yyyy-mm-dd
         end_date (str):
             should take on the form yyyy-mm-dd
+        parameterCd (str):
+            NWIS parameter code. Default is streamflow '00060'
 
     Returns:
         a response object.
@@ -62,7 +64,7 @@ def request_nwis(site, service, start_date, end_date):
     values = {
         'format': 'json,1.1',
         'sites': site,
-        'parameterCd': '00060',  # represents stream discharge.
+        'parameterCd': parameterCd,  # default parameterCd represents stream discharge.
         # 'period': 'P10D' # This is the format for requesting data for a period before today
         'startDT': start_date,
         'endDT': end_date
@@ -121,8 +123,7 @@ def extract_nwis_df(response_obj):
                                             have any data for this request.")
 
     data = nwis_dict['value']['timeSeries'][0]['values'][0]['value']
-    # print("inside extract_nwis_df")
-    # print(data)
+
     DF = pd.DataFrame(data, columns=['dateTime', 'value'])
     DF.index = pd.to_datetime(DF.pop('dateTime'))
     DF.value = DF.value.astype(float)

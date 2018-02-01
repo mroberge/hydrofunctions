@@ -101,16 +101,30 @@ class TestNWIS(unittest.TestCase):
         self.assertEqual(actual.end_date, end)
         # self.assertIs(type(actual.fetch), function)
 
-    @mock.patch("hydrofunctions.hydrofunctions.request_nwis")
-    def test_NWIS_get_data_calls_request_nwis_correctly(self, mock_request_nwis):
+    def test_NWIS_setters_parameterCd(self):
         name = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
+        parameterCd = "00065"
+        actual = station.NWIS(name, service, start, end, parameterCd=parameterCd)
+        self.assertIsInstance(actual, station.NWIS)
+        self.assertEqual(actual.name, name)
+        self.assertEqual(actual.service, service)
+        self.assertEqual(actual.start_date, start)
+        self.assertEqual(actual.parameterCd, parameterCd)
+
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    def test_NWIS_get_data_calls_get_nwis_correctly(self, mock_get_nwis):
+        name = "01582500"
+        service = "dv"
+        start = "2011-01-01"
+        end = "2011-01-02"
+        parameterCd = "00060"
         actual = station.NWIS(name, service, start, end)
         try_it_out = actual.get_data()
         # try_it_out should be a response object, I think
-        mock_request_nwis.assert_called_once_with(name, service, start, end)
+        mock_get_nwis.assert_called_once_with(name, service, start, end, parameterCd=parameterCd)
 
       # Now I need to test .df() and .json()
     @unittest.skip("mock this out.")
