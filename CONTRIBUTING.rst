@@ -23,17 +23,13 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-Fix Bugs
-~~~~~~~~
+Fix Bugs & Implement Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Look through the GitHub issues for bugs. Anything tagged with "bug"
-and "help wanted" is open to whoever wants to implement it.
-
-Implement Features
-~~~~~~~~~~~~~~~~~~
-
-Look through the GitHub issues for features. Anything tagged with "enhancement"
-and "help wanted" is open to whoever wants to implement it.
+There are lots of little coding improvements that have been suggested on our issues page. 
+Look through our list for bugs or features that you think you can help with,
+and leave a comment if you think you have a solution. Even if you just make a suggestion, 
+we are thankful for any help that we get!
 
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
@@ -59,106 +55,46 @@ Get Started!
 
 Ready to contribute? Here's how to set up `hydrofunctions` for local development.
 
+1. Fork the `hydrofunctions` repo on GitHub.
+2. Clone your fork locally::
 
-1. Fork the `hydrofunctions repo <https://github.com/mroberge/hydrofunctions>`
-on GitHub website by clicking on the 'Fork' button near the upper right corner.
+    $ git clone git@github.com:your_name_here/hydrofunctions.git
 
-2. Install Anaconda if you don't already have it on your system. This includes
-a package manager, conda, which replaces pip and also manages virtual
-environments, replacing venv, and virtualenv.:
+3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
-    `Download Anaconda <https://www.continuum.io/downloads>`
+    $ mkvirtualenv hydrofunctions
+    $ cd hydrofunctions/
+    $ python setup.py develop
 
-3. Much of the rest involves the command line. In the following examples I'll
-be using Windows, but this will only affect simple commands like making a new
-directory, or changing directory. The important commands are the same on
-different platforms.  Also, if you are using Windows, use **cmd.exe** as your
-command line instead of PowerShell, which seems to interfere
-with one of our tools, conda.)
+4. Create a branch for local development::
 
-4. Create a directory for your development work and change directories into
-it (I call mine py-dev)::
+    $ git checkout -b name-of-your-bugfix-or-feature
 
-    `> mkdir py-dev
-    `> cd py-dev
+   Now you can make your changes locally.
 
-5. If you've just installed Anaconda and haven't done anything else with it,
-then you can skip ahead to step #7.
+5. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
 
-6. Create a new conda environment named `my35env`. Include everything we need:
-python 3.5, git, and the anaconda set of scientific packages.
+    $ flake8 hydrofunctions tests
+    $ python setup.py test
+    
+or ``$ python -m unittest -v`` or  ``$ py.test`` or ``$ nose2``
 
-    `> conda create -n my35env python=3.5 anaconda git
+then::
 
-7. List all of your available environments, and activate my35env.:
+    $ tox
 
-    `> conda info -e`  The active environment will have a star next to it.
-    `> activate my35env
+To get flake8 and tox, just pip install them into your virtualenv.::
 
-8. For kicks, check that you've got the right version of python running::
+    $ pip install flake8
+    $ pip install tox
 
-    `> python --version
+6. Commit your changes and push your branch to GitHub::
 
-9. Conda doesn't install from github or pypi, so we'll use pip instead. Use pip
-to install hydrofunctions in development mode from github, and to start git
-tracking. This command creates a src directory, and puts the source files into
-a directory named in the `egg=` part of the url. Then you can edit the source
-files and have the edits freshly interpreted again when you `import
-hydrofunctions` during a python session. Additionally, git will create a .git
-directory inside of the hydrofunctions directory.:
+    $ git add .
+    $ git commit -m "Your detailed description of your changes."
+    $ git push origin name-of-your-bugfix-or-feature
 
-    `> pip install -e git+https://github.com/your_github_name/hydrofunctions.git@master#egg=hydrofunctions
-
-10. Move into the hydrofunctions directory.:
-
-    `> cd src/hydrofunctions
-
-11. Run the automatic tests to make sure everything is hunky-dory::
-
-    `> python setup.py test
-
-12. Start your own branch in git::
-
-    `> git checkout -b name-of-your-bugfix-or-feature
-
-Alternatively, use github's Desktop tool, which does a great job of putting
-most of Git's best features into an easy-to-use GUI.
-
-    Download `GitHub Desktop <https://desktop.github.com/>`
-    Add the repository we created in step 9:
-        -click on the + pull-down > 'Add';
-        -find the repository `py-dev/src/hydrofunctions`;
-        -confirm with 'Add Repository'.
-        -Any changes you make in this directory will appear in this program.
-
-12. Go ahead and make changes to the files now. I like to use Spyder, which you
-installed already with anaconda::
-
-    `> spyder
-
-13. After you've made a small change, make sure you didn't break anything by
-running the tests again. I find it easiest to run the tests from the command
-line. If you tied up the command line when you ran spyder, you can access it
-here: Tools > Open Command Prompt.
-
-14. Before you make too many changes, 'commit' what you've done. Ideally, each
-group of changes that you put into a commit will be logically related to each
-other, and the group of changes will be really small. Make sure that you
-explain your changes in the commit message. Use github Desktop. If you use the
-command line, then type::
-
-    `> git add .
-    `> git commit -m "Your detailed description of your changes."
-
-15. When you are done commiting changes, push your branch and all of the
-commits in it to GitHub. This can be done with the 'Sync' button in the
-upper right corner. Or, use the command line::
-
-    `> git push origin name-of-your-bugfix-or-feature
-
-16. Finally, submit a pull request to me through the GitHub website.
-
-
+7. Submit a pull request through the GitHub website.
 
 Pull Request Guidelines
 -----------------------
@@ -176,7 +112,7 @@ Before you submit a pull request, check that it meets these guidelines:
 Tips
 ----
 
-To run a subset of tests, like the file `test_hydrofunctions.py`::
+To run a subset of tests::
 
 
     $ python -m unittest tests.test_hydrofunctions
