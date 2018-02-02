@@ -24,3 +24,13 @@ History
 * Check user inputs & raise explanatory exceptions
 * Extract data from response into a dataframe.
 * Stations object for managing data.
+
+0.1.4 (2016-09-18)
+----------------------
+
+* Added tests & documentation.
+
+0.1.5 (2018-02-02)
+----------------------
+
+* Added a parameter for requesting different parameters from NWIS (thanks @jdhughes-usgs!)
