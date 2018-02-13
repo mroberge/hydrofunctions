@@ -76,6 +76,7 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
         'endDT': end_date
         }
 
+    # process sites, stateCd, or countyCd options
     if stateCd is None and countyCd is None:
         sites = typing.check_NWIS_name(site)
         values['sites'] = sites
@@ -155,6 +156,8 @@ def extract_nwis_df(response_obj):
         if ndv not in noDataValues:
             noDataValues.append(ndv)
 
+    # determine the NWIS data item with the maximum amount of data so that
+    # it can be processed first
     idxmx = 0
     emax = 0
     for idx, key in enumerate(keys):
@@ -171,27 +174,22 @@ def extract_nwis_df(response_obj):
     DF = DF.rename(columns={'value': names[idxmx]})
     DF[names[idxmx]] = DF[names[idxmx]].astype(float)
 
-    # set index name and replace missing values
+    # set index name for dataframe
     DF.index.name = 'datetime'
 
     # process data for the remaining NWIS sites
     for key in keys:
-        # skip key if it has already been processed
+        # skip data processing if key has already been processed
         if key == idxmx:
             continue
         da = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
         dfa = pd.DataFrame(da, columns=['dateTime', 'value'])
         dfa.index = pd.to_datetime(dfa.pop('dateTime'))
         dfa = dfa.rename(columns={'value': names[key]})
-        # dfa = dfa.replace(to_replace=noDataValue[key], value=np.nan)
         DF = pd.concat([DF, dfa], axis=1)
-        # DF = DF.replace(to_replace={names[key]: noDataValue[key]}, value=np.nan)
         DF[names[key]] = DF[names[key]].astype(float)
 
-    # # set index name and replace missing values
-    # DF.index.name = 'datetime'
-
-    # replace missing values
+    # replace missing values in the dataframe
     DF = DF.replace(to_replace=noDataValues, value=np.nan)
 
     return DF

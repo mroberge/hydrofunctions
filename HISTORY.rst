@@ -30,7 +30,11 @@ History
 
 * Added tests & documentation.
 
-0.1.5 (2018-02-02)
+0.1.5 (2018-02-13)
 ----------------------
 
-* Added a parameter for requesting different parameters from NWIS (thanks @jdhughes-usgs!)
+* Added a parameter (parameterCd) for requesting different parameters from NWIS (thanks @jdhughes-usgs!)
+* Added functionality to pass a either a string for the site id or a list of sites ids
+* Added functionality to query NWIS for all data for a specified parameterCD for a specified state
+* Added functionality to query NWIS for all data for a specified parameterCD for a specified county (a list of county ids can be provided)
+* Revised pandas dataframe column names to include the site id, NWIS parameterCd statistic, and the NWIS parameterCD variable description (for example, '07228000 - Mean Discharge, cubic feet per second')
