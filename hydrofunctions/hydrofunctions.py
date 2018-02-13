@@ -11,20 +11,26 @@ import pandas as pd
 # Change to relative import: from . import exceptions
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
+from . import typing
 
-
-def get_nwis(site, service, start_date, end_date, parameterCd='00060'):
+def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
+             parameterCd='00060'):
     """Request stream gauge data from the USGS NWIS.
 
     Args:
-        site (str):
-            a valid site is 01585200
+        site (str or list of strings):
+            a valid site is '01585200' or ['01585200', '01646502']. site
+            should be None in stateCd or countyCd are not None.
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
         start_date (str):
            should take on the form yyyy-mm-dd
         end_date (str):
             should take on the form yyyy-mm-dd
+        stateCd (str):
+            a valid state abbreviation. Default is None.
+        countyCd (str or list of strings):
+            a valid county abbreviation. Default is None.
         parameterCd (str):
             NWIS parameter code. Default is streamflow '00060'
 
@@ -63,12 +69,21 @@ def get_nwis(site, service, start_date, end_date, parameterCd='00060'):
 
     values = {
         'format': 'json,1.1',
-        'sites': site,
+        # 'sites': sites,
         'parameterCd': parameterCd,  # default parameterCd represents stream discharge.
         # 'period': 'P10D' # This is the format for requesting data for a period before today
         'startDT': start_date,
         'endDT': end_date
         }
+
+    if stateCd is None and countyCd is None:
+        sites = typing.check_NWIS_name(site)
+        values['sites'] = sites
+    elif stateCd is not None:
+        values['stateCd'] = stateCd
+    elif countyCd is not None:
+        countyCd = typing.check_NWIS_name(countyCd)
+        values['countyCd'] = countyCd
 
     url = 'http://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'
@@ -122,13 +137,61 @@ def extract_nwis_df(response_obj):
         raise exceptions.HydroNoDataError("The NWIS reports that it does not \
                                             have any data for this request.")
 
-    data = nwis_dict['value']['timeSeries'][0]['values'][0]['value']
+    # create lists of timeseries keys, names, and noDataValues
+    keys = []
+    names = []
+    noDataValues = []
+    for idx, tts in enumerate(ts):
+        keys.append(idx)
+        tag = tts['name'].split(':')[1]
+        tag += ' - '
+        try:
+            tag += tts['variable']['options']['option'][0]['value']
+        except:
+            pass
+        tag += ' ' + tts['variable']['variableDescription']
+        names.append(tag)
+        ndv = tts['variable']['noDataValue']
+        if ndv not in noDataValues:
+            noDataValues.append(ndv)
 
+    idxmx = 0
+    emax = 0
+    for idx, key in enumerate(keys):
+        data = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
+        if len(data) > emax:
+            emax = len(data)
+            idxmx = idx
+
+
+    # process data for the first NWIS site
+    data = nwis_dict['value']['timeSeries'][idxmx]['values'][0]['value']
     DF = pd.DataFrame(data, columns=['dateTime', 'value'])
     DF.index = pd.to_datetime(DF.pop('dateTime'))
-    DF.value = DF.value.astype(float)
-    # DF.index.name = None
+    DF = DF.rename(columns={'value': names[idxmx]})
+    DF[names[idxmx]] = DF[names[idxmx]].astype(float)
+
+    # set index name and replace missing values
     DF.index.name = 'datetime'
-    DF.replace(to_replace='-999999', value=np.nan)
+
+    # process data for the remaining NWIS sites
+    for key in keys:
+        # skip key if it has already been processed
+        if key == idxmx:
+            continue
+        da = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
+        dfa = pd.DataFrame(da, columns=['dateTime', 'value'])
+        dfa.index = pd.to_datetime(dfa.pop('dateTime'))
+        dfa = dfa.rename(columns={'value': names[key]})
+        # dfa = dfa.replace(to_replace=noDataValue[key], value=np.nan)
+        DF = pd.concat([DF, dfa], axis=1)
+        # DF = DF.replace(to_replace={names[key]: noDataValue[key]}, value=np.nan)
+        DF[names[key]] = DF[names[key]].astype(float)
+
+    # # set index name and replace missing values
+    # DF.index.name = 'datetime'
+
+    # replace missing values
+    DF = DF.replace(to_replace=noDataValues, value=np.nan)
 
     return DF

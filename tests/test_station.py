@@ -136,5 +136,13 @@ class TestNWIS(unittest.TestCase):
         actual = station.NWIS(name, service, start, end)
         actual.get_data().df() #returns a dataframe
 
+    def test_NWIS_sites_returns_df(self):
+        name = ["01638500", "01646502"]
+        service = "dv"
+        start = "2011-01-01"
+        end = "2011-01-02"
+        actual = station.NWIS(name, service, start, end)
+        actual.get_data().df() #returns a dataframe
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
