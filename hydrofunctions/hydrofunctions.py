@@ -48,7 +48,7 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
 
     Example::
 
-        >>> from hydrofunctions import hydrofunctions as hf
+        >>> import hydrofunctions as hf
         >>> response = hf.get_nwis('01585200', 'dv', '2012-06-01', '2012-07-01')
 
         >>> response
@@ -134,8 +134,8 @@ def extract_nwis_df(response_obj):
         # there is no data being collected.
 
         # TODO: this if clause needs to be tested.
-        raise exceptions.HydroNoDataError("The NWIS reports that it does not \
-                                            have any data for this request.")
+        raise exceptions.HydroNoDataError("The NWIS reports that it does not"
+                                          " have any data for this request.")
 
     # create lists of timeseries keys, names, and noDataValues
     keys = []
