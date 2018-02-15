@@ -72,7 +72,9 @@ class NWIS(Station):
                  start_date=None,
                  end_date=None,
                  parameterCd='00060'):
-        self.name = name
+
+        sites = typing.check_NWIS_name(name)
+        self.name = sites
         self.service = service
         self.start_date = start_date
         self.end_date = end_date

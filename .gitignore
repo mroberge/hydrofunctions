@@ -58,3 +58,7 @@ docs/_build/
 # PyBuilder
 target/
 .spyderproject
+ 
+# PyCharm
+.idea/
+.ipynb_checkpoints/

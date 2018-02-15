@@ -23,12 +23,25 @@ import re
 def check_NWIS_name(input):
     """Checks that the USGS station id is valid.
     """
+    msg = "NWIS station id(s) should be a string or list of strings, " + \
+          "often in the form of an eight digit number enclosed in quotes"
+    if input is None:
+        return None
     if isinstance(input, str):
-        return input
+        input = input.split(',')
+    elif isinstance(input, list):
+        for s in input:
+            if not isinstance(s, str):
+                raise TypeError(msg)
     else:
-        raise TypeError("NWIS station id should be a string, often in the \
-                        form of an eight digit number enclosed in quotes")
+        raise TypeError(msg)
 
+    # format site(s)
+    sites = '{}'.format(input[0])
+    if len(input) > 1:
+        for s in input[1:]:
+            sites += ',{}'.format(s)
+    return sites
 
 def check_NWIS_service(input):
     """Checks that the service is valid: either iv or dv"""
