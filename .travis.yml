@@ -27,4 +27,4 @@ python:
   - "3.5"
   - "3.6"
 script: 
-  - pytest -v
+  - python setup.py test
