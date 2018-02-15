@@ -16,7 +16,7 @@ requirements = [
 ]
 
 test_requirements = [
-    pytest
+    'pytest'
     # 'nose2' doesn't add any extra functionality for me right now.
 ]
 
