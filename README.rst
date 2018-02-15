@@ -46,7 +46,7 @@ for Python. The easiest way to get started is by using
 which puts everything you need into
 `one easy download <https://www.continuum.io/downloads>`_. Choose
 the version of Anaconda that is right for your operating system, and I would
-advise using Python 3.5.
+advise using Python 3.4 or higher.
 
 Once you have Anaconda installed, much of the following will be done from the
 command line. For Windows users, use cmd.exe to do this instead of PowerShell,

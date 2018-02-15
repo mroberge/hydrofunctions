@@ -33,6 +33,7 @@ History
 0.1.5 (2018-02-13)
 ----------------------
 
+* Updated to support Python 3.6
 * Added a parameter (parameterCd) for requesting different parameters from NWIS (thanks @jdhughes-usgs!)
 * Added functionality to pass a either a string for the site id or a list of sites ids
 * Added functionality to query NWIS for all data for a specified parameterCD for a specified state

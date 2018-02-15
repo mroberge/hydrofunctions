@@ -17,14 +17,15 @@ deploy:
       RWFHYWZVbUQrajhuN2E3U0xOSUtodzZJMURwNzNWdklWVjJ0NCs3VnZIMmt0NFk3NFNSdU90RXlO
       R1NuRDVkWTJnNUlTUkEzTjI0Um9IaWhBdHFUVTZBeHBiUDNDSnozY0Y4aTYvclNpcC9sNVZhUlE9
   user: mroberge
-  on:
-    condition: $TOXENV == py35
+  true:
+    condition: $TOXENV == py36
     repo: mroberge/hydrofunctions
     tags: true
 env:
+- TOXENV=py36
 - TOXENV=py35
 - TOXENV=py34
 install: pip install -U tox
 language: python
-python: 3.5
+python: 3.6
 script: travis_wait tox -e ${TOXENV}
