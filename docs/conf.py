@@ -12,20 +12,28 @@
 #    choke when they try to import and build numpy and pandas, due to these
 #    relying extensively on C modules. So I need to mock these out.
 #
+#    Update 2018-02-15: Importing MagicMock during by docs build using 
+#    'make html' is leading to a RecursionError:
+#    'maximum recursion depth exceeded while calling a Python object'.
+#    I was able to avoid the RecursionError during 'make html' by commenting out 
+#    the following block, which imports MagicMock.
+#    Now we need to see if the original
+#    error during the ReadTheDocs build still occurs.
+#
 ####################Added Stuff Below ################################
-
-
-import sys
-from unittest.mock import MagicMock
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return Mock()
-
-MOCK_MODULES = ['pygtk', 'gtk', 'gobject', 'argparse', 'numpy', 'pandas']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-
+#
+#
+#import sys
+#from unittest.mock import MagicMock
+#
+#class Mock(MagicMock):
+#    @classmethod
+#    def __getattr__(cls, name):
+#            return Mock()
+#
+#MOCK_MODULES = ['pygtk', 'gtk', 'gobject', 'argparse', 'numpy', 'pandas']
+#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+#
 ################ Added Stuff Above ###################################
 
 # hydrofunctions documentation build configuration file, created by
