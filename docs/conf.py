@@ -75,7 +75,7 @@ import hydrofunctions
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.autosectionlabel']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -89,9 +89,13 @@ source_suffix = '.rst'
 # The master toctree document.
 master_doc = 'index'
 
+# Renames internal refs so that they include page #.
+# See http://www.sphinx-doc.org/en/stable/ext/autosectionlabel.html#confval-autosectionlabel_prefix_document
+autosectionlabel_prefix_document = True
+
 # General information about the project.
-project = u'HydroFunctions'
-copyright = u"2016, Martin Roberge"
+project = u'Hydrofunctions'
+copyright = u"2016, Martin Roberge and Hydrofunction authors"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout

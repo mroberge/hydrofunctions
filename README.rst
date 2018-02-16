@@ -25,65 +25,80 @@ A suite of convenience functions for exploring water data in IPython.
 Features
 --------
 
-* Retrieves stream gauge data from the USGS NWIS service
-* Extracts into a Pandas dataframe or dict
-* Read the `online manual <http://hydrofunctions.readthedocs.io/en/master>`_
+* Retrieves stream gage data from the USGS NWIS service
+* Retrieve data using multiple site numbers, state, or county code
+* Preserves NWIS metadata, including NoData values.
+* Extracts data into a Pandas dataframe, json, or dict
+* Plotting and manipulation through Pandas dataframes!
+
+Read the `online manual <http://hydrofunctions.readthedocs.io/en/master>`_
 
 * Still under development! More features to come!
 
 Basic Usage
 -----------
 
+First, import hydrofunctions into your project::
 
+    >>> import hydrofunctions as hf
+    >>> %matplotlib inline
 
+    >>> start = '2017-06-01'
+    >>> end = '2017-07-14'
+    >>> herring = hf.NWIS('01585200', 'dv', start, end)
 
-Installation
-------------
+We've set up our system, now we submit our request for data::
+
+    >>> herring.get_data()
+    <hydrofunctions.station.NWIS at 0x127506d6ac8>
+
+Create a Pandas dataframe, then list the first five items::
+
+    >>> herring.df()
+
+--a table with our data appears--
+
+    +------------+--------------------------------------------------+
+    |  datetime  | 01585200 - Mean Discharge, cubic feet per second |
+    +------------+--------------------------------------------------+
+    | 2017-06-01 |                                       0.71       |
+    | 2017-06-02 |                                       0.64       |
+    | 2017-06-03 |                                       0.61       |
+    | 2017-06-04 |                                       0.58       |
+    | 2017-06-05 |                                       1.95       |
+    +------------+--------------------------------------------------+
+
+Plot the data using Pandas and mathplotlib::
+
+    >>> herring.df().plot()
+    --a stream hydrograph appears--
+
+Learn more:
+
+* `More Usage <http://hydrofunctions.readthedocs.io/en/master/usage.html>`_
+* A Jupyter Notebook tutorial: <Introduction to Hydrofunctions.ipynb>
+
+Easy Installation
+-----------------
+
+The easiest way to install Hydrofunctions is by typing this from your 
+command line:
+
+.. code-block:: console
+
+    $ pip install hydrofunctions
+
 
 Hydrofunctions depends upon Pandas and numerous other scientific packages
-for Python. The easiest way to get started is by using
-`Anaconda <https://www.continuum.io/open-source-core-modern-software>`_,
-which puts everything you need into
-`one easy download <https://www.continuum.io/downloads>`_. Choose
-the version of Anaconda that is right for your operating system, and I would
-advise using Python 3.4 or higher.
+for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_ 
+is an easy, safe, open-source method for downloading everything and avoiding
+conflicts with other versions of Python that might be running on your
+computer.
 
-Once you have Anaconda installed, much of the following will be done from the
-command line. For Windows users, use cmd.exe to do this instead of PowerShell,
-which I've found has a strange interaction with conda.
+Visit the `Installation Page <http://hydrofunctions.readthedocs.io/en/master/installation.html>`_ 
+in the Users Guide to learn how to install
+Anaconda, or if you have problems using the Easy Installation method above.
 
-1. list your available environments::
-
-         > conda info -e
-
-2. The active environment will have a star next to it. 
-   To activate a different environment, type::
-
-         > activate name_of_environment
-
-3. Test that you have the correct version of python::
-
-         > python --version
-
-4. install git::
-
-         > conda install git
-
-5. install hydrofunctions using the pip tool::
-
-         > pip install git+https://github.com/your_github_name/hydrofunctions.git@master#egg=hydrofunctions
-
-6. You can now run python in one of several 
-   environments:
-
-      - from the command line: `python`
-      - from an enhanced command line: `ipython`
-      - in the Spyder IDE: `spyder`
-      - or using Jupyter: 'jupyter notebook`
-
-7) Use hydrofunctions in your python code this way::
-
-         > import hydrofunctions as hf
 
 Credits
 ---------
@@ -96,3 +111,7 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+MIT License
+
+Copyright (c) 2016, Martin Roberge and contributors

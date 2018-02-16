@@ -83,7 +83,6 @@ class NWIS(Station):
         self.df = lambda: print("You must call .get_data() before calling .df().")
         self.json = lambda: print("You must call .get_data() before calling .json().")
 
-
     def get_data(self):
         self.name = typing.check_NWIS_name(self.name)
         self.service = typing.check_NWIS_service(self.service)
@@ -105,10 +104,6 @@ class NWIS(Station):
 
         return self
 
-
-
-
     def dataframe(self):
         """return data as a Pandas dataframe"""
         pass
-

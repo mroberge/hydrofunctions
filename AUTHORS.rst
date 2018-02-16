@@ -1,5 +1,5 @@
 =======
-Credits
+Authors
 =======
 
 Development Lead
