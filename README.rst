@@ -17,7 +17,7 @@ HydroFunctions
         :target: https://github.com/mroberge/hydrofunctions/blob/master/LICENSE
         :alt: MIT license
 
-A suite of convenience functions for exploring water data in IPython.
+A suite of convenience functions for exploring water data in Python.
 
 
 
@@ -25,20 +25,21 @@ A suite of convenience functions for exploring water data in IPython.
 Features
 --------
 
-* Retrieves stream gage data from the USGS NWIS service
+* Retrieves stream data from the USGS NWIS service
 * Retrieve data using multiple site numbers, state, or county code
-* Preserves NWIS metadata, including NoData values.
+* Preserves NWIS metadata, including NoData values
 * Extracts data into a Pandas dataframe, json, or dict
-* Plotting and manipulation through Pandas dataframes!
+* Plotting and manipulation through Pandas dataframes
+* Still in early development! More features to come!
 
-Read the `online manual <http://hydrofunctions.readthedocs.io/en/master>`_
+Read the `Users Guide <http://hydrofunctions.readthedocs.io/en/master>`_ for more details.
 
-* Still under development! More features to come!
 
 Basic Usage
 -----------
 
-First, import hydrofunctions into your project::
+First, import hydrofunctions into your project and enable automatic chart 
+display::
 
     >>> import hydrofunctions as hf
     >>> %matplotlib inline
@@ -56,7 +57,7 @@ Create a Pandas dataframe, then list the first five items::
 
     >>> herring.df().head()
 
---a table with our data appears--
+*--a table with our data appears--*
 
     +------------+--------------------------------------------------+
     |  datetime  | 01585200 - Mean Discharge, cubic feet per second |
@@ -75,13 +76,16 @@ Create a Pandas dataframe, then list the first five items::
 Plot the data using Pandas and mathplotlib::
 
     >>> herring.df().plot()
-    --a stream hydrograph appears--
+
+*--a stream hydrograph appears--*
+
+.. image:: HerringHydrograph.png
+        :alt: a stream hydrograph for Herring Run
 
 Learn more:
 
-* `More Usage <http://hydrofunctions.readthedocs.io/en/master/usage.html>`_
-* A `Jupyter Notebook<https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_ 
-with a quick tutorial.
+* `More usage <http://hydrofunctions.readthedocs.io/en/master/usage.html>`_ tips
+* `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
 
 Easy Installation
 -----------------
@@ -108,9 +112,9 @@ Anaconda, or if you have problems using the Easy Installation method above.
 Credits
 ---------
 
-Visit `Hydropy <https://github.com/stijnvanhoey/hydropy>`_, which builds upon Pandas for enhanced data selection and plotting of hydrology data.
+`Hydropy <https://github.com/stijnvanhoey/hydropy>`_, a Python package that builds upon Pandas for enhanced data selection and plotting of hydrology data.
 
-`WellApplication <https://github.com/inkenbrandt/WellApplication>`_ provides functions for working with dataloggers and USGS well data.
+`WellApplication <https://github.com/inkenbrandt/WellApplication>`_ a Python package that provides functions for working with dataloggers and USGS well data.
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
@@ -118,4 +122,5 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
 MIT License
+
 Copyright (c) 2016, Martin Roberge and contributors

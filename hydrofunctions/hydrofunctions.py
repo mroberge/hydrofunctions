@@ -20,7 +20,7 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
     Args:
         site (str or list of strings):
             a valid site is '01585200' or ['01585200', '01646502']. site
-            should be None in stateCd or countyCd are not None.
+            should be None if stateCd or countyCd are not None.
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
         start_date (str):
@@ -28,18 +28,22 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
         end_date (str):
             should take on the form yyyy-mm-dd
         stateCd (str):
-            a valid state abbreviation. Default is None.
+            a valid two-letter state postal abbreviation. Default is None.
         countyCd (str or list of strings):
             a valid county abbreviation. Default is None.
         parameterCd (str):
-            NWIS parameter code. Default is streamflow '00060'
+            NWIS parameter code. Default is stream discharge '00060'
+                -stage: '00065'
+                -discharge: '00060'
+                -not all sites collect all parameters!
+            See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
 
     Returns:
         a response object.
 
             * response.url: the url we requested data from.
-            * response.status_code:
-            * response.json: the content translated as json
+            * response.status_code: '200' when okay; see <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
+            * response.json: the content translated as json.
             * response.ok: "True" when we get a '200'
 
     Raises:
@@ -52,13 +56,13 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
         >>> response = hf.get_nwis('01585200', 'dv', '2012-06-01', '2012-07-01')
 
         >>> response
-        <respones [200]>
+        <response [200]>
         >>> response.ok
         True
         >>> response.json()
         *JSON ensues*
 
-    The specification for this service is located here:
+    The specification for the USGS NWIS service is located here:
     http://waterservices.usgs.gov/rest/IV-Service.html
     """
 
@@ -99,6 +103,13 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
 
 def extract_nwis_dict(response_obj):
     """Returns a dict object from an NWIS response object.
+
+    Args:
+        response_obj (obj):
+            a response object as returned by get_nwis().
+
+    Returns:
+        a dict formed from the response.json()
     """
     nwis_dict = response_obj.json()
 
@@ -107,6 +118,10 @@ def extract_nwis_dict(response_obj):
 
 def extract_nwis_df(response_obj):
     """Returns a Pandas dataframe from an NWIS response object.
+
+    Args:
+        response_obj (obj):
+            a response object as returned by get_nwis().
 
     Returns:
         a pandas dataframe.

@@ -11,7 +11,7 @@ from . import hydrofunctions as hf
 
 
 class Station(object):
-    """A class for organizing stream gauge data for a single site.
+    """A class for organizing stream gauge data for a single request.
 
     Store copies of each station in a dictionary station_dict.
     This dict will include descendant objects too.
@@ -27,9 +27,9 @@ class Station(object):
     Future Feature:
         only create new instance if its id is not already in the list.
         if id in station_dict:
-            #just re-use already existing obj.
+            # just re-use already existing obj.
             return station_dict[id]
-            #prob need to use a factory to do this.
+            # prob need to use a factory to do this.
     """
     station_dict = {}
 
@@ -49,7 +49,7 @@ class NWIS(Station):
 
             Opt 1: request automatically
                 self.response = self.fetchNWIS()
-            ***Opt 2: only request when user asks.
+            ==>Opt 2: only request when user asks.
                 self.get_data = self.fetchNWIS
                 This has to be the way, otherwise testing is impossible...?
 
@@ -63,7 +63,7 @@ class NWIS(Station):
             Opt 2: Create a session object that contains the data folder location
                     and an Analysis object that contains the start & end date.
                     ??when would the service get passed??
-                        -create both NWISiv and NWISdv classes (this would make it hard to keep both data sets in the same object)
+                    -create both NWISiv and NWISdv classes (this would make it hard to keep both data sets in the same object)
     """
 
     def __init__(self,

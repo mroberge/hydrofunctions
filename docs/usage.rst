@@ -1,9 +1,7 @@
-=====
-Usage
-=====
+====================
+Using Hydrofunctions
+====================
 
-Using hydrofunctions in a project
----------------------------------
 
 First, import hydrofunctions into your project::
 
@@ -62,11 +60,13 @@ Using the NWIS object to request data
 -------------------------------------
 
 A second method for requesting data is to use the NWIS object to store your
-response and the extracted data::
+response and the extracted data.
 
-First, import hydrofunctions into your project::
+First, import hydrofunctions into your project and enable automatic chart 
+display::
 
     >>> import hydrofunctions as hf
+    >>> %matplotlib inline
 
 Now set up the data request, much as we did with the `hf.get_nwis()` function,
 but this time we'll use the hf.NWIS object::
@@ -105,11 +105,14 @@ first five items in our dataframe by dot chaining the `.head()` method::
 Plot the data using Pandas and mathplotlib::
 
     >>> herring.df().plot()
-    --a stream hydrograph appears--
 
+.. image:: HerringHydrograph.png
+        :alt: a stream hydrograph for Herring Run
+
+As long as you had `%matplotlib inline` enabled earlier, you will get a graph.
 
 Example Notebooks
 -----------------
 
-
-* `Introduction to Hydrofunctions<https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_
+- `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_
+- `NWIS Trial Run <https://github.com/mroberge/hydrofunctions/blob/master/NWIS%20trial%20run.ipynb>`_

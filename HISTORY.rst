@@ -35,13 +35,8 @@ History
 
 * Updated to support Python 3.6
 * Updated docs, added notebooks (mcr jdh)
-* Added a parameter (parameterCd) for requesting different parameters from NWIS
-(thanks @jdhughes-usgs!)
-* Added functionality to pass a either a string for the site id or a list of 
-sites ids (jdh)
-* Added functionality to query NWIS for all data for a specified parameterCD 
-for a specified state (jdh)
-* Added functionality to query NWIS for all data for a specified parameterCD 
-for a specified county (a list of county ids can be provided) (jdh)
-* Revised pandas dataframe column names to include the site id, NWIS 
-parameterCd statistic, and the NWIS parameterCD variable description (for example, '07228000 - Mean Discharge, cubic feet per second')(jdh)
+* Added a parameter (parameterCd) for requesting different parameters from NWIS (thanks @jdhughes-usgs!)
+* Added functionality to pass a either a string for the site id or a list of sites ids (jdh)
+* Added functionality to query NWIS for all data for a specified parameterCD for a specified state (jdh)
+* Added functionality to query NWIS for all data for a specified parameterCD for a specified county (a list of county ids can be provided) (jdh)
+* Revised pandas dataframe column names to include the site id, NWIS parameterCd statistic, and the NWIS parameterCD variable description (for example, '07228000 - Mean Discharge, cubic feet per second')(jdh)

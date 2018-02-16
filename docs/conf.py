@@ -153,16 +153,23 @@ pygments_style = 'sphinx'
 # The new default is alabaster.
 # The old default is now 'classic'.
 # more themes: http://www.sphinx-doc.org/en/stable/theming.html
+#html_theme = 'bizstyle'
 html_theme = 'alabaster'
 
 html_theme_options = {
     'github_user': 'mroberge',
     'github_repo': 'hydrofunctions',
+    'description': 'Python tools for hydrology',
     'github_button': True,
     'github_banner': True,
     'travis_button': True,
     'fixed_sidebar': True,
-    'analytics_id': 'UA-73178522-4'
+    'sidebar_width': '230px',
+    'show_related': True,
+    'analytics_id': 'UA-73178522-4',
+    'head_font_family': 'Roboto, Tahoma, Verdana, Segoe, sans-serif',
+    'font_family': 'Tahoma, Verdana, Segoe, sans-serif',
+    'code_font_family': 'Lucida Console, Lucida Sans Typewriter, monospace'
 }
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
