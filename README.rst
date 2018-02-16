@@ -54,7 +54,7 @@ We've set up our system, now we submit our request for data::
 
 Create a Pandas dataframe, then list the first five items::
 
-    >>> herring.df()
+    >>> herring.df().head()
 
 --a table with our data appears--
 
@@ -62,9 +62,13 @@ Create a Pandas dataframe, then list the first five items::
     |  datetime  | 01585200 - Mean Discharge, cubic feet per second |
     +------------+--------------------------------------------------+
     | 2017-06-01 |                                       0.71       |
+    +------------+--------------------------------------------------+
     | 2017-06-02 |                                       0.64       |
+    +------------+--------------------------------------------------+
     | 2017-06-03 |                                       0.61       |
+    +------------+--------------------------------------------------+
     | 2017-06-04 |                                       0.58       |
+    +------------+--------------------------------------------------+
     | 2017-06-05 |                                       1.95       |
     +------------+--------------------------------------------------+
 
@@ -76,7 +80,8 @@ Plot the data using Pandas and mathplotlib::
 Learn more:
 
 * `More Usage <http://hydrofunctions.readthedocs.io/en/master/usage.html>`_
-* A Jupyter Notebook tutorial: <Introduction to Hydrofunctions.ipynb>
+* A `Jupyter Notebook<https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_ 
+with a quick tutorial.
 
 Easy Installation
 -----------------
@@ -113,5 +118,4 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 
 MIT License
-
 Copyright (c) 2016, Martin Roberge and contributors

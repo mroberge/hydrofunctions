@@ -23,8 +23,8 @@ you through the process.
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
 
-Installing with Anaconda
-========================
+Why Use Anaconda?
+=================
 
 Anaconda is a free, open-source Python distribution. It bundles important
 scientific software like Jupyter notebooks and the Spyder IDE all into one
@@ -39,7 +39,7 @@ hydrofunctions, or if you want to use Python 2 and 3 at the same time, or if
 you had problems when you tried the Easy Install instructions above... then use
 these instructions here:
 
-0. `Download and install Anaconda.<https://www.continuum.io/downloads>`_.
+0. `Download and install Anaconda<https://www.continuum.io/downloads>`_.
 Choose the version of Anaconda that is right for your operating system. I
 advise using Python 3.4 or higher.
 
@@ -49,7 +49,7 @@ which I've found has a strange interaction with conda.
 
 
 Easy Anaconda Install
----------------------
+=====================
 
 *For people who are using Anaconda because they just wanted an easy way to get
 all of the software installed at once.*
@@ -63,8 +63,8 @@ all of the software installed at once.*
 That's it!
 
 
-Safe Anaconda Install for People Who Had Problems
--------------------------------------------------
+Safe Anaconda Install for People Having Problems
+================================================
 
 *For people who like to write their own code, or have Python already installed
 for something else, or who had difficulties.*
@@ -92,7 +92,7 @@ different environment, type::
          > pip install hydrofunctions
 
 Getting Started Once Everything Is Installed
---------------------------------------------
+============================================
 
 You now have several ways to run Python. If you installed Anaconda, then you
 will have icons that will start the following programs. Otherwise, just open
@@ -110,7 +110,8 @@ lines says this::
 
 
 Installations for People Wanting to Contribute Code to Hydrofunctions
----------------------------------------------------------------------
+=====================================================================
 
 You are a brave and special person indeed. WE SALUTE YOU:
+
 Follow the directions in the `Contributors Guide <http://hydrofunctions.readthedocs.io/en/master/contributing.html>`_
