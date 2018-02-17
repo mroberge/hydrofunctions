@@ -28,7 +28,7 @@ Features
 * Plotting and manipulation through Pandas dataframes
 * Still in early development! More features to come!
 
-Read the `Users Guide <http://hydrofunctions.readthedocs.io/en/master>`_ for more details.
+Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for more details.
 
 
 Basic Usage
@@ -80,7 +80,7 @@ Plot the data using Pandas and mathplotlib::
 
 Learn more:
 
-* `More usage <http://hydrofunctions.readthedocs.io/en/master/usage.html>`_ tips
+* `More usage <https://hydrofunctions.readthedocs.io/en/master/usage.html>`_ tips
 * `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
 
 Easy Installation
@@ -100,7 +100,7 @@ is an easy, safe, open-source method for downloading everything and avoiding
 conflicts with other versions of Python that might be running on your
 computer.
 
-Visit the `Installation Page <http://hydrofunctions.readthedocs.io/en/master/installation.html>`_ 
+Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_ 
 in the Users Guide to learn how to install
 Anaconda, or if you have problems using the Easy Installation method above.
 

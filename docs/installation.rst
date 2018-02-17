@@ -122,4 +122,4 @@ Installations for People Wanting to Contribute Code to Hydrofunctions
 
 You are a brave and special person indeed. WE SALUTE YOU:
 
-==> Follow the directions in the `Contributors Guide <http://hydrofunctions.readthedocs.io/en/master/contributing.html>`_
+==> Follow the directions in the `Contributors Guide <https://hydrofunctions.readthedocs.io/en/master/contributing.html>`_

@@ -31,7 +31,7 @@ List all of the different attributes and methods with dir()::
 
     >>> dir(response)
 
-Read more about Hydrofunctions here: http://hydrofunctions.readthedocs.io/
+Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
 """
 
