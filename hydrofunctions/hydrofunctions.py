@@ -21,22 +21,28 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
         site (str or list of strings):
             a valid site is '01585200' or ['01585200', '01646502']. site
             should be None if stateCd or countyCd are not None.
+
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
+
         start_date (str):
            should take on the form yyyy-mm-dd
+
         end_date (str):
             should take on the form yyyy-mm-dd
+
         stateCd (str):
             a valid two-letter state postal abbreviation. Default is None.
+
         countyCd (str or list of strings):
             a valid county abbreviation. Default is None.
+
         parameterCd (str):
             NWIS parameter code. Default is stream discharge '00060'
-                -stage: '00065'
-                -discharge: '00060'
-                -not all sites collect all parameters!
-            See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
+                * stage: '00065'
+                * discharge: '00060'
+                * not all sites collect all parameters!
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
 
     Returns:
         a response object.

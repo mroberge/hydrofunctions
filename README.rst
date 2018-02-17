@@ -2,7 +2,6 @@
 HydroFunctions
 ===============================
 
-
 .. image:: https://img.shields.io/pypi/v/hydrofunctions.svg
         :target: https://pypi.python.org/pypi/hydrofunctions
 
@@ -17,10 +16,7 @@ HydroFunctions
         :target: https://github.com/mroberge/hydrofunctions/blob/master/LICENSE
         :alt: MIT license
 
-A suite of convenience functions for exploring water data in Python.
-
-
-
+a suite of convenience functions for exploring water data in Python.
 
 Features
 --------

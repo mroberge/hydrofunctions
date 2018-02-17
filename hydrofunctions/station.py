@@ -21,15 +21,17 @@ class Station(object):
         make each subclass store its own dictionary, parent class can combine.
         only store weakrefs to the objects, so that they can be garbage
         collected. maybe weakvaluedictionary.
+
             1) http://stackoverflow.com/a/18321898
             2) http://stackoverflow.com/a/9460070
 
     Future Feature:
-        only create new instance if its id is not already in the list.
-        if id in station_dict:
-            # just re-use already existing obj.
-            return station_dict[id]
-            # prob need to use a factory to do this.
+        only create new instance if its id is not already in the list. ::
+
+            if id in station_dict:
+                # just re-use already existing obj.
+                return station_dict[id]
+                # prob need to use a factory to do this.
     """
     station_dict = {}
 
@@ -49,7 +51,8 @@ class NWIS(Station):
 
             Opt 1: request automatically
                 self.response = self.fetchNWIS()
-            ==>Opt 2: only request when user asks.
+
+            **==>Opt 2:** only request when user asks.
                 self.get_data = self.fetchNWIS
                 This has to be the way, otherwise testing is impossible...?
 
@@ -58,8 +61,9 @@ class NWIS(Station):
     TODO: decide how the service, start_date, and end_date should be passed
         to the instance so that requests can be made from NWIS.
 
-            **Opt 1: pass these variables to the instance when it is made. (current option)
+            **==>Opt 1:** pass these variables to the instance when it is made. (current option)
                 HerringRun = NWIS("01585200", "dv", "2014-04-01", "2014-06-01")
+
             Opt 2: Create a session object that contains the data folder location
                     and an Analysis object that contains the start & end date.
                     ??when would the service get passed??

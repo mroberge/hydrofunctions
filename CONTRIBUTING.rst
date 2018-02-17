@@ -46,6 +46,8 @@ Standards for the Ideal Pull Request
 A Detailed Guide to Contributing New Code
 -----------------------------------------
 
+.. highlight:: doscon
+
 Ready to contribute? Here's how to set up `hydrofunctions` for local development.
 
 #. Fork the `hydrofunctions repo <https://github.com/mroberge/hydrofunctions>`_ on GitHub by clicking the
@@ -154,6 +156,8 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
 The Non-Conda Version
 ---------------------
 **Caveat emptor:** I haven't tested the following steps recently!
+
+.. highlight:: console
 
 1. Fork the `hydrofunctions` repo on GitHub.
 2. Clone your fork locally::

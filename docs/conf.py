@@ -94,8 +94,8 @@ master_doc = 'index'
 autosectionlabel_prefix_document = True
 
 # General information about the project.
-project = u'Hydrofunctions'
-copyright = u"2016, Martin Roberge and Hydrofunction authors"
+project = 'Hydrofunctions'
+copyright = '2016, Martin Roberge and Hydrofunction authors'
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -135,6 +135,7 @@ exclude_patterns = ['_build']
 # output. They are ignored by default.
 #show_authors = False
 
+highlight_language = 'python'
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
@@ -143,7 +144,7 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built
 # documents.
-#keep_warnings = False
+keep_warnings = True
 
 
 # -- Options for HTML output -------------------------------------------
@@ -160,7 +161,11 @@ html_theme_options = {
     'github_user': 'mroberge',
     'github_repo': 'hydrofunctions',
     'description': 'Python tools for hydrology',
+    'logo': 'hf-logo.svg',
+    'logo_name': 'Hydrofunctions',
     'github_button': True,
+    'github_type': 'watch',
+    'github_count': True,
     'github_banner': True,
     'travis_button': True,
     'fixed_sidebar': True,
@@ -174,14 +179,13 @@ html_theme_options = {
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+#html_title = 'Hydrofunctions'
 
 # A shorter title for the navigation bar.  Default is the same as
 # html_title.
@@ -189,7 +193,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the
 # top of the sidebar.
-#html_logo = None
+html_logo = 'hf-logo.svg'
 
 # The name of an image file (within the static path) to use as favicon
 # of the docs.  This file should be a Windows icon file (.ico) being
@@ -204,11 +208,11 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page
 # bottom, using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
-#html_use_smartypants = True
+html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
@@ -235,15 +239,15 @@ html_sidebars = {'**': [
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer.
 # Default is True.
-#html_show_sphinx = True
+html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer.
 # Default is True.
-#html_show_copyright = True
+html_show_copyright = True
 
 # If true, an OpenSearch description file will be output, and all pages
 # will contain a <link> tag referring to it.  The value of this option
