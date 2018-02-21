@@ -90,12 +90,15 @@ def check_period(input):
     """
     if input is None:
         return None
+    #TODO: check how many days maximum NWIS is willing to respond to.
+    # This pattern sets a maximum of 999 days (between 1 and 3 digits).
     pattern = r"^P\d{1,3}D$"
     periodstr = re.compile(pattern)
     if isinstance(input, str) and periodstr.match(input):
         return input
     else:
         raise TypeError('Period should be a string in the form of "PxD", \
-                        where x represents the number of days before today. \
-                        For example, to request the previous 10 days, \
+                        where x represents the number of days before today, \
+                        with a maximum of 999 days. \
+                        Example: to request the previous 10 days, \
                         enter period="P10D". Actual value: {}'.format(input))
