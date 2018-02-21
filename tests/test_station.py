@@ -8,6 +8,7 @@ Created on Mon Sep  5 21:13:34 2016
 from __future__ import absolute_import, print_function
 import unittest
 from unittest import mock
+import pandas as pd
 
 from hydrofunctions import station
 
@@ -147,7 +148,9 @@ class TestNWIS(unittest.TestCase):
         # You don't need to test the following like this.
         # Just test that actual.df() returns nothing if you call before get_data()
         # And actual.df() returns a df if you call after .get_data()
-        actual.get_data().df() #returns a dataframe
+        actualdf = actual.get_data().df() #returns a dataframe
+        self.assertIs(type(actualdf), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
 
 
 if __name__ == '__main__':
