@@ -19,10 +19,10 @@ from __future__ import absolute_import, print_function
 from hydrofunctions import hydrofunctions as hf
 
 
+def will_NWIS_return_200_response():
     """This test should not be run as a part of the normal test suite.
     This is a resource test only!
-    Nose2 will find it.
-    Unittest will not.
+    Because of the function name, it is not discoverable by Unittest or pytest.
     """
 
     expected = 200
@@ -31,4 +31,6 @@ from hydrofunctions import hydrofunctions as hf
     assert expected == actual
     print('NWIS is up and running!')
 
+
 if __name__ == "__main__":
+    will_NWIS_return_200_response()
