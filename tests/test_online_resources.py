@@ -19,7 +19,6 @@ from __future__ import absolute_import, print_function
 from hydrofunctions import hydrofunctions as hf
 
 
-def test_will_get_nwis_return_response():
     """This test should not be run as a part of the normal test suite.
     This is a resource test only!
     Nose2 will find it.
@@ -33,4 +32,3 @@ def test_will_get_nwis_return_response():
     print('NWIS is up and running!')
 
 if __name__ == "__main__":
-    test_will_get_nwis_return_response()
