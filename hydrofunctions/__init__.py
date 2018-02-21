@@ -50,4 +50,6 @@ from .hydrofunctions import (
         get_nwis, extract_nwis_dict, extract_nwis_df
         )
 from .station import Station, NWIS
-from .typing import check_NWIS_name, check_datestr, check_NWIS_service
+from .typing import (
+        check_NWIS_site, check_datestr, check_NWIS_service, check_period
+        )

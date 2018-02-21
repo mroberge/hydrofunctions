@@ -13,6 +13,7 @@ import pandas as pd
 from . import exceptions
 from . import typing
 
+
 def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
              parameterCd='00060'):
     """Request stream gauge data from the USGS NWIS.
@@ -42,13 +43,15 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
-                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for \
+                full list
 
     Returns:
         a response object.
 
             * response.url: the url we requested data from.
-            * response.status_code: '200' when okay; see <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
+            * response.status_code: '200' when okay; see \
+            <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
             * response.json: the content translated as json.
             * response.ok: "True" when we get a '200'
 
@@ -80,20 +83,22 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
     values = {
         'format': 'json,1.1',
         # 'sites': sites,
-        'parameterCd': parameterCd,  # default parameterCd represents stream discharge.
-        # 'period': 'P10D' # This is the format for requesting data for a period before today
+        # default parameterCd represents stream discharge.
+        'parameterCd': parameterCd,
+        # This is the format for requesting 10 days of data before today.
+        # 'period': 'P10D',
         'startDT': start_date,
         'endDT': end_date
         }
 
     # process sites, stateCd, or countyCd options
     if stateCd is None and countyCd is None:
-        sites = typing.check_NWIS_name(site)
+        sites = typing.check_NWIS_site(site)
         values['sites'] = sites
     elif stateCd is not None:
         values['stateCd'] = stateCd
     elif countyCd is not None:
-        countyCd = typing.check_NWIS_name(countyCd)
+        countyCd = typing.check_NWIS_site(countyCd)
         values['countyCd'] = countyCd
 
     url = 'http://waterservices.usgs.gov/nwis/'
@@ -169,6 +174,8 @@ def extract_nwis_df(response_obj):
         tag += ' - '
         try:
             tag += tts['variable']['options']['option'][0]['value']
+        # TODO: either list specific exceptions that we can fix, or remove this
+        # except clause.
         except:
             pass
         tag += ' ' + tts['variable']['variableDescription']
@@ -186,7 +193,6 @@ def extract_nwis_df(response_obj):
         if len(data) > emax:
             emax = len(data)
             idxmx = idx
-
 
     # process data for the first NWIS site
     data = nwis_dict['value']['timeSeries'][idxmx]['values'][0]['value']

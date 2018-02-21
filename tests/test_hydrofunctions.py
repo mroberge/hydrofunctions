@@ -19,7 +19,7 @@ import hydrofunctions as hf
 class TestHydrofunctions(unittest.TestCase):
 
     @mock.patch('requests.get')
-    def test_hf_request_nwis_calls_correct_url(self, mock_get):
+    def test_hf_get_nwis_calls_correct_url(self, mock_get):
 
         """
         Thanks to
@@ -43,12 +43,34 @@ class TestHydrofunctions(unittest.TestCase):
                                          headers=expected_headers)
         self.assertEqual(actual, expected)
 
+    @mock.patch('requests.get')
+    def test_hf_get_nwis_calls_correct_url_multiple_sites(self, mock_get):
+
+        site = ['site1', 'site2']
+        service = 'B'
+        start = 'C'
+        end = 'D'
+
+        expected_url = 'http://waterservices.usgs.gov/nwis/B/?'
+        expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
+        expected_params = {'format': 'json,1.1', 'sites': 'site1,site2', 'endDT': 'D',
+                           'startDT': 'C', 'parameterCd': '00060'}
+        expected = 'mock data'
+
+        mock_get.return_value = expected
+        actual = hf.get_nwis(site, service, start, end)
+        mock_get.assert_called_once_with(expected_url, params=expected_params,
+                                         headers=expected_headers)
+        self.assertEqual(actual, expected)
+
+    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_dict(self):
         # TODO: I need to make a response fixture to test this out!!
         test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_dict(test)
         self.assertIs(type(actual), dict, msg="Did not return a dict")
 
+    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_df(self):
         # TODO: I need to make a response fixture to test this out!!
         test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
@@ -56,6 +78,8 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
+    @unittest.skip('Stop requesting data during test.')
+    # @mock.patch('requests.get')
     def test_hf_extract_nwis_stations_df(self):
         # TODO: I need to make a response fixture to test this out!!
         sites = ["01638500", "01646502"]
@@ -65,6 +89,7 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
+    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_iv_gwstations_df(self):
         # TODO: I need to make a response fixture to test this out!!
         sites = ["380616075380701", "394008077005601"]

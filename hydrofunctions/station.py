@@ -35,9 +35,9 @@ class Station(object):
     """
     station_dict = {}
 
-    def __init__(self, name=None):
-        Station.station_dict[name] = self
-        self.name = name
+    def __init__(self, site=None):
+        Station.station_dict[site] = self
+        self.site = site
         # One option is to make it so that you can pass in a get_data function
         # during the creation of an instance.
         self.get_data = None
@@ -45,6 +45,37 @@ class Station(object):
 
 class NWIS(Station):
     """A class for working with data from the USGS NWIS service.
+
+    description
+
+    Args:
+        site (str or list of strings):
+            a valid site is '01585200' or ['01585200', '01646502']. Site
+            should be None if stateCd or countyCd are not None.
+
+        service (str):
+            can either be 'iv' or 'dv' for instantaneous or daily data.
+
+        start_date (str):
+           should take on the form yyyy-mm-dd
+
+        end_date (str):
+            should take on the form yyyy-mm-dd
+
+        stateCd (str):
+            a valid two-letter state postal abbreviation. Default is None.
+
+        countyCd (str or list of strings):
+            a valid county abbreviation. Default is None.
+
+        parameterCd (str):
+            NWIS parameter code. Default is stream discharge '00060'
+                * stage: '00065'
+                * discharge: '00060'
+                * not all sites collect all parameters!
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for \
+                full list
+
 
     TODO: decide if data should be requested when the object is created
             or when the user calls get_data().
@@ -56,7 +87,8 @@ class NWIS(Station):
                 self.get_data = self.fetchNWIS
                 This has to be the way, otherwise testing is impossible...?
 
-                now, when the user types myInstance.get_data() it returns the response object.
+                now, when the user types myInstance.get_data() it returns the \
+                response object.
 
     TODO: decide how the service, start_date, and end_date should be passed
         to the instance so that requests can be made from NWIS.
@@ -71,28 +103,38 @@ class NWIS(Station):
     """
 
     def __init__(self,
-                 name=None,
+                 site=None,
                  service="dv",
                  start_date=None,
                  end_date=None,
-                 parameterCd='00060'):
+                 stateCd=None,
+                 countyCd=None,
+                 parameterCd='00060',
+                 period=None):
 
-        sites = typing.check_NWIS_name(name)
-        self.name = sites
-        self.service = service
-        self.start_date = start_date
-        self.end_date = end_date
+        self.site = typing.check_NWIS_site(site)
+        self.service = typing.check_NWIS_service(service)
+        self.start_date = typing.check_datestr(start_date)
+        self.end_date = typing.check_datestr(end_date)
+        self.stateCd = stateCd
+        self.countyCd = countyCd
         self.parameterCd = parameterCd
+        self.period = period
         self.response = None
         self.df = lambda: print("You must call .get_data() before calling .df().")
         self.json = lambda: print("You must call .get_data() before calling .json().")
+        if (self.site and self.stateCd) or \
+           (self.stateCd and self.countyCd) or \
+           (self.site and self.countyCd):
+            raise ValueError("Select sites using either site, stateCd, or \
+                             countyCd, but not more than one.")
 
     def get_data(self):
-        self.name = typing.check_NWIS_name(self.name)
+        self.site = typing.check_NWIS_site(self.site)
         self.service = typing.check_NWIS_service(self.service)
         self.start_date = typing.check_datestr(self.start_date)
         self.end_date = typing.check_datestr(self.end_date)
-        self.response = hf.get_nwis(self.name, self.service,
+        self.response = hf.get_nwis(self.site, self.service,
                                     self.start_date, self.end_date,
                                     parameterCd=self.parameterCd)
         # set self.json without calling it.
@@ -107,7 +149,3 @@ class NWIS(Station):
         # it would try to process the mocked response.
 
         return self
-
-    def dataframe(self):
-        """return data as a Pandas dataframe"""
-        pass

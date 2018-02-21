@@ -18,16 +18,16 @@ class TestStation(unittest.TestCase):
         actual = station.Station()
         self.assertIsInstance(actual, station.Station)
 
-    def test_station_name_defaults_to_None(self):
+    def test_station_site_defaults_to_None(self):
         actual = station.Station()
-        self.assertIsNone(actual.name)
+        self.assertIsNone(actual.site)
 
     def test_station_id_sets(self):
         expected = "01234567"
         actual = station.Station(expected)
         another = station.Station("23456789")
-        self.assertEqual(actual.name, expected)
-        self.assertEqual(another.name, "23456789")
+        self.assertEqual(actual.site, expected)
+        self.assertEqual(another.site, "23456789")
 
     def test_station_dict_returns_dict(self):
         actual = station.Station('first')
@@ -69,80 +69,86 @@ class TestStation(unittest.TestCase):
 class TestNWIS(unittest.TestCase):
     """Testing the station.NWIS object."""
 
-    @unittest.skip("service no longer defaults to dv.")
     def test_NWIS_service_defaults_to_dv(self):
-        name = "01582500"
+        site = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
-        actual = station.NWIS(name, service, start, end)
+        actual = station.NWIS(site, service, start, end)
         self.assertEqual(actual.service, "dv")
 
-    @unittest.skip("dates no longer default to None.")
     def test_NWIS_start_defaults_to_None(self):
         actual = station.NWIS()
         self.assertIsNone(actual.start_date)
 
-    @unittest.skip("dates no longer default to None.")
     def test_NWIS_end_defaults_to_None(self):
         actual = station.NWIS()
         self.assertIsNone(actual.end_date)
 
     def test_NWIS_setters_work(self):
-        name = "01582500"
+        site = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
-        actual = station.NWIS(name, service, start, end)
+        actual = station.NWIS(site, service, start, end)
         self.assertIsInstance(actual, station.NWIS)
-        self.assertEqual(actual.name, name)
+        self.assertEqual(actual.site, site)
         self.assertEqual(actual.service, service)
         self.assertEqual(actual.start_date, start)
         self.assertEqual(actual.end_date, end)
         # self.assertIs(type(actual.fetch), function)
 
     def test_NWIS_setters_parameterCd(self):
-        name = "01582500"
+        site = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
         parameterCd = "00065"
-        actual = station.NWIS(name, service, start, end, parameterCd=parameterCd)
+        actual = station.NWIS(site, service, start, end, parameterCd=parameterCd)
         self.assertIsInstance(actual, station.NWIS)
-        self.assertEqual(actual.name, name)
+        self.assertEqual(actual.site, site)
         self.assertEqual(actual.service, service)
         self.assertEqual(actual.start_date, start)
         self.assertEqual(actual.parameterCd, parameterCd)
 
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
     def test_NWIS_get_data_calls_get_nwis_correctly(self, mock_get_nwis):
-        name = "01582500"
+        site = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
         parameterCd = "00060"
-        actual = station.NWIS(name, service, start, end)
+        actual = station.NWIS(site, service, start, end)
         try_it_out = actual.get_data()
         # try_it_out should be a response object, I think
-        mock_get_nwis.assert_called_once_with(name, service, start, end, parameterCd=parameterCd)
+        mock_get_nwis.assert_called_once_with(site, service, start, end, parameterCd=parameterCd)
 
-      # Now I need to test .df() and .json()
-    @unittest.skip("mock this out.")
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    def test_NWIS_get_data_calls_get_nwis_mult_sites(self, mock_get_nwis):
+        site = ["01638500", "01646502"]
+        siteEx = "01638500,01646502"
+        service = "dv"
+        start = "2011-01-01"
+        end = "2011-01-02"
+        parameterCd = "00060"
+        actual = station.NWIS(site, service, start, end)
+        try_it_out = actual.get_data()
+        # try_it_out should be an instance of NWIS.
+        mock_get_nwis.assert_called_once_with(siteEx, service, start, end, parameterCd=parameterCd)
+
+    # Now test .df() and .json()
+    @unittest.skip("Test this differently")
     def test_NWIS_df_returns_df(self):
-        name = "01582500"
+        site = "01582500"
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
-        actual = station.NWIS(name, service, start, end)
+        actual = station.NWIS(site, service, start, end)
+        # You don't need to test the following like this.
+        # Just test that actual.df() returns nothing if you call before get_data()
+        # And actual.df() returns a df if you call after .get_data()
         actual.get_data().df() #returns a dataframe
 
-    def test_NWIS_sites_returns_df(self):
-        name = ["01638500", "01646502"]
-        service = "dv"
-        start = "2011-01-01"
-        end = "2011-01-02"
-        actual = station.NWIS(name, service, start, end)
-        actual.get_data().df() #returns a dataframe
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
