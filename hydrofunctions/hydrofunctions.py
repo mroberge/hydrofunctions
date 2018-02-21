@@ -109,8 +109,11 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
     # I think that is appropriate, so I don't want to handle this error.
 
     # TODO: where should all unhelpful ('404' etc) responses be handled?
-    return response
-
+    if response.status_code == 200:
+        return response
+    else:
+        raise exceptions.HydroNoDataError("The NWIS service returned a code \
+                                          of {}".format(response.status_code))
 
 def extract_nwis_dict(response_obj):
     """Returns a dict object from an NWIS response object.
