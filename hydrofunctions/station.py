@@ -119,24 +119,34 @@ class NWIS(Station):
         self.stateCd = stateCd
         self.countyCd = countyCd
         self.parameterCd = parameterCd
-        self.period = period
+        self.period = typing.check_period(period)
         self.response = None
         self.df = lambda: print("You must call .get_data() before calling .df().")
         self.json = lambda: print("You must call .get_data() before calling .json().")
         if (self.site and self.stateCd) or \
            (self.stateCd and self.countyCd) or \
            (self.site and self.countyCd):
-            raise ValueError("Select sites using either site, stateCd, or \
-                             countyCd, but not more than one.")
+            raise ValueError("Select sites using either site, stateCd, or "
+                             "countyCd, but not more than one.")
+        if (self.start_date and self.period):
+            raise ValueError("Use either start_date or period, but not both.")
 
     def get_data(self):
         self.site = typing.check_NWIS_site(self.site)
         self.service = typing.check_NWIS_service(self.service)
         self.start_date = typing.check_datestr(self.start_date)
         self.end_date = typing.check_datestr(self.end_date)
-        self.response = hf.get_nwis(self.site, self.service,
-                                    self.start_date, self.end_date,
+        self.response = hf.get_nwis(self.site,
+                                    self.service,
+                                    self.start_date,
+                                    self.end_date,
+                                    stateCd=self.stateCd,
+                                    countyCd=self.countyCd,
                                     parameterCd=self.parameterCd)
+        # If the response status_code is anything other than 200,
+        # an error will be reported and an Exception raised.
+        # The response object will be saved for examination.
+        hf.handle_status_code(self.response)
         # set self.json without calling it.
         self.json = lambda: self.response.json()
         # set self.df without calling it.
@@ -144,8 +154,6 @@ class NWIS(Station):
 
         # Another option might be to do this:
         # self.df = hf.extract_nwis_df(self.response)
-        # This would make myinst.df return a plain df.
-        # Unfortunately, it would be tough to test. you call get_data(), and
-        # it would try to process the mocked response.
+        # This would make myInstance.df return a plain df.
 
         return self

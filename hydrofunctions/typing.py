@@ -64,9 +64,9 @@ def check_NWIS_service(input):
     if input == "iv" or input == "dv":
         return input
     else:
-        raise TypeError("The NWIS service type accepts 'dv' for daily values, \
-                        or 'iv' for instantaneous values. Actual value: \
-                        {}".format(input))
+        raise TypeError("The NWIS service type accepts 'dv' for daily values, "
+                        "or 'iv' for instantaneous values. Actual value: "
+                        "{}".format(input))
 
 
 def check_datestr(input):
@@ -80,8 +80,8 @@ def check_datestr(input):
     if isinstance(input, str) and datestr.match(input):
         return input
     else:
-        raise TypeError('Dates should be a string in the form of "YYYY-MM-DD" \
-                        enclosed in quotes. Actual value: {}'.format(input))
+        raise TypeError("Dates should be a string in the form of 'YYYY-MM-DD' "
+                        "enclosed in quotes. Actual value: {}".format(input))
 
 
 def check_period(input):
@@ -90,15 +90,16 @@ def check_period(input):
     """
     if input is None:
         return None
-    #TODO: check how many days maximum NWIS is willing to respond to.
+    # TODO: check how many days maximum NWIS is willing to respond to.
     # This pattern sets a maximum of 999 days (between 1 and 3 digits).
     pattern = r"^P\d{1,3}D$"
     periodstr = re.compile(pattern)
     if isinstance(input, str) and periodstr.match(input):
         return input
     else:
-        raise TypeError('Period should be a string in the form of "PxD", \
-                        where x represents the number of days before today, \
-                        with a maximum of 999 days. \
-                        Example: to request the previous 10 days, \
-                        enter period="P10D". Actual value: {}'.format(input))
+        raise TypeError("Period should be a string in the form of 'PxD', "
+                        "where x represents the number of days before today, "
+                        "with a maximum of 999 days. "
+                        "Example: to request the previous 10 days, "
+                        "enter 'period=P10D'. Actual value entered: {}"
+                        .format(input))

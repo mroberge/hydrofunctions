@@ -58,7 +58,8 @@ class HydroNoDataError(HydroException):
 
         Catch this error in automated systems so that the system can reconsider
         the request and either fix the request or move on to the next
-        request."""
+        request.
+    """
     pass
 
 

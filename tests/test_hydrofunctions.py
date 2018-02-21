@@ -65,7 +65,7 @@ class TestHydrofunctions(unittest.TestCase):
 
     @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_dict(self):
-        # TODO: I need to make a response fixture to test this out!!
+        # TODO: I need to make a fake response object to test this properly!!
         test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_dict(test)
         self.assertIs(type(actual), dict, msg="Did not return a dict")
@@ -79,9 +79,8 @@ class TestHydrofunctions(unittest.TestCase):
                       msg="Did not return a df")
 
     @unittest.skip('Stop requesting data during test.')
-    # @mock.patch('requests.get')
     def test_hf_extract_nwis_stations_df(self):
-        # TODO: I need to make a response fixture to test this out!!
+        # TODO: I need to make a fake response with multiple sites to test this out!!
         sites = ["01638500", "01646502"]
         test = hf.get_nwis(sites, "dv",
                            "2013-01-01", "2013-01-05")

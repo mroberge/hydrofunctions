@@ -56,8 +56,12 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
             * response.ok: "True" when we get a '200'
 
     Raises:
-        ConnectionError  due to connection problems like refused connection
-        or DNS Error.
+        ConnectionError
+            due to connection problems like refused connection
+            or DNS Error.
+
+        HydroNoDataError
+            when NWIS returns a response code that is not 200.
 
     Example::
 
@@ -108,12 +112,16 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
     # or if we are disconnected from the internet.
     # I think that is appropriate, so I don't want to handle this error.
 
-    # TODO: where should all unhelpful ('404' etc) responses be handled?
+    # This function will always return the response. Higher-level code
+    # That calls this function may decide how to handle or report 
+    # status codes that indicate something went wrong.
+    # Error codes are from: https://waterservices.usgs.gov/docs/portable_code.html
     if response.status_code == 200:
         return response
     else:
-        raise exceptions.HydroNoDataError("The NWIS service returned a code \
-                                          of {}".format(response.status_code))
+        print("The NWIS returned a code of {}.".format(response.status_code))
+        return response
+
 
 def extract_nwis_dict(response_obj):
     """Returns a dict object from an NWIS response object.
@@ -223,3 +231,44 @@ def extract_nwis_df(response_obj):
     DF = DF.replace(to_replace=noDataValues, value=np.nan)
 
     return DF
+
+
+def handle_status_code(response):
+    if response.status_code == 200:
+        return response
+    # All other status codes will raise an Exception.
+    elif response.status_code == 400:
+        raise exceptions.HydroNoDataError("The NWIS returned a code "
+                                          "of {}. Description: ".format(response.status_code)
+                                          + "400 Bad Request - This often occurs if the URL arguments "
+                                          "are inconsistent, for example in the instantaneous values "
+                                          "service using startDT and endDT with the period argument. An "
+                                          "accompanying error should describe why the request was "
+                                          "bad."
+                                          # Error value will be reported in response.reason
+                                          + "NWIS error value: {}".format(response.reason)
+                                          )
+
+    elif response.status_code == 403:
+        raise exceptions.HydroNoDataError("The NWIS service returned a code "
+                                          "of {}. Description: ".format(response.status_code)
+                                          + "403 Access Forbidden - This "
+                                          "should only occur if for some reason"
+                                          "the USGS has blocked your Internet Protocol (IP) address from using the service. This can happen if we believe that your use of the service is so excessive that it is seriously impacting others using the service. To get unblocked, send us the URL you are using along with the IP using this form. We may require changes to your query and frequency of use in order to give you access to the service again.")
+
+    elif response.status_code == 404:
+        raise exceptions.HydroNoDataError("The NWIS service returned a code "
+                                          "of {}. Description: ".format(response.status_code)
+                                          + "404 Not Found - Returned if and only if the query expresses a combination of elements where data do not exist. For multi-site queries, if any data are found, it is returned for those site/parameters/date ranges where there are data.")
+
+    elif response.status_code == 500:
+        raise exceptions.HydroNoDataError("The NWIS service returned a code "
+                                          "of {}. Description: ".format(response.status_code)
+                                          + "500 Internal Server Error - If you see this, it means there is a problem with the web service itself. It usually means the application server is down unexpectedly. This could be caused by a host of conditions but changing your query will not solve this problem. The application support team has to fix it. Most of these errors are quickly detected and the support team is notified if they occur.")
+    elif response.status_code == 503:
+        raise exceptions.HydroNoDataError("The NWIS service returned a code "
+                                          "of {}. Description: ".format(response.status_code)
+                                          + "503 Service Unavailable - The application server is working but this application is down at the moment. When something causes this to happen, the support team should be quickly notified. Hopefully the service will be available shortly.")
+    else:
+        raise exceptions.HydroNoDataError("The NWIS service returned a code "
+                                          "of {}. Description: ".format(response.status_code))
