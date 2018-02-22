@@ -14,8 +14,8 @@ from . import exceptions
 from . import typing
 
 
-def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
-             parameterCd='00060'):
+def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, countyCd=None,
+             parameterCd='00060', period=None):
     """Request stream gauge data from the USGS NWIS.
 
     Args:
@@ -25,6 +25,10 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
 
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
+                'dv'(default): daily values. Mean value for an entire day.
+                'iv': instantaneous value measured at this time. Also known
+                      as 'Real-time data'. Can be measured as often as every
+                      five minutes by the USGS. 15 minutes is more typical.
 
         start_date (str):
            should take on the form yyyy-mm-dd
@@ -43,17 +47,27 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
-                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for \
-                full list
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for
+                  full list
+
+        period (str):
+            NWIS period code. Default is None.
+                * Format is "PxxD", where xx is the number of days before
+                today, with a maximum of 999 days accepted.
+                * Either use start_date or period, but not both.
 
     Returns:
         a response object.
 
-            * response.url: the url we requested data from.
-            * response.status_code: '200' when okay; see \
+            * response.url: the url we used to request data
+            * response.status_code: '200' when okay; see
             <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
-            * response.json: the content translated as json.
-            * response.ok: "True" when we get a '200'
+            * response.json: the content translated as json
+            * response.status_code: the internet status code
+                - '200': is a good request
+                - non-200 codes will be reported as a warning.
+                - '400': is a 'Bad Request'-- the parameters did not make sense
+            * response.ok: "True" when we get a '200' status_code
 
     Raises:
         ConnectionError
@@ -70,10 +84,27 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
 
         >>> response
         <response [200]>
-        >>> response.ok
-        True
+
         >>> response.json()
         *JSON ensues*
+
+        >>> hf.extract_nwis_df(response)
+        *a Pandas dataframe appears*
+
+    Other Valid Ways to Make a Request::
+
+        >>> sites = ['07180500', '03380475', '06926000'] # Request a list of sites.
+        >>> service = 'iv'  # Request real-time data
+        >>> days = 'P10D'  # Request the last 10 days.
+        >>> stage = '00065' # Sites that collect discharge usually collect water depth too.
+        >>> response2 = hf.get_nwis(sites, service, period=days, parameterCd=stage)
+
+    Request Data By Location::
+
+        >>> # Request the most recent daily data for every site in Maine
+        >>> response3 = hf.get_nwis(None, 'dv', stateCd='ME')
+        >>> response3
+        <Response [200]>
 
     The specification for the USGS NWIS service is located here:
     http://waterservices.usgs.gov/rest/IV-Service.html
@@ -90,7 +121,7 @@ def get_nwis(site, service, start_date, end_date, stateCd=None, countyCd=None,
         # default parameterCd represents stream discharge.
         'parameterCd': parameterCd,
         # This is the format for requesting 10 days of data before today.
-        # 'period': 'P10D',
+        'period': period,
         'startDT': start_date,
         'endDT': end_date
         }
