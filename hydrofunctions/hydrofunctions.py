@@ -157,19 +157,10 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
         return response
 
 
-def extract_nwis_dict(response_obj):
-    """Returns a dict object from an NWIS response object.
+    # Issue warnings for bad status codes
+    nwis_custom_status_codes(response)
 
-    Args:
-        response_obj (obj):
-            a response object as returned by get_nwis().
-
-    Returns:
-        a dict formed from the response.json()
-    """
-    nwis_dict = response_obj.json()
-
-    return nwis_dict
+    return response
 
 
 def extract_nwis_df(response_obj):

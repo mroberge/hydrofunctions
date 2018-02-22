@@ -33,9 +33,9 @@ List all of the different attributes and methods with dir()::
 Functions that use the response object
 --------------------------------------
 
-Extract a dict from the response::
+Extract the full json response from the data provider::
 
-    >>> my_dict = hf.extract_nwis_dict(response)
+    >>> my_dict = response.json()
     >>> my_dict
     {'declaredType': 'org.cuahsi.waterml.TimeSeriesResponseType',
      'globalScope': True,
