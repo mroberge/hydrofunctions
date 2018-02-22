@@ -40,14 +40,14 @@ __version__ = '0.1.5'
 __author__ = 'Martin Roberge'
 __email__ = 'mroberge.whois@gmail.com'
 __license__ = 'MIT'
-__copyright__ = 'Copyright 2016 Martin Roberge'
+__copyright__ = 'Copyright 2016 Martin Roberge and contributors'
 
 
 
 
 from .exceptions import HydroNoDataError
 from .hydrofunctions import (
-        get_nwis, extract_nwis_dict, extract_nwis_df
+        get_nwis, extract_nwis_df, nwis_custom_status_codes
         )
 from .station import Station, NWIS
 from .typing import (

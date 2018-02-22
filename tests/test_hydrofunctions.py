@@ -41,6 +41,7 @@ class TestHydrofunctions(unittest.TestCase):
 
         expected = fakeResponse()
         expected.status_code = 200
+        expected.reason = "any text"
 
         mock_get.return_value = expected
         actual = hf.get_nwis(site, service, start, end)
@@ -63,6 +64,7 @@ class TestHydrofunctions(unittest.TestCase):
 
         expected = fakeResponse()
         expected.status_code = 200
+        expected.reason = "any text"
 
         mock_get.return_value = expected
         actual = hf.get_nwis(site, service, start, end)
@@ -103,6 +105,20 @@ class TestHydrofunctions(unittest.TestCase):
         # See line 78 in hydrofunctions
         pass
 
+    def test_hf_nwis_custom_status_codes_returns_None_for_200(self):
+        fake = fakeResponse()
+        fake.status_code = 200
+        fake.reason = "any text"
+        fake.url = "any text"
+        self.assertIsNone(hf.nwis_custom_status_codes(fake))
+
+    def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
+        fake = fakeResponse()
+        fake.status_code = 400
+        fake.reason = "any text"
+        fake.url = "any text"
+        expected = 400
+        self.assertEqual(hf.nwis_custom_status_codes(fake), expected)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -121,8 +121,8 @@ class NWIS(Station):
         self.parameterCd = parameterCd
         self.period = typing.check_period(period)
         self.response = None
-        self.df = lambda: print("You must call .get_data() before calling .df().")
-        self.json = lambda: print("You must call .get_data() before calling .json().")
+        self.df = lambda: print("You must successfully call .get_data() before calling .df().")
+        self.json = lambda: print("You must successfully call .get_data() before calling .json().")
         if (self.site and self.stateCd) or \
            (self.stateCd and self.countyCd) or \
            (self.site and self.countyCd):
@@ -149,6 +149,9 @@ class NWIS(Station):
         
         #TODO: fix tests and uncomment this call
         #hf.handle_status_code(self.response)
+        #nwis_custom_status_codes(self.response)
+        # Raise an exception if non-200 status_code, or return None for 200.
+        self.response.raise_for_status()
         
         # set self.json without calling it.
         self.json = lambda: self.response.json()
