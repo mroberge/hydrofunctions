@@ -119,10 +119,11 @@ class TestNWIS(unittest.TestCase):
         start = "2011-01-01"
         end = "2011-01-02"
         parameterCd = "00060"
+        
         actual = station.NWIS(site, service, start, end)
         try_it_out = actual.get_data()
         # try_it_out should be a response object, I think
-        mock_get_nwis.assert_called_once_with(site, service, start, end, parameterCd=parameterCd)
+        mock_get_nwis.assert_called_once_with(site, service, start, end, parameterCd=parameterCd, stateCd=None, countyCd=None)
 
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
     def test_NWIS_get_data_calls_get_nwis_mult_sites(self, mock_get_nwis):
@@ -135,7 +136,7 @@ class TestNWIS(unittest.TestCase):
         actual = station.NWIS(site, service, start, end)
         try_it_out = actual.get_data()
         # try_it_out should be an instance of NWIS.
-        mock_get_nwis.assert_called_once_with(siteEx, service, start, end, parameterCd=parameterCd)
+        mock_get_nwis.assert_called_once_with(siteEx, service, start, end, parameterCd=parameterCd, stateCd=None, countyCd=None)
 
     # Now test .df() and .json()
     @unittest.skip("Test this differently")

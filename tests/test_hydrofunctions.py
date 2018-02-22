@@ -16,6 +16,10 @@ import pandas as pd
 import hydrofunctions as hf
 
 
+class fakeResponse(object):
+    pass
+
+
 class TestHydrofunctions(unittest.TestCase):
 
     @mock.patch('requests.get')
@@ -32,10 +36,11 @@ class TestHydrofunctions(unittest.TestCase):
         end = 'D'
 
         expected_url = 'http://waterservices.usgs.gov/nwis/B/?'
-        expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
-        expected_params = {'format': 'json,1.1', 'sites': 'A', 'endDT': 'D',
-                           'startDT': 'C', 'parameterCd': '00060'}
-        expected = 'mock data'
+        expected_headers = {'Accept-encoding': 'gzip', 'max-age': '120'}
+        expected_params = {'format': 'json,1.1', 'parameterCd': '00060', 'period': None, 'startDT': 'C', 'endDT': 'D', 'sites': 'A'}
+
+        expected = fakeResponse()
+        expected.status_code = 200
 
         mock_get.return_value = expected
         actual = hf.get_nwis(site, service, start, end)
@@ -54,8 +59,10 @@ class TestHydrofunctions(unittest.TestCase):
         expected_url = 'http://waterservices.usgs.gov/nwis/B/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': 'site1,site2', 'endDT': 'D',
-                           'startDT': 'C', 'parameterCd': '00060'}
-        expected = 'mock data'
+                           'startDT': 'C', 'parameterCd': '00060', 'period': None}
+
+        expected = fakeResponse()
+        expected.status_code = 200
 
         mock_get.return_value = expected
         actual = hf.get_nwis(site, service, start, end)
