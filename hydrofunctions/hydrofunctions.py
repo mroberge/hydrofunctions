@@ -11,6 +11,7 @@ import pandas as pd
 # Change to relative import: from . import exceptions
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
+import warnings
 from . import typing
 
 
@@ -74,7 +75,7 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
             due to connection problems like refused connection
             or DNS Error.
 
-        HydroNoDataError
+        SyntaxWarning
             when NWIS returns a response code that is not 200.
 
     Example::
@@ -150,7 +151,9 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
     if response.status_code == 200:
         return response
     else:
-        print("The NWIS returned a code of {}.".format(response.status_code))
+        # Warnings will not beak the code. They just print a message.
+        msg = "The NWIS returned a code of {}.".format(response.status_code)
+        warnings.warn(msg, SyntaxWarning)
         return response
 
 
