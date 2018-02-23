@@ -78,22 +78,9 @@ class NWIS(Station):
 
         period (str):
             NWIS period code. Default is None.
-                * Format is "PxxD", where xx is the number of days before
+                * Format is "PxxD", where xx is the number of days before \
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
-
-    TODO: decide if data should be requested when the object is created
-            or when the user calls get_data().
-
-            Opt 1: request automatically
-                self.response = self.fetchNWIS()
-
-            **==>Opt 2:** only request when user asks.
-                self.get_data = self.fetchNWIS
-                This has to be the way, otherwise testing is impossible...?
-
-                now, when the user types myInstance.get_data() it returns the \
-                response object.
     """
 
     def __init__(self,

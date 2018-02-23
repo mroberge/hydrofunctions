@@ -22,8 +22,9 @@ Features
 --------
 
 * Retrieves stream data from the USGS NWIS service
-* Retrieve data using multiple site numbers, state, or county code
+* Retrieve data using multiple site numbers, state, or county codes
 * Preserves NWIS metadata, including NoData values
+* Helpful error messages to help you write valid requests
 * Extracts data into a Pandas dataframe, json, or dict
 * Plotting and manipulation through Pandas dataframes
 * Still in early development! More features to come!
@@ -40,16 +41,19 @@ display::
     >>> import hydrofunctions as hf
     >>> %matplotlib inline
 
-    >>> start = '2017-06-01'
-    >>> end = '2017-07-14'
-    >>> herring = hf.NWIS('01585200', 'dv', start, end)
+Create NWIS data object to hold our request and the data we will retrieve.
+We will request the daily values ('dv') for site '0158520' for the past
+55 days::
 
-We've set up our system, now we submit our request for data::
+    >>> herring = hf.NWIS('01585200', 'dv', period='P55D')
+
+We've set up our system, now we submit our request for data and get a
+response::
 
     >>> herring.get_data()
     <hydrofunctions.station.NWIS at 0x127506d6ac8>
 
-Create a Pandas dataframe, then list the first five items::
+Create a dataframe from our data, and list the first five items::
 
     >>> herring.df().head()
 
@@ -69,7 +73,7 @@ Create a Pandas dataframe, then list the first five items::
     | 2017-06-05 |                                       1.95       |
     +------------+--------------------------------------------------+
 
-Plot the data using Pandas and mathplotlib::
+Plot the data using built-in methods from Pandas and mathplotlib::
 
     >>> herring.df().plot()
 

@@ -26,10 +26,10 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
 
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
-                'dv'(default): daily values. Mean value for an entire day.
-                'iv': instantaneous value measured at this time. Also known
-                      as 'Real-time data'. Can be measured as often as every
-                      five minutes by the USGS. 15 minutes is more typical.
+            'dv'(default): daily values. Mean value for an entire day.
+            'iv': instantaneous value measured at this time. Also known
+            as 'Real-time data'. Can be measured as often as every
+            five minutes by the USGS. 15 minutes is more typical.
 
         start_date (str):
            should take on the form yyyy-mm-dd
@@ -48,12 +48,11 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
-                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for
-                  full list
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
 
         period (str):
             NWIS period code. Default is None.
-                * Format is "PxxD", where xx is the number of days before
+                * Format is "PxxD", where xx is the number of days before \
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
 
@@ -62,8 +61,7 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
             even if the NWIS returns a status_code that indicates a problem.
 
             * response.url: the url we used to request data
-            * response.status_code: '200' when okay; see
-            <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
+            * response.status_code: '200' when okay; see <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
             * response.json: the content translated as json
             * response.status_code: the internet status code
                 - '200': is a good request
