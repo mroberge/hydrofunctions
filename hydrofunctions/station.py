@@ -76,6 +76,11 @@ class NWIS(Station):
                 * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for \
                 full list
 
+        period (str):
+            NWIS period code. Default is None.
+                * Format is "PxxD", where xx is the number of days before
+                today, with a maximum of 999 days accepted.
+                * Either use start_date or period, but not both.
 
     TODO: decide if data should be requested when the object is created
             or when the user calls get_data().
@@ -89,17 +94,6 @@ class NWIS(Station):
 
                 now, when the user types myInstance.get_data() it returns the \
                 response object.
-
-    TODO: decide how the service, start_date, and end_date should be passed
-        to the instance so that requests can be made from NWIS.
-
-            **==>Opt 1:** pass these variables to the instance when it is made. (current option)
-                HerringRun = NWIS("01585200", "dv", "2014-04-01", "2014-06-01")
-
-            Opt 2: Create a session object that contains the data folder location
-                    and an Analysis object that contains the start & end date.
-                    ??when would the service get passed??
-                    -create both NWISiv and NWISdv classes (this would make it hard to keep both data sets in the same object)
     """
 
     def __init__(self,
@@ -123,13 +117,18 @@ class NWIS(Station):
         self.response = None
         self.df = lambda: print("You must successfully call .get_data() before calling .df().")
         self.json = lambda: print("You must successfully call .get_data() before calling .json().")
-        if (self.site and self.stateCd) or \
-           (self.stateCd and self.countyCd) or \
-           (self.site and self.countyCd):
+
+        # Check that site selcetion parameters are exclusive!
+        if (self.site and self.stateCd) \
+         or (self.stateCd and self.countyCd) \
+         or (self.site and self.countyCd):
             raise ValueError("Select sites using either site, stateCd, or "
                              "countyCd, but not more than one.")
+        # Check that time parameters are not both set.
+        # If neither is set, then NWIS will return the most recent observation.
         if (self.start_date and self.period):
-            raise ValueError("Use either start_date or period, but not both.")
+            raise ValueError("Use either start_date or period, or neither, "
+                             "but not both.")
 
     def get_data(self):
         self.site = typing.check_NWIS_site(self.site)
@@ -142,11 +141,12 @@ class NWIS(Station):
                                     self.end_date,
                                     stateCd=self.stateCd,
                                     countyCd=self.countyCd,
-                                    parameterCd=self.parameterCd)
+                                    parameterCd=self.parameterCd,
+                                    period=self.period)
         # If the response status_code is anything other than 200,
         # an error will be reported and an Exception raised.
         # The response object will be saved for examination.
-        
+    
         #TODO: fix tests and uncomment this call
         #hf.handle_status_code(self.response)
         #nwis_custom_status_codes(self.response)

@@ -110,6 +110,8 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
     http://waterservices.usgs.gov/rest/IV-Service.html
     """
 
+    service = typing.check_NWIS_service(service)
+
     header = {
         'Accept-encoding': 'gzip',
         'max-age': '120'
@@ -119,24 +121,36 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
         # specify version of nwis json. Based on WaterML1.1
         # json,1.1 works; json%2C works; json1.1 DOES NOT WORK
         'format': 'json,1.1',
-        # 'sites': sites,
-        # default parameterCd represents stream discharge.
+        'sites': typing.check_NWIS_site(site),
+        'stateCd': stateCd,
+        'countyCd': typing.check_NWIS_site(countyCd),
         'parameterCd': parameterCd,
-        # This is the format for requesting 10 days of data before today.
         'period': period,
         'startDT': start_date,
         'endDT': end_date
         }
 
-    # process sites, stateCd, or countyCd options
-    if stateCd is None and countyCd is None:
-        sites = typing.check_NWIS_site(site)
-        values['sites'] = sites
-    elif stateCd is not None:
-        values['stateCd'] = stateCd
-    elif countyCd is not None:
-        countyCd = typing.check_NWIS_site(countyCd)
-        values['countyCd'] = countyCd
+#    # process sites, stateCd, or countyCd options
+#    if stateCd is None and countyCd is None:
+#        sites = typing.check_NWIS_site(site)
+#        values['sites'] = sites
+#    elif stateCd is not None:
+#        values['stateCd'] = stateCd
+#    elif countyCd is not None:
+#        countyCd = typing.check_NWIS_site(countyCd)
+#        values['countyCd'] = countyCd
+#    else:
+#        raise ValueError("You must set either site, stateCd, or countyCd")
+
+    # Check that site selcetion parameters are exclusive!
+    if (site and stateCd) or (stateCd and countyCd) or (site and countyCd):
+        raise ValueError("Select sites using either site, stateCd, or "
+                         "countyCd, but not more than one.")
+    # Check that time parameters are not both set.
+    # If neither is set, then NWIS will return the most recent observation.
+    if (start_date and period):
+        raise ValueError("Use either start_date or period, or neither, "
+                         "but not both.")
 
     url = 'http://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'

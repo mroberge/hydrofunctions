@@ -17,7 +17,18 @@ import hydrofunctions as hf
 
 
 class fakeResponse(object):
-    pass
+
+    def __init__(self, code=200):
+        self.status_code = code
+        self.url = "fake url"
+        self.reason = "fake reason"
+        if code == 200:
+            pass
+        else:
+            self.status_code = code
+
+    def raise_for_status(self):
+        return self.status_code
 
 
 class TestHydrofunctions(unittest.TestCase):
@@ -31,13 +42,13 @@ class TestHydrofunctions(unittest.TestCase):
         """
 
         site = 'A'
-        service = 'B'
+        service = 'iv'
         start = 'C'
         end = 'D'
 
-        expected_url = 'http://waterservices.usgs.gov/nwis/B/?'
+        expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
         expected_headers = {'Accept-encoding': 'gzip', 'max-age': '120'}
-        expected_params = {'format': 'json,1.1', 'parameterCd': '00060', 'period': None, 'startDT': 'C', 'endDT': 'D', 'sites': 'A'}
+        expected_params = {'format': 'json,1.1', 'sites': 'A', 'stateCd': None, 'countyCd': None, 'parameterCd': '00060', 'period': None, 'startDT': 'C', 'endDT': 'D'}
 
         expected = fakeResponse()
         expected.status_code = 200
@@ -53,14 +64,14 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_get_nwis_calls_correct_url_multiple_sites(self, mock_get):
 
         site = ['site1', 'site2']
-        service = 'B'
+        parsed_site = hf.check_NWIS_site(site)
+        service = 'iv'
         start = 'C'
         end = 'D'
 
-        expected_url = 'http://waterservices.usgs.gov/nwis/B/?'
+        expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
-        expected_params = {'format': 'json,1.1', 'sites': 'site1,site2', 'endDT': 'D',
-                           'startDT': 'C', 'parameterCd': '00060', 'period': None}
+        expected_params = {'format': 'json,1.1', 'sites': parsed_site, 'stateCd': None, 'countyCd': None, 'parameterCd': '00060', 'period': None, 'startDT': 'C', 'endDT': 'D'}
 
         expected = fakeResponse()
         expected.status_code = 200
@@ -82,8 +93,8 @@ class TestHydrofunctions(unittest.TestCase):
 
     @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_stations_df(self):
-        # TODO: I need to make a fake response with multiple sites to test this out!!
         sites = ["01638500", "01646502"]
+        # TODO: test should be the json for a multiple site request.
         test = hf.get_nwis(sites, "dv",
                            "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_df(test)
@@ -113,12 +124,18 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertIsNone(hf.nwis_custom_status_codes(fake))
 
     def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
-        fake = fakeResponse()
-        fake.status_code = 400
-        fake.reason = "any text"
-        fake.url = "any text"
+        bad_response = fakeResponse()
+        bad_response.status_code = 400
+        bad_response.reason = "any text"
+        bad_response.url = "any text"
         expected = 400
-        self.assertEqual(hf.nwis_custom_status_codes(fake), expected)
+        # bad_response should raise a warning that should be caught during test
+        actual = None
+        with self.assertWarns(SyntaxWarning) as cm:
+            actual = hf.nwis_custom_status_codes(bad_response)
+        # Does the function return the bad status_code?
+        self.assertEqual(actual, expected)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
