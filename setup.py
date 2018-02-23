@@ -16,12 +16,13 @@ requirements = [
 ]
 
 test_requirements = [
+    # 'pytest'
     # 'nose2' doesn't add any extra functionality for me right now.
 ]
 
 setup(
     name='hydrofunctions',
-    version='0.1.4',
+    version='0.1.5',
     description="A suite of convenience functions for exploring water data in IPython.",
     long_description=readme + '\n\n' + history,
     author="Martin Roberge",
@@ -42,6 +43,7 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Visualization',
         'Topic :: Utilities'

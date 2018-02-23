@@ -11,7 +11,7 @@ Use the errors like this::
     try:
         #some code here that might return no data
         #more code that might get encoded improperly
-    except HyrdoNoDataError('This site has no data'):
+    except HydroNoDataError('This site has no data'):
         # handle error here.
     except HydroEncodeError():
         # handle this error here.
@@ -58,7 +58,8 @@ class HydroNoDataError(HydroException):
 
         Catch this error in automated systems so that the system can reconsider
         the request and either fix the request or move on to the next
-        request."""
+        request.
+    """
     pass
 
 

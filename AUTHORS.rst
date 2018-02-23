@@ -1,5 +1,5 @@
 =======
-Credits
+Authors
 =======
 
 Development Lead
@@ -10,4 +10,4 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Joseph Hughes <jdhughes@usgs.gov>

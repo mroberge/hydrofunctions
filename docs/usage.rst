@@ -1,12 +1,13 @@
-=====
-Usage
-=====
-Using hydrofunctions in a project
----------------------------------
+====================
+Using Hydrofunctions
+====================
+
 
 First, import hydrofunctions into your project::
 
     >>> import hydrofunctions as hf
+
+Next, request data from the USGS National Water Information System (NWIS)::
 
     >>> site = '01582500'
     >>> start = '2015-05-10'
@@ -28,12 +29,13 @@ List all of the different attributes and methods with dir()::
 
     >>> dir(response)
 
+
 Functions that use the response object
 --------------------------------------
 
-Extract a dict from the response::
+Extract the full json response from the data provider::
 
-    >>> my_dict = hf.extract_nwis_dict(response)
+    >>> my_dict = response.json()
     >>> my_dict
     {'declaredType': 'org.cuahsi.waterml.TimeSeriesResponseType',
      'globalScope': True,
@@ -52,3 +54,65 @@ Extract a Pandas dataframe from the response::
     2015-05-13  129.0
     2015-05-14  114.0
     2015-05-15  109.0
+
+
+Using the NWIS object to request data
+-------------------------------------
+
+A second method for requesting data is to use the NWIS object to store your
+response and the extracted data.
+
+First, import hydrofunctions into your project and enable automatic chart 
+display::
+
+    >>> import hydrofunctions as hf
+    >>> %matplotlib inline
+
+Now set up the data request, much as we did with the `hf.get_nwis()` function,
+but this time we'll use the hf.NWIS object, and we'll request the previous
+20 days instead of between two dates::
+
+    >>> myTime = 'P20D'
+    >>> herring = hf.NWIS('01585200', 'dv', period=myTime)
+
+We've set up our system, now we submit our request for data::
+
+    >>> herring.get_data()
+    <hydrofunctions.station.NWIS at 0x127506d6ac8>
+
+Once you've requested your data, you don't need to request it again. Next,
+we will create a Pandas dataframe using the `.df()` method, then we list the
+first five items in our dataframe by dot chaining the `.head()` method::
+
+    >>> herring.df().head()
+
+--a table with our data appears--
+
+    +------------+--------------------------------------------------+
+    |  datetime  | 01585200 - Mean Discharge, cubic feet per second |
+    +------------+--------------------------------------------------+
+    | 2017-06-01 |                                       0.71       |
+    +------------+--------------------------------------------------+
+    | 2017-06-02 |                                       0.64       |
+    +------------+--------------------------------------------------+
+    | 2017-06-03 |                                       0.61       |
+    +------------+--------------------------------------------------+
+    | 2017-06-04 |                                       0.58       |
+    +------------+--------------------------------------------------+
+    | 2017-06-05 |                                       1.95       |
+    +------------+--------------------------------------------------+
+
+Plot the data using Pandas and mathplotlib::
+
+    >>> herring.df().plot()
+
+.. image:: HerringHydrograph.png
+        :alt: a stream hydrograph for Herring Run
+
+As long as you had `%matplotlib inline` enabled earlier, you will get a graph.
+
+Example Notebooks
+-----------------
+
+- `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_
+- `NWIS Trial Run <https://github.com/mroberge/hydrofunctions/blob/master/NWIS%20trial%20run.ipynb>`_
