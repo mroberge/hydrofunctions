@@ -90,6 +90,7 @@ class NWIS(Station):
                  end_date=None,
                  stateCd=None,
                  countyCd=None,
+                 bBox=None,
                  parameterCd='00060',
                  period=None):
 
@@ -99,6 +100,7 @@ class NWIS(Station):
         self.end_date = typing.check_datestr(end_date)
         self.stateCd = stateCd
         self.countyCd = countyCd
+        self.bBox = bBox
         self.parameterCd = parameterCd
         self.period = typing.check_period(period)
         self.response = None
@@ -107,10 +109,12 @@ class NWIS(Station):
 
         # Check that site selcetion parameters are exclusive!
         if (self.site and self.stateCd) \
-         or (self.stateCd and self.countyCd) \
-         or (self.site and self.countyCd):
+            or (self.stateCd and self.countyCd) \
+            or (self.site and self.countyCd) \
+            or (self.site and self.bBox):
             raise ValueError("Select sites using either site, stateCd, or "
                              "countyCd, but not more than one.")
+
         # Check that time parameters are not both set.
         # If neither is set, then NWIS will return the most recent observation.
         if (self.start_date and self.period):
@@ -128,18 +132,19 @@ class NWIS(Station):
                                     self.end_date,
                                     stateCd=self.stateCd,
                                     countyCd=self.countyCd,
+                                    bBox=self.bBox,
                                     parameterCd=self.parameterCd,
                                     period=self.period)
         # If the response status_code is anything other than 200,
         # an error will be reported and an Exception raised.
         # The response object will be saved for examination.
-    
+
         #TODO: fix tests and uncomment this call
         #hf.handle_status_code(self.response)
         #nwis_custom_status_codes(self.response)
         # Raise an exception if non-200 status_code, or return None for 200.
         self.response.raise_for_status()
-        
+
         # set self.json without calling it.
         self.json = lambda: self.response.json()
         # set self.df without calling it.
