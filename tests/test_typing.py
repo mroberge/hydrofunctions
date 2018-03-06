@@ -104,6 +104,21 @@ class TestTyping(unittest.TestCase):
         self.assertRaises(TypeError, typing.check_datestr, bad3)
         self.assertRaises(TypeError, typing.check_datestr, bad4)
 
+    def test_typing_Bbox_None_returns_None(self):
+        self.assertIsNone(typing.check_NWIS_Bbox(None))
+
+    def test_typing_Bbox_accepts_list_of_four_latlongs(self):
+        goodList = [-80, 20, -70, 30]
+        actual = typing.check_NWIS_Bbox(goodList)
+        expected = '-80,20,-70,30'
+        self.assertEqual(actual, expected)
+
+    def test_typing_Bbox_raises_TypeError_bad_input(self):
+        bad1 = []
+        bad2 = [1, 2, 3]  # We only test for insufficient args right now
+        self.assertRaises(TypeError, typing.check_NWIS_Bbox, bad1)
+        self.assertRaises(TypeError, typing.check_NWIS_Bbox, bad2)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
