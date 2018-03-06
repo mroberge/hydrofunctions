@@ -44,7 +44,12 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
             a valid county abbreviation. Default is None.
 
         bBox (str):
-            a valid two-letter state postal abbreviation. Default is None.
+            a set of coordinates that defines a bounding box.
+                * Coordinates are in decimal degrees
+                * West and South coordinates are negative
+                * comma-delimited, no spaces.
+                * The order of the boundaries should be: "West,South,East,North"
+                * Example: -83.000000,36.500000,-81.000000,38.500000
 
         parameterCd (str):
             NWIS parameter code. Default is stream discharge '00060'
