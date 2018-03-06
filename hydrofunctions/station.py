@@ -113,11 +113,14 @@ class NWIS(Station):
         self.stateCd = stateCd
         self.countyCd = countyCd
         self.bBox = bBox
+        self.ok = None
         self.parameterCd = parameterCd
         self.period = typing.check_period(period)
         self.response = None
         self.df = lambda: print("You must successfully call .get_data() before calling .df().")
         self.json = lambda: print("You must successfully call .get_data() before calling .json().")
+        self.name = None
+        self.siteName = None
 
         # Check that site selcetion parameters are exclusive!
         if (self.site and self.stateCd) \
@@ -165,5 +168,12 @@ class NWIS(Station):
         # Another option might be to do this:
         # self.df = hf.extract_nwis_df(self.response)
         # This would make myInstance.df return a plain df.
+        self.ok = self.response.ok
+        self.siteName = hf.get_nwis_property(self.response,
+                                             key='siteName',
+                                             remove_duplicates=True)
+        self.name = hf.get_nwis_property(self.response,
+                                         key='name',
+                                         remove_duplicates=True)
 
         return self
