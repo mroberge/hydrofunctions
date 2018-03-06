@@ -212,6 +212,18 @@ def get_nwis_property(response_obj, key=None, remove_duplicates=False):
     if len(ts) < 1:
         raise exceptions.HydroNoDataError(msg)
 
+    # This predefines what to expect in the response.
+    # Would it be better to look in the response for the key?
+    # Pseudo code
+    # skip stations with no data
+    # if key in tts['variable']:
+    #    v = etc
+    # elif key in tts['sourceInfo']:
+    #    v = etc
+    # elif key in tts:
+    #    v = etc
+    # else just return index or raise an error later
+    #
     sourceInfo = ['siteName', 'siteCode', 'timeZoneInfo', 'geoLocation',
                   'siteType', 'siteProperty']
     variable = ['variableCode', 'variableName', 'variableDescription',
@@ -237,7 +249,8 @@ def get_nwis_property(response_obj, key=None, remove_duplicates=False):
                     vals.append(v)
             else:
                 vals.append(v)
-    except:
+    # Why catch this? If we can't find the key, we already return the index.
+    except:  # TODO: dangerous to use bare 'except'  clauses.
         msg = 'The selected key "{}" could not be found'.format(key)
         raise ValueError(msg)
     return vals
