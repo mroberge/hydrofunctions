@@ -55,6 +55,10 @@ class NWIS(Station):
 
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
+            'dv'(default): daily values. Mean value for an entire day.
+            'iv': instantaneous value measured at this time. Also known
+            as 'Real-time data'. Can be measured as often as every
+            five minutes by the USGS. 15 minutes is more typical.
 
         start_date (str):
            should take on the form yyyy-mm-dd
@@ -67,6 +71,14 @@ class NWIS(Station):
 
         countyCd (str or list of strings):
             a valid county abbreviation. Default is None.
+
+        bBox (str):
+            a set of coordinates that defines a bounding box.
+                * Coordinates are in decimal degrees
+                * West and South coordinates are negative
+                * comma-delimited, no spaces.
+                * The order of the boundaries should be: "West,South,East,North"
+                * Example: -83.000000,36.500000,-81.000000,38.500000
 
         parameterCd (str):
             NWIS parameter code. Default is stream discharge '00060'

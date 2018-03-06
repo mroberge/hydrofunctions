@@ -40,3 +40,9 @@ History
 * Added ability to request lists of sites or counties (jdh)
 * Improved column names: now includes site id & variable description (for example, '07228000 - Mean Discharge, cubic feet per second')(jdh)
 * Added descriptive warnings to explain why queries fail (mcr)
+
+0.1.6 (2018-03-06)
+----------------------
+
+* Added draw_map function for help selecting sites (mcr)
+* Select by boundary box (jdh)

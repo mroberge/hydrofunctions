@@ -22,7 +22,7 @@ Features
 --------
 
 * Retrieves stream data from the USGS NWIS service
-* Retrieve data using multiple site numbers, state, or county codes
+* Retrieve data using multiple site numbers, state, county codes, or boundary box
 * Preserves NWIS metadata, including NoData values
 * Helpful error messages to help you write valid requests
 * Extracts data into a Pandas dataframe, json, or dict
