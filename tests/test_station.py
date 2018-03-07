@@ -76,6 +76,7 @@ class TestStation(unittest.TestCase):
     def test_station_subclasses_maintain_same_station_dict(self):
         class Foo(station.Station):
             pass
+
         foo_inst = Foo('foo')
         station_inst = station.Station('station')
         self.assertIn('station', foo_inst.station_dict)
@@ -122,7 +123,8 @@ class TestNWIS(unittest.TestCase):
         start = "2011-01-01"
         end = "2011-01-02"
         parameterCd = "00065"
-        actual = station.NWIS(site, service, start, end, parameterCd=parameterCd)
+        actual = station.NWIS(site, service, start, end,
+                              parameterCd=parameterCd)
         self.assertIsInstance(actual, station.NWIS)
         self.assertEqual(actual.site, site)
         self.assertEqual(actual.service, service)
@@ -136,11 +138,14 @@ class TestNWIS(unittest.TestCase):
         start = "2011-01-01"
         end = "2011-01-02"
         parameterCd = "00060"
-        
+
         actual = station.NWIS(site, service, start, end)
         try_it_out = actual.get_data()
         # try_it_out should be a response object, I think
-        mock_get_nwis.assert_called_once_with(site, service, start, end, parameterCd=parameterCd, period=None, stateCd=None, countyCd=None)
+        mock_get_nwis.assert_called_once_with(site, service, start, end,
+                                              parameterCd=parameterCd,
+                                              period=None, stateCd=None,
+                                              countyCd=None, bBox=None)
 
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
     def test_NWIS_get_data_calls_get_nwis_mult_sites(self, mock_get_nwis):
@@ -153,12 +158,13 @@ class TestNWIS(unittest.TestCase):
         actual = station.NWIS(site, service, start, end)
         try_it_out = actual.get_data()
         # try_it_out should be an instance of NWIS.
-        mock_get_nwis.assert_called_once_with(siteEx, service, start, end, parameterCd=parameterCd, period=None, stateCd=None, countyCd=None)
-
+        mock_get_nwis.assert_called_once_with(siteEx, service, start, end,
+                                              parameterCd=parameterCd,
+                                              period=None, stateCd=None,
+                                              countyCd=None, bBox=None)
 
     @mock.patch('requests.get')
     def test_hf_get_nwis_accepts_countyCd_array(self, mock_get):
-
         start = "2017-01-01"
         end = "2017-12-31"
         cnty = ['51059', '51061']
@@ -167,12 +173,16 @@ class TestNWIS(unittest.TestCase):
 
         expected_url = 'http://waterservices.usgs.gov/nwis/dv/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
-        expected_params = {'format': 'json,1.1', 'sites': None, 'stateCd': None, 'countyCd': cnty, 'parameterCd': '00060', 'period': None, 'startDT': start, 'endDT': end}
+        expected_params = {'format': 'json,1.1', 'sites': None,
+                           'stateCd': None, 'countyCd': cnty, 'bBox': None,
+                           'parameterCd': '00060', 'period': None,
+                           'startDT': start, 'endDT': end}
 
         expected = fakeResponse(200)
 
         mock_get.return_value = expected
-        actual = station.NWIS(None, service2, start, countyCd=cnty, end_date=end).get_data()
+        actual = station.NWIS(None, service2, start, countyCd=cnty,
+                              end_date=end).get_data()
         mock_get.assert_called_once_with(expected_url, params=expected_params,
                                          headers=expected_headers)
 
@@ -187,7 +197,7 @@ class TestNWIS(unittest.TestCase):
         # You don't need to test the following like this.
         # Just test that actual.df() returns nothing if you call before get_data()
         # And actual.df() returns a df if you call after .get_data()
-        actualdf = actual.get_data().df() #returns a dataframe
+        actualdf = actual.get_data().df()  # returns a dataframe
         self.assertIs(type(actualdf), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
