@@ -22,9 +22,10 @@ class fakeResponse(object):
         self.url = "fake url"
         self.reason = "fake reason"
         if code == 200:
-            pass
+            self.ok = True
         else:
             self.status_code = code
+            self.ok = False
 
     def raise_for_status(self):
         return self.status_code
@@ -132,7 +133,8 @@ class TestNWIS(unittest.TestCase):
         self.assertEqual(actual.parameterCd, parameterCd)
 
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
-    def test_NWIS_get_data_calls_get_nwis_correctly(self, mock_get_nwis):
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_NWIS_get_data_calls_get_nwis_correctly(self, mock_get_prop, mock_get_nwis):
         site = "01582500"
         service = "dv"
         start = "2011-01-01"
@@ -148,7 +150,8 @@ class TestNWIS(unittest.TestCase):
                                               countyCd=None, bBox=None)
 
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
-    def test_NWIS_get_data_calls_get_nwis_mult_sites(self, mock_get_nwis):
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_NWIS_get_data_calls_get_nwis_mult_sites(self, mock_get_prop, mock_get_nwis):
         site = ["01638500", "01646502"]
         siteEx = "01638500,01646502"
         service = "dv"
@@ -164,7 +167,8 @@ class TestNWIS(unittest.TestCase):
                                               countyCd=None, bBox=None)
 
     @mock.patch('requests.get')
-    def test_hf_get_nwis_accepts_countyCd_array(self, mock_get):
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_hf_get_nwis_accepts_countyCd_array(self, mock_get_prop, mock_get):
         start = "2017-01-01"
         end = "2017-12-31"
         cnty = ['51059', '51061']

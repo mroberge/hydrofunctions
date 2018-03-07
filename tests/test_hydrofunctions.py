@@ -127,6 +127,7 @@ class TestHydrofunctions(unittest.TestCase):
         test = hf.get_nwis(sites, "dv",
                            "2013-01-01", "2013-01-05", bBox=bBox)
         names = hf.get_nwis_property(test, key='name')
+        self.assertIs(type(names), list, msg="Did not return a list")
         actual = hf.extract_nwis_df(test)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
