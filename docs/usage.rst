@@ -115,4 +115,7 @@ Example Notebooks
 -----------------
 
 - `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_
+- `Selecting Sites <https://github.com/mroberge/hydrofunctions/blob/master/Selecting_Sites.ipynb>`_
+- `Writing Valid Requests for NWIS <https://github.com/mroberge/hydrofunctions/blob/master/Writing_Valid_Requests_for_NWIS.ipynb>`_
+- `Draw Map Demo <https://github.com/mroberge/hydrofunctions/blob/master/Draw_Map_Demo.ipynb>`_
 - `NWIS Trial Run <https://github.com/mroberge/hydrofunctions/blob/master/NWIS%20trial%20run.ipynb>`_

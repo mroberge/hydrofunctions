@@ -1,5 +1,5 @@
-hydrofunctions
-==============
+hydrofunctions |version|
+========================
 
 .. toctree::
    :maxdepth: 4

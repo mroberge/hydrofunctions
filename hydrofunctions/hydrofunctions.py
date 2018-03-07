@@ -175,7 +175,7 @@ def get_nwis_property(response_obj, key=None, remove_duplicates=False):
             a response object as returned by get_nwis().
 
         key (str):
-            a valid NWIS response property key. Default is None. The index is
+            a valid NWIS response property key. Default is None. The index is \
             returned if key is None. Valid keys are:
                 * None
                 * name - constructed name "provider:site:parameterCd:statistic"
