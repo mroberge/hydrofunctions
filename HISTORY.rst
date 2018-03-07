@@ -42,7 +42,7 @@ History
 * Added descriptive warnings to explain why queries fail (mcr)
 
 
-0.1.6 (2018-03-06)
+0.1.6 (2018-03-07)
 ----------------------
 
 * Added draw_map function for help selecting sites (mcr)

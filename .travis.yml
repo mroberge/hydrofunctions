@@ -5,7 +5,7 @@ python:
   - "3.5"
   - "3.6"
 script: 
-  # consider using pytest
+  # consider using pytest: is it faster?
   - python setup.py test
 
 deploy:
@@ -29,8 +29,8 @@ deploy:
   # cleanup was interfering with deployment.
   skip_cleanup: true
   on:
-    # deploy when there is a commit to Master in hydrofunctions.
+    # deploy every time there is a commit to Master in hydrofunctions.
     repo: mroberge/hydrofunctions
-    # but only during the 3.6 set of tests.
+    #tags: true  # This line would only update PyPI if the version tag changed.
+    # only deploy to PyPI after the 3.6 set of tests, not after the other sets.
     python: '3.6'
-    #tags: true

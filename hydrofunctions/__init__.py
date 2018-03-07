@@ -36,7 +36,7 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 """
 
 __title__ = 'hydrofunctions'
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 __author__ = 'Martin Roberge'
 __email__ = 'mroberge.whois@gmail.com'
 __license__ = 'MIT'
