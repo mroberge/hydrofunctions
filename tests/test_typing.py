@@ -53,6 +53,13 @@ class TestTyping(unittest.TestCase):
         self.assertRaises(TypeError, typing.check_NWIS_site, test6)
         self.assertRaises(TypeError, typing.check_NWIS_site, test7)
 
+    def test_typing_check_NWIS_bBox(self):
+        b0 = (-105.43, 39.655, -104.0, 39.863)
+        b1 = [-105.43, 39.655, -104.0, 39.863]
+        bt = '-105.43,39.655,-104.0,39.863'
+        self.assertEqual(typing.check_NWIS_bBox(b0), bt)
+        self.assertEqual(typing.check_NWIS_bBox(b1), bt)
+
     def test_typing_check_NWIS_service_accepts_iv_and_dv(self):
         self.assertTrue(typing.check_NWIS_service("iv"))
         self.assertEqual(typing.check_NWIS_service("iv"), "iv")
