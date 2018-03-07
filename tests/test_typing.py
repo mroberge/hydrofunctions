@@ -53,12 +53,13 @@ class TestTyping(unittest.TestCase):
         self.assertRaises(TypeError, typing.check_NWIS_site, test6)
         self.assertRaises(TypeError, typing.check_NWIS_site, test7)
 
-    def test_typing_check_NWIS_bBox(self):
+    def test_typing_check_NWIS_bBox_accepts_list_tuple_string(self):
         b0 = (-105.43, 39.655, -104.0, 39.863)
         b1 = [-105.43, 39.655, -104.0, 39.863]
         bt = '-105.43,39.655,-104.0,39.863'
         self.assertEqual(typing.check_NWIS_bBox(b0), bt)
         self.assertEqual(typing.check_NWIS_bBox(b1), bt)
+        self.assertEqual(typing.check_NWIS_bBox(bt), bt)
 
     def test_typing_check_NWIS_service_accepts_iv_and_dv(self):
         self.assertTrue(typing.check_NWIS_service("iv"))
@@ -111,20 +112,20 @@ class TestTyping(unittest.TestCase):
         self.assertRaises(TypeError, typing.check_datestr, bad3)
         self.assertRaises(TypeError, typing.check_datestr, bad4)
 
-    def test_typing_Bbox_None_returns_None(self):
-        self.assertIsNone(typing.check_NWIS_Bbox(None))
+    def test_typing_bBox_None_returns_None(self):
+        self.assertIsNone(typing.check_NWIS_bBox(None))
 
-    def test_typing_Bbox_accepts_list_of_four_latlongs(self):
+    def test_typing_bBox_accepts_list_of_four_latlongs(self):
         goodList = [-80, 20, -70, 30]
-        actual = typing.check_NWIS_Bbox(goodList)
+        actual = typing.check_NWIS_bBox(goodList)
         expected = '-80,20,-70,30'
         self.assertEqual(actual, expected)
 
-    def test_typing_Bbox_raises_TypeError_bad_input(self):
+    def test_typing_bBox_raises_TypeError_bad_input(self):
         bad1 = []
         bad2 = [1, 2, 3]  # We only test for insufficient args right now
-        self.assertRaises(TypeError, typing.check_NWIS_Bbox, bad1)
-        self.assertRaises(TypeError, typing.check_NWIS_Bbox, bad2)
+        self.assertRaises(TypeError, typing.check_NWIS_bBox, bad1)
+        self.assertRaises(TypeError, typing.check_NWIS_bBox, bad2)
 
 
 if __name__ == '__main__':
