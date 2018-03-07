@@ -20,6 +20,35 @@ Suggested format for these functions:
 import re
 
 
+def check_NWIS_bBox(input):
+    """Checks that the USGS bBox is valid
+    """
+    msg = 'NWIS bBox should be a string, list of strings, or tuple ' + \
+          'containing the longitude and latitude at the lower left corner ' + \
+          'of the bounding box followed by the longitude and latitude ' + \
+          'at the upper left corner of the bounding box. Most often in ' + \
+          'the form of "ll_long,ll_lat,ur_long,ur_lat" . ' + \
+          'Actual value: {}'.format(input)
+    if input is None:
+        return None
+    # assume that if it is a string it will be fine as is.
+    # don't accept a series of sites in a single string.
+    # Test for and reject empty strings: empty strings are false.
+    if isinstance(input, str) and input:
+        t = input.split(',')
+        if len(t) < 4:
+            raise TypeError(msg)
+        return input
+    # test for input is a list and it is not empty
+    elif (isinstance(input, list) or isinstance(input, tuple)) and input:
+        if len(input) < 4:
+            raise TypeError(msg)
+        # format:  [-83.000000, 36.500000, -81.000000, 38.500000] ==> '-83.000000,36.500000,-81.000000,38.500000'
+        return ','.join([str(s) for s in input])
+    else:
+        raise TypeError(msg)
+
+
 def check_NWIS_site(input):
     """Checks that the USGS station site id is valid.
     """
@@ -41,7 +70,7 @@ def check_NWIS_site(input):
             if isinstance(s, str) and s:
                 output = output + s + ','
             else:
-                raise TypeError(msg+"   bad element: {}".format(s))
+                raise TypeError(msg + "   bad element: {}".format(s))
         # format:  ['0123', '567'] ==> "0123,567"
         # remove the last comma
         return output[:-1]

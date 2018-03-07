@@ -48,7 +48,10 @@ class TestHydrofunctions(unittest.TestCase):
 
         expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
         expected_headers = {'Accept-encoding': 'gzip', 'max-age': '120'}
-        expected_params = {'format': 'json,1.1', 'sites': 'A', 'stateCd': None, 'countyCd': None, 'parameterCd': '00060', 'period': None, 'startDT': 'C', 'endDT': 'D'}
+        expected_params = {'format': 'json,1.1', 'sites': 'A', 'stateCd': None,
+                           'countyCd': None, 'bBox': None,
+                           'parameterCd': '00060', 'period': None,
+                           'startDT': 'C', 'endDT': 'D'}
 
         expected = fakeResponse()
         expected.status_code = 200
@@ -71,7 +74,10 @@ class TestHydrofunctions(unittest.TestCase):
 
         expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
-        expected_params = {'format': 'json,1.1', 'sites': parsed_site, 'stateCd': None, 'countyCd': None, 'parameterCd': '00060', 'period': None, 'startDT': 'C', 'endDT': 'D'}
+        expected_params = {'format': 'json,1.1', 'sites': parsed_site,
+                           'stateCd': None, 'countyCd': None,
+                           'bBox': None, 'parameterCd': '00060',
+                           'period': None, 'startDT': 'C', 'endDT': 'D'}
 
         expected = fakeResponse()
         expected.status_code = 200
@@ -98,6 +104,7 @@ class TestHydrofunctions(unittest.TestCase):
         test = hf.get_nwis(sites, "dv",
                            "2013-01-01", "2013-01-05")
         actual = hf.extract_nwis_df(test)
+        vD = hf.get_nwis_property(test, key='variableDescription')
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
@@ -107,6 +114,32 @@ class TestHydrofunctions(unittest.TestCase):
         sites = ["380616075380701", "394008077005601"]
         test = hf.get_nwis(sites, "iv",
                            "2018-01-01", "2018-01-05", parameterCd='72019')
+        actual = hf.extract_nwis_df(test)
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+
+
+    @unittest.skip('Stop requesting data during test.')
+    def test_hf_extract_nwis_bBox_df(self):
+        sites = None
+        bBox = (-105.430, 39.655, -104, 39.863)
+        # TODO: test should be the json for a multiple site request.
+        test = hf.get_nwis(sites, "dv",
+                           "2013-01-01", "2013-01-05", bBox=bBox)
+        names = hf.get_nwis_property(test, key='name')
+        self.assertIs(type(names), list, msg="Did not return a list")
+        actual = hf.extract_nwis_df(test)
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+
+    @unittest.skip('Stop requesting data during test.')
+    def test_hf_extract_nwis_bBox2_df(self):
+        sites = None
+        bBox = '-105.430,39.655,-104,39.863'
+        # TODO: test should be the json for a multiple site request.
+        test = hf.get_nwis(sites, "dv",
+                           "2013-01-01", "2013-01-05", bBox=bBox)
+        names = hf.get_nwis_property(test, key='name')
         actual = hf.extract_nwis_df(test)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")

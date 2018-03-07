@@ -55,6 +55,10 @@ class NWIS(Station):
 
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
+            'dv'(default): daily values. Mean value for an entire day.
+            'iv': instantaneous value measured at this time. Also known
+            as 'Real-time data'. Can be measured as often as every
+            five minutes by the USGS. 15 minutes is more typical.
 
         start_date (str):
            should take on the form yyyy-mm-dd
@@ -67,6 +71,15 @@ class NWIS(Station):
 
         countyCd (str or list of strings):
             a valid county abbreviation. Default is None.
+
+        bBox (str, list, or tuple):
+            a set of coordinates that defines a bounding box.
+                * Coordinates are in decimal degrees
+                * Longitude values are negative (west of the prime meridian).
+                * Latitude values are positive (north of the equator).
+                * comma-delimited, no spaces, if provided as a string.
+                * The order of the boundaries should be: "West,South,East,North"
+                * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
         parameterCd (str):
             NWIS parameter code. Default is stream discharge '00060'
@@ -90,6 +103,7 @@ class NWIS(Station):
                  end_date=None,
                  stateCd=None,
                  countyCd=None,
+                 bBox=None,
                  parameterCd='00060',
                  period=None):
 
@@ -99,18 +113,24 @@ class NWIS(Station):
         self.end_date = typing.check_datestr(end_date)
         self.stateCd = stateCd
         self.countyCd = countyCd
+        self.bBox = bBox
+        self.ok = None
         self.parameterCd = parameterCd
         self.period = typing.check_period(period)
         self.response = None
         self.df = lambda: print("You must successfully call .get_data() before calling .df().")
         self.json = lambda: print("You must successfully call .get_data() before calling .json().")
+        self.name = None
+        self.siteName = None
 
         # Check that site selcetion parameters are exclusive!
         if (self.site and self.stateCd) \
-         or (self.stateCd and self.countyCd) \
-         or (self.site and self.countyCd):
+            or (self.stateCd and self.countyCd) \
+            or (self.site and self.countyCd) \
+            or (self.site and self.bBox):
             raise ValueError("Select sites using either site, stateCd, or "
                              "countyCd, but not more than one.")
+
         # Check that time parameters are not both set.
         # If neither is set, then NWIS will return the most recent observation.
         if (self.start_date and self.period):
@@ -128,18 +148,19 @@ class NWIS(Station):
                                     self.end_date,
                                     stateCd=self.stateCd,
                                     countyCd=self.countyCd,
+                                    bBox=self.bBox,
                                     parameterCd=self.parameterCd,
                                     period=self.period)
         # If the response status_code is anything other than 200,
         # an error will be reported and an Exception raised.
         # The response object will be saved for examination.
-    
+
         #TODO: fix tests and uncomment this call
         #hf.handle_status_code(self.response)
         #nwis_custom_status_codes(self.response)
         # Raise an exception if non-200 status_code, or return None for 200.
         self.response.raise_for_status()
-        
+
         # set self.json without calling it.
         self.json = lambda: self.response.json()
         # set self.df without calling it.
@@ -148,5 +169,12 @@ class NWIS(Station):
         # Another option might be to do this:
         # self.df = hf.extract_nwis_df(self.response)
         # This would make myInstance.df return a plain df.
+        self.ok = self.response.ok
+        self.siteName = hf.get_nwis_property(self.response,
+                                             key='siteName',
+                                             remove_duplicates=True)
+        self.name = hf.get_nwis_property(self.response,
+                                         key='name',
+                                         remove_duplicates=True)
 
         return self

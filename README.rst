@@ -22,11 +22,12 @@ Features
 --------
 
 * Retrieves stream data from the USGS NWIS service
-* Retrieve data using multiple site numbers, state, or county codes
+* Retrieve data using multiple site numbers, state, county codes, or boundary box
 * Preserves NWIS metadata, including NoData values
 * Helpful error messages to help you write valid requests
 * Extracts data into a Pandas dataframe, json, or dict
 * Plotting and manipulation through Pandas dataframes
+* Interactive map for finding stream gage ID numbers
 * Still in early development! More features to come!
 
 Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for more details.
@@ -81,6 +82,11 @@ Plot the data using built-in methods from Pandas and mathplotlib::
 
 .. image:: HerringHydrograph.png
         :alt: a stream hydrograph for Herring Run
+
+Draw an interactive map in a Jupyter Notebook:
+
+.. image:: _static/draw_map.jpg
+        :alt: a map in an interactive Jupyter Notebook.
 
 Learn more:
 

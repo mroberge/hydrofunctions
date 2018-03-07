@@ -12,7 +12,8 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'numpy',
     'pandas',
-    'requests'
+    'requests',
+    'IPython'
 ]
 
 test_requirements = [
@@ -22,7 +23,7 @@ test_requirements = [
 
 setup(
     name='hydrofunctions',
-    version='0.1.5',
+    version='0.1.6',
     description="A suite of convenience functions for exploring water data in IPython.",
     long_description=readme + '\n\n' + history,
     author="Martin Roberge",

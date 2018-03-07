@@ -15,8 +15,8 @@ import warnings
 from . import typing
 
 
-def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, countyCd=None,
-             parameterCd='00060', period=None):
+def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
+             countyCd=None, bBox=None, parameterCd='00060', period=None):
     """Request stream gauge data from the USGS NWIS.
 
     Args:
@@ -42,6 +42,15 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
 
         countyCd (str or list of strings):
             a valid county abbreviation. Default is None.
+
+        bBox (str, list, or tuple):
+            a set of coordinates that defines a bounding box.
+                * Coordinates are in decimal degrees
+                * Longitude values are negative (west of the prime meridian).
+                * Latitude values are positive (north of the equator).
+                * comma-delimited, no spaces, if provided as a string.
+                * The order of the boundaries should be: "West,South,East,North"
+                * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
         parameterCd (str):
             NWIS parameter code. Default is stream discharge '00060'
@@ -113,7 +122,7 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
     header = {
         'Accept-encoding': 'gzip',
         'max-age': '120'
-        }
+    }
 
     values = {
         # specify version of nwis json. Based on WaterML1.1
@@ -122,28 +131,19 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
         'sites': typing.check_NWIS_site(site),
         'stateCd': stateCd,
         'countyCd': typing.check_NWIS_site(countyCd),
+        'bBox': typing.check_NWIS_bBox(bBox),
         'parameterCd': parameterCd,
         'period': period,
         'startDT': start_date,
         'endDT': end_date
-        }
-
-#    # process sites, stateCd, or countyCd options
-#    if stateCd is None and countyCd is None:
-#        sites = typing.check_NWIS_site(site)
-#        values['sites'] = sites
-#    elif stateCd is not None:
-#        values['stateCd'] = stateCd
-#    elif countyCd is not None:
-#        countyCd = typing.check_NWIS_site(countyCd)
-#        values['countyCd'] = countyCd
-#    else:
-#        raise ValueError("You must set either site, stateCd, or countyCd")
+    }
 
     # Check that site selcetion parameters are exclusive!
-    if (site and stateCd) or (stateCd and countyCd) or (site and countyCd):
-        raise ValueError("Select sites using either site, stateCd, or "
-                         "countyCd, but not more than one.")
+    if (site and stateCd) or (stateCd and countyCd) or (site and countyCd) \
+        or (site and bBox):
+        raise ValueError("Select sites using either site, stateCd, "
+                         "countyCd, or bBox, but not more than one.")
+
     # Check that time parameters are not both set.
     # If neither is set, then NWIS will return the most recent observation.
     if (start_date and period):
@@ -165,6 +165,96 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None, county
     nwis_custom_status_codes(response)
 
     return response
+
+
+def get_nwis_property(response_obj, key=None, remove_duplicates=False):
+    """Returns a list containing property data from an NWIS response object.
+
+    Args:
+        response_obj (obj):
+            a response object as returned by get_nwis().
+
+        key (str):
+            a valid NWIS response property key. Default is None. The index is \
+            returned if key is None. Valid keys are:
+                * None
+                * name - constructed name "provider:site:parameterCd:statistic"
+                * siteName
+                * siteCode
+                * timeZoneInfo
+                * geoLocation
+                * siteType
+                * siteProperty
+                * variableCode
+                * variableName
+                * variableDescription
+                * valueType
+                * unit
+                * options
+                * noDataValue
+        remove_duplicates (bool):
+            a flag used to remove duplicate values in the returned list.
+
+    Returns:
+        a list with the data for the passed key string.
+
+    Raises:
+        HydroNoDataError  when the request is valid, but NWIS has no data for
+            the parameters provided in the request.
+
+        ValueError when the key is not available in
+    """
+    nwis_dict = response_obj.json()
+
+    # strip header and all metadata.
+    ts = nwis_dict['value']['timeSeries']
+    msg = 'The NWIS reports that it does not' + \
+          ' have any data for this request.'
+    if len(ts) < 1:
+        raise exceptions.HydroNoDataError(msg)
+
+    # This predefines what to expect in the response.
+    # Would it be better to look in the response for the key?
+    # Pseudo code
+    # skip stations with no data
+    # if key in tts['variable']:
+    #    v = etc
+    # elif key in tts['sourceInfo']:
+    #    v = etc
+    # elif key in tts:
+    #    v = etc
+    # else just return index or raise an error later
+    #
+    sourceInfo = ['siteName', 'siteCode', 'timeZoneInfo', 'geoLocation',
+                  'siteType', 'siteProperty']
+    variable = ['variableCode', 'variableName', 'variableDescription',
+                'valueType', 'unit', 'options', 'noDataValue']
+    root = ['name']
+    vals = []
+    try:
+        for idx, tts in enumerate(ts):
+            d = tts['values'][0]['value']
+            # skip stations with no data
+            if len(d) < 1:
+                continue
+            if key in variable:
+                v = tts['variable'][key]
+            elif key in sourceInfo:
+                v = tts['sourceInfo'][key]
+            elif key in root:
+                v = tts[key]
+            else:
+                v = idx  # just return index
+            if remove_duplicates:
+                if v not in vals:
+                    vals.append(v)
+            else:
+                vals.append(v)
+    # Why catch this? If we can't find the key, we already return the index.
+    except:  # TODO: dangerous to use bare 'except'  clauses.
+        msg = 'The selected key "{}" could not be found'.format(key)
+        raise ValueError(msg)
+    return vals
 
 
 def extract_nwis_df(response_obj):
@@ -205,26 +295,10 @@ def extract_nwis_df(response_obj):
         raise exceptions.HydroNoDataError("The NWIS reports that it does not"
                                           " have any data for this request.")
 
-    # create lists of timeseries keys, names, and noDataValues
-    keys = []
-    names = []
-    noDataValues = []
-    for idx, tts in enumerate(ts):
-        keys.append(idx)
-        tag = tts['name'].split(':')[1]
-        tag += ' - '
-        try:
-            tag += tts['variable']['options']['option'][0]['value']
-        # TODO: either list specific exceptions that we can fix, or remove this
-        # except clause.
-        except:
-            pass
-        tag += ' ' + tts['variable']['variableDescription']
-        names.append(tag)
-        ndv = tts['variable']['noDataValue']
-        if ndv not in noDataValues:
-            noDataValues.append(ndv)
-
+    # create lists of timeseries keys and noDataValues
+    keys = get_nwis_property(response_obj)
+    noDataValues = get_nwis_property(response_obj, key='noDataValue',
+                                     remove_duplicates=True)
     # determine the NWIS data item with the maximum amount of data so that
     # it can be processed first
     idxmx = 0
@@ -234,13 +308,20 @@ def extract_nwis_df(response_obj):
         if len(data) > emax:
             emax = len(data)
             idxmx = idx
+    # empty json
+    if emax < 1:
+        return None
 
     # process data for the first NWIS site
+    tsname = nwis_dict['value']['timeSeries'][idxmx]['name']
+    tsqual = tsname + '_qualifiers'
     data = nwis_dict['value']['timeSeries'][idxmx]['values'][0]['value']
-    DF = pd.DataFrame(data, columns=['dateTime', 'value'])
+    DF = pd.DataFrame(data, columns=['dateTime', 'value', 'qualifiers'])
     DF.index = pd.to_datetime(DF.pop('dateTime'))
-    DF = DF.rename(columns={'value': names[idxmx]})
-    DF[names[idxmx]] = DF[names[idxmx]].astype(float)
+    DF = DF.rename(columns={'value': tsname,
+                            'qualifiers': tsqual})
+    DF[tsname] = DF[tsname].astype(float)
+    DF[tsqual] = DF[tsqual].apply(lambda x: ' '.join(x))
 
     # set index name for dataframe
     DF.index.name = 'datetime'
@@ -250,12 +331,16 @@ def extract_nwis_df(response_obj):
         # skip data processing if key has already been processed
         if key == idxmx:
             continue
+        tsname = nwis_dict['value']['timeSeries'][key]['name']
+        tsqual = tsname + '_qualifiers'
         da = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
-        dfa = pd.DataFrame(da, columns=['dateTime', 'value'])
+        dfa = pd.DataFrame(da, columns=['dateTime', 'value', 'qualifiers'])
         dfa.index = pd.to_datetime(dfa.pop('dateTime'))
-        dfa = dfa.rename(columns={'value': names[key]})
+        dfa = dfa.rename(columns={'value': tsname,
+                                  'qualifiers': tsqual})
+        dfa[tsname] = dfa[tsname].astype(float)
+        dfa[tsqual] = dfa[tsqual].apply(lambda x: ' '.join(x))
         DF = pd.concat([DF, dfa], axis=1)
-        DF[names[key]] = DF[names[key]].astype(float)
 
     # replace missing values in the dataframe
     DF = DF.replace(to_replace=noDataValues, value=np.nan)
@@ -291,45 +376,45 @@ def nwis_custom_status_codes(response):
             https://waterservices.usgs.gov/rest/IV-Service.html#Error
     """
     nwis_msg = {
-            '200': 'OK',
-            '400': "400 Bad Request - "
-                   "This often occurs if the URL arguments "
-                   "are inconsistent, for example in the instantaneous values "
-                   "service using startDT and endDT with the period argument. "
-                   "An accompanying error should describe why the request was "
-                   "bad."
-                   + "\nError message from NWIS: {}".format(response.reason),
-            '403': "403 Access Forbidden - "
-                   "This should only occur if for some reason the USGS has "
-                   "blocked your Internet Protocol (IP) address from using "
-                   "the service. This can happen if we believe that your use "
-                   "of the service is so excessive that it is seriously "
-                   "impacting others using the service. To get unblocked, "
-                   "send us the URL you are using along with the IP using "
-                   "this form. We may require changes to your query and "
-                   "frequency of use in order to give you access to the "
-                   "service again.",
-            '404': "404 Not Found - "
-                   "Returned if and only if the query expresses a combination "
-                   "of elements where data do not exist. For multi-site "
-                   "queries, if any data are found, it is returned for those "
-                   "site/parameters/date ranges where there are data.",
-            '503': "500 Internal Server Error - "
-                   "If you see this, it means there is a problem with the web "
-                   "service itself. It usually means the application server "
-                   "is down unexpectedly. This could be caused by a host of "
-                   "conditions but changing your query will not solve this "
-                   "problem. The application support team has to fix it. Most "
-                   "of these errors are quickly detected and the support team "
-                   "is notified if they occur."
-            }
+        '200': 'OK',
+        '400': "400 Bad Request - "
+               "This often occurs if the URL arguments "
+               "are inconsistent, for example in the instantaneous values "
+               "service using startDT and endDT with the period argument. "
+               "An accompanying error should describe why the request was "
+               "bad."
+               + "\nError message from NWIS: {}".format(response.reason),
+        '403': "403 Access Forbidden - "
+               "This should only occur if for some reason the USGS has "
+               "blocked your Internet Protocol (IP) address from using "
+               "the service. This can happen if we believe that your use "
+               "of the service is so excessive that it is seriously "
+               "impacting others using the service. To get unblocked, "
+               "send us the URL you are using along with the IP using "
+               "this form. We may require changes to your query and "
+               "frequency of use in order to give you access to the "
+               "service again.",
+        '404': "404 Not Found - "
+               "Returned if and only if the query expresses a combination "
+               "of elements where data do not exist. For multi-site "
+               "queries, if any data are found, it is returned for those "
+               "site/parameters/date ranges where there are data.",
+        '503': "500 Internal Server Error - "
+               "If you see this, it means there is a problem with the web "
+               "service itself. It usually means the application server "
+               "is down unexpectedly. This could be caused by a host of "
+               "conditions but changing your query will not solve this "
+               "problem. The application support team has to fix it. Most "
+               "of these errors are quickly detected and the support team "
+               "is notified if they occur."
+    }
     if response.status_code == 200:
         return None
     # All other status codes will raise a warning.
     else:
         # Use the status_code as a key, return None if key not in dict
-        msg = "The NWIS returned a code of {}.\n".format(response.status_code)\
-              + nwis_msg.get(str(response.status_code))\
+        msg = "The NWIS returned a code of {}.\n".format(response.status_code) \
+              + nwis_msg.get(str(response.status_code)) \
               + "\n\nURL used in this request: {}".format(response.url)
 
         # Warnings will not beak the flow. They just print a message.
