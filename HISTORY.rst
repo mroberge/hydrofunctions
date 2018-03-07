@@ -41,8 +41,12 @@ History
 * Improved column names: now includes site id & variable description (for example, '07228000 - Mean Discharge, cubic feet per second')(jdh)
 * Added descriptive warnings to explain why queries fail (mcr)
 
+
 0.1.6 (2018-03-06)
 ----------------------
 
 * Added draw_map function for help selecting sites (mcr)
-* Select by boundary box (jdh)
+* Added ability to query sites by a bounding box (jdh)
+* Revised pandas dataframe column names to be the name composed of the provider, site id, parameter, and statistic (for example. USGS:01638500:00060:0001). (jdh)
+* Added qualifiers for each station as a column in the dataframe. (jdh)
+* Added ability extract NWIS property data from the response object (for example, siteName). (jdh)

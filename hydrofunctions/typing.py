@@ -20,7 +20,7 @@ Suggested format for these functions:
 import re
 
 
-def check_NWIS_Bbox(input):
+def check_NWIS_bBox(input):
     """Checks that the USGS bBox is valid
     """
     msg = 'NWIS bBox should be a string, list of strings, or tuple ' + \

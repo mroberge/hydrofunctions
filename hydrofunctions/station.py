@@ -72,13 +72,14 @@ class NWIS(Station):
         countyCd (str or list of strings):
             a valid county abbreviation. Default is None.
 
-        bBox (str):
+        bBox (str, list, or tuple):
             a set of coordinates that defines a bounding box.
                 * Coordinates are in decimal degrees
-                * West and South coordinates are negative
-                * comma-delimited, no spaces.
+                * Longitude values are negative (west of the prime meridian).
+                * Latitude values are positive (north of the equator).
+                * comma-delimited, no spaces, if provided as a string.
                 * The order of the boundaries should be: "West,South,East,North"
-                * Example: -83.000000,36.500000,-81.000000,38.500000
+                * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
         parameterCd (str):
             NWIS parameter code. Default is stream discharge '00060'
