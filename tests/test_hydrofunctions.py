@@ -131,6 +131,18 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
+    @unittest.skip('Stop requesting data during test.')
+    def test_hf_extract_nwis_bBox2_df(self):
+        sites = None
+        bBox = '-105.430,39.655,-104,39.863'
+        # TODO: test should be the json for a multiple site request.
+        test = hf.get_nwis(sites, "dv",
+                           "2013-01-01", "2013-01-05", bBox=bBox)
+        names = hf.get_nwis_property(test, key='name')
+        actual = hf.extract_nwis_df(test)
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+
     @unittest.skip("What happens if NWIS returns valid response with no data?")
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         # See line 78 in hydrofunctions

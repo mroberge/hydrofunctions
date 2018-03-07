@@ -50,7 +50,7 @@ from .hydrofunctions import (
         )
 from .station import Station, NWIS
 from .typing import (
-        check_NWIS_site, check_datestr, check_NWIS_service, check_NWIS_Bbox,
+        check_NWIS_site, check_datestr, check_NWIS_service, check_NWIS_bBox,
         check_period
         )
 from .helpers import (
