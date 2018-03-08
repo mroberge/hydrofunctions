@@ -2,12 +2,28 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
+import re
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
+
+
+def relative2absolute(input, old, new):
+    """ Replaces every instance of rel_key in input with absolute_stem.
+    Use this to change relative links to absolute links in pypi.
+    """
+    pattern = old
+    p = re.compile(pattern)
+    output = p.sub(new, input)
+    return output
+
+
+relative = r'_static'
+stem = r'https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static'
+readme = relative2absolute(readme, relative, stem)
 
 requirements = [
     'numpy',
