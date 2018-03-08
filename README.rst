@@ -80,7 +80,7 @@ Plot the data using built-in methods from Pandas and mathplotlib::
 
 *--a stream hydrograph appears--*
 
-.. image:: HerringHydrograph.png
+.. image:: _static/HerringHydrograph.png
         :alt: a stream hydrograph for Herring Run
 
 Draw an interactive map in a Jupyter Notebook:

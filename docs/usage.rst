@@ -106,7 +106,7 @@ Plot the data using Pandas and mathplotlib::
 
     >>> herring.df().plot()
 
-.. image:: HerringHydrograph.png
+.. image:: _static/HerringHydrograph.png
         :alt: a stream hydrograph for Herring Run
 
 As long as you had `%matplotlib inline` enabled earlier, you will get a graph.
