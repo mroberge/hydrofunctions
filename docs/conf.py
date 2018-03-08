@@ -162,7 +162,7 @@ html_theme_options = {
     'github_repo': 'hydrofunctions',
     'description': 'Python tools for hydrology',
     'logo': 'hf-logo.svg',
-    'logo_name': 'Hydrofunctions',
+    'logo_name': True,
     'github_button': True,
     'github_type': 'watch',
     'github_count': True,
