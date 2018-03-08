@@ -24,7 +24,7 @@ test_requirements = [
 setup(
     name='hydrofunctions',
     version='0.1.6',
-    description="A suite of convenience functions for exploring water data in IPython.",
+    description="A suite of convenience functions for exploring water data in a Jupyter Notebook.",
     long_description=readme + '\n\n' + history,
     author="Martin Roberge",
     author_email='mroberge.whois@gmail.com',
@@ -37,8 +37,14 @@ setup(
     license="MIT license",
     zip_safe=False,
     keywords='hydrofunctions hydrology USGS stream gauge water NWIS',
+    project_urls={
+            'Documentation': 'https://hydrofunctions.readthedocs.io',
+            'Source': 'https://github.com/mroberge/hydrofunctions',
+            'Latest': 'https://github.com/mroberge/hydrofunctions/tree/develop',
+            'Tracker': 'https://github.com/mroberge/hydrofunctions/issues'
+            },
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
