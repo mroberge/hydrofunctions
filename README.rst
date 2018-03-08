@@ -115,8 +115,8 @@ in the Users Guide to learn how to install
 Anaconda, or if you have problems using the Easy Installation method above.
 
 
-Credits
----------
+Other Projects You Should See
+-----------------------------
 
 `Hydropy <https://github.com/stijnvanhoey/hydropy>`_, a Python package that builds upon Pandas for enhanced data selection and plotting of hydrology data.
 
