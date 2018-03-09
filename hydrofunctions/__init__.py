@@ -56,3 +56,6 @@ from .typing import (
 from .helpers import (
         draw_map
         )
+from .charts import (
+        flow_duration
+        )

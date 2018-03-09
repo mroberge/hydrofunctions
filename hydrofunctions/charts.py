@@ -11,3 +11,7 @@ from matplotlib.ticker import NullFormatter
 # I don't need these yet, but soon...
 import bokeh
 import seaborn
+
+
+def flow_duration(df):
+    return df
