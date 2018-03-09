@@ -310,7 +310,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'hydrofunctions',
-     u'HydroFunctions Documentation',
+     u"HydroFunctions User's Guide",
      [u'Martin Roberge'], 1)
 ]
 
@@ -325,10 +325,10 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'hydrofunctions',
-     u'HydroFunctions Documentation',
+     u"HydroFunctions User's Guide",
      u'Martin Roberge',
      'hydrofunctions',
-     'One line description of project.',
+     'A set of convenience functions for exploring water data.',
      'Miscellaneous'),
 ]
 
