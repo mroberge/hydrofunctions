@@ -6,6 +6,8 @@ Tests for the charts.py module.
 """
 from __future__ import absolute_import, print_function
 import unittest
+import matplotlib
+import pandas as pd
 
 from hydrofunctions import charts
 
@@ -13,9 +15,13 @@ from hydrofunctions import charts
 class TestFlowDuration(unittest.TestCase):
 
     def test_charts_flowduration_exists(self):
-        expected = 5
+        d = {'col1': [1, 2, 3, 38, 23, 1, 19],
+             'col2': [3, 4, 45, 23, 2, 4, 76]}
+        expected = pd.DataFrame(data=d)
         actual = charts.flow_duration(expected)
-        self.assertEqual(actual, expected)
+        self.assertIsInstance(actual, tuple)
+        self.assertIsInstance(actual[0], matplotlib.figure.Figure)
+        self.assertIsInstance(actual[1], matplotlib.axes.Axes)
 
 
 if __name__ == '__main__':
