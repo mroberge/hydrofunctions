@@ -10,6 +10,9 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
+    'matplotlib',
+    'bokeh',
+    'seaborn',
     'numpy',
     'pandas',
     'requests',
