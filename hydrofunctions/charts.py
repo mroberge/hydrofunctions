@@ -8,6 +8,7 @@ Charting functions for Hydrofunctions.
 # See https://matplotlib.org/faq/howto_faq.html
 # Basically, matplotlib usually uses an 'X11 connection' by default; Travis CI
 # does not have this configured, so you need to set your backend explicitly.
+import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
