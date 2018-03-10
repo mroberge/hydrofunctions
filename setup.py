@@ -22,6 +22,11 @@ requirements = [
 test_requirements = [
     # 'pytest'
     # 'nose2' doesn't add any extra functionality for me right now.
+    # Recommended that I use this line to avoid errors in TravisCI
+# See https://matplotlib.org/faq/howto_faq.html
+# Basically, matplotlib usually uses an 'X11 connection' by default; Travis CI
+# does not have this configured, so you need to set your backend explicitly.
+matplotlib.use('Agg')
 ]
 
 setup(
