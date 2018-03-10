@@ -7,6 +7,7 @@ Tests for the charts.py module.
 from __future__ import absolute_import, print_function
 import unittest
 import matplotlib
+# attempted matplotlib.use('Agg') here, but it was too late; backend already set
 import pandas as pd
 
 from hydrofunctions import charts
