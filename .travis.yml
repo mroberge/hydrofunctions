@@ -5,7 +5,7 @@ python:
   - "3.5"
   - "3.6"
 script: 
-  # consider using pytest: is it faster?
+  # consider using pytest: is it faster? (it's the pandas build that takes so long, not unittest)
   - python setup.py test
 
 deploy:
@@ -29,8 +29,15 @@ deploy:
   # cleanup was interfering with deployment.
   skip_cleanup: true
   on:
-    # deploy every time there is a commit to Master in hydrofunctions.
+    # Deployment only occurs when all of the following conditions are met:
+    
+    # 1- when there is a commit to Master
     repo: mroberge/hydrofunctions
-    #tags: true  # This line would only update PyPI if the version tag changed.
-    # only deploy to PyPI after the 3.6 set of tests, not after the other sets.
+    
+    # 2- when there is a new version tag (PyPI only accepts uploads with a new version anyway)
+    # See line 806 of Build 153.3 to see PyPI reject an upload of a package with the same version number
+    # https://travis-ci.org/mroberge/hydrofunctions/jobs/351813494#L806
+    tags: true
+    
+    # 3- when the Python 3.6 environment tests have completed. 
     python: '3.6'
