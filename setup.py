@@ -33,7 +33,8 @@ requirements = [
 ]
 
 test_requirements = [
-    'codecov'
+    # run coverage tests locally. Codecov set to run in Travis.
+    'coverage'
     # 'pytest'
     # 'nose2' doesn't add any extra functionality for me right now.
 ]
