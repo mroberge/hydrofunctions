@@ -10,7 +10,9 @@ install:
 
 script: 
   # consider using pytest: is it faster? (it's the pandas build that takes so long, not unittest)
-  - python setup.py test
+  # - python setup.py test
+  # add coverage
+  - coverage run --branch --source hydrofunctions setup.py test
 
 after_success:
   - codecov
