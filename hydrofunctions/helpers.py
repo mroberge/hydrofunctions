@@ -21,18 +21,15 @@ def draw_map(width=700, height=400, url="http://hydrocloud.org"):
     which you can use to request data.
 
     Args:
-    -----
         width (int): The width of the map iframe.
         height (int): The height of the map iframe.
-        url (str): The URL to put inside of the IFrame. Defaults to
-            https://hydrocloud.org
+        url (str): The URL to put inside of the IFrame. Defaults to\
+        https://hydrocloud.org
 
     Returns:
-    --------
         HTML display object.
 
     Example:
-    --------
         >>> import hydrofunctions as hf
         >>> hf.draw_map()
 
@@ -43,11 +40,11 @@ def draw_map(width=700, height=400, url="http://hydrocloud.org"):
         Draws a larger map.
 
     TODO:
-    -----
-        - use ipywidgets to allow users to click on the map, and this will
-            return a value that can be used in another IPython cell. This
-            feature would allow the map to act as an interactive site selection
-            tool.
+        use ipywidgets to allow users to click on the map, and this will
+        return a value that can be used in another IPython cell. This
+        feature would allow the map to act as an interactive site selection
+        tool.
+
 """
 
     output = HTML('<p>Use <a href="http://hydrocloud.org" target="_blank">'
