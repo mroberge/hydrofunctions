@@ -33,6 +33,7 @@ requirements = [
 ]
 
 test_requirements = [
+    'codecov'
     # 'pytest'
     # 'nose2' doesn't add any extra functionality for me right now.
 ]
