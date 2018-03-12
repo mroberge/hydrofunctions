@@ -4,9 +4,15 @@ HydroFunctions
 
 .. image:: https://img.shields.io/pypi/v/hydrofunctions.svg
         :target: https://pypi.python.org/pypi/hydrofunctions
+        :alt: Visit Hydrofunctions on PyPI
 
 .. image:: https://img.shields.io/travis/mroberge/hydrofunctions.svg
         :target: https://travis-ci.org/mroberge/hydrofunctions
+        :alt: Unit Testing Status
+
+.. image:: https://codecov.io/gh/mroberge/hydrofunctions/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/mroberge/hydrofunctions
+        :alt: Code Coverage Status
 
 .. image:: https://readthedocs.org/projects/hydrofunctions/badge/?version=latest
         :target: https://hydrofunctions.readthedocs.io/en/latest/?badge=latest
