@@ -6,8 +6,9 @@ python:
   - "3.6"
 
 install: 
-  # Codecov 'command not found' after I added the conditionals.
-  #- pip install codecov
+  # Install codecov so I can use it (and coverage.py) to run setup.py
+  # However, keep codecov in setup.py so that it gets installed for local usage too.
+  - pip install codecov
 
 script: 
   # consider using pytest: is it faster? (it's the pandas build that takes so long, not unittest)
@@ -19,7 +20,7 @@ script:
 
 after_success:
   # Only run codecov if we collected stats.
-  - - if [[ "$RUN_COVERAGE" == 1 ]]; then codecov; fi
+  - if [[ "$RUN_COVERAGE" == 1 ]]; then codecov; fi
 
 deploy:
   distributions: sdist bdist_wheel
