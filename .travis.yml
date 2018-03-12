@@ -12,10 +12,13 @@ script:
   # consider using pytest: is it faster? (it's the pandas build that takes so long, not unittest)
   # - python setup.py test
   # add coverage
-  - coverage run --branch --source hydrofunctions setup.py test
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then export RUN_COVERAGE=1; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coverage run --branch --source hydrofunctions setup.py test; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then python setup.py test; fi
 
 after_success:
-  - codecov
+  # Only run codecov if we collected stats.
+  - - if [[ "$RUN_COVERAGE" == 1 ]]; then codecov; fi
 
 deploy:
   distributions: sdist bdist_wheel
