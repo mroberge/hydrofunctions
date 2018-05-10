@@ -12,12 +12,14 @@ install:
   #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-252285413
   #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-266721196
   
+  # An alternative solution is to cache my builds: https://docs.travis-ci.com/user/caching/
+  
   # Question: Do these two lines slow down the runs for Python 3.5 & 3.6?
   #     It takes about 1 min 10 seconds to run Python 3.5 & 3.6 tests without adding these two pip install lines.
   #     Pip uses wheel binaries already during the Python 3.5 & 3.6 runs.
   
   - pip install --upgrade pip setuptools wheel
-  - pip install --only-binary=numpy,scipy numpy scipy
+  - pip install --only-binary=numpy,scipy,pandas,Ipython numpy scipy pandas ipython
 
   # Install codecov so I can use it (and coverage.py) to run setup.py
   # However, keep codecov in setup.py so that it gets installed for local usage too.
