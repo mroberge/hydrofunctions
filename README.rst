@@ -4,9 +4,15 @@ HydroFunctions
 
 .. image:: https://img.shields.io/pypi/v/hydrofunctions.svg
         :target: https://pypi.python.org/pypi/hydrofunctions
+        :alt: Visit Hydrofunctions on PyPI
 
 .. image:: https://img.shields.io/travis/mroberge/hydrofunctions.svg
         :target: https://travis-ci.org/mroberge/hydrofunctions
+        :alt: Unit Testing Status
+
+.. image:: https://codecov.io/gh/mroberge/hydrofunctions/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/mroberge/hydrofunctions
+        :alt: Code Coverage Status
 
 .. image:: https://readthedocs.org/projects/hydrofunctions/badge/?version=latest
         :target: https://hydrofunctions.readthedocs.io/en/latest/?badge=latest
@@ -80,7 +86,7 @@ Plot the data using built-in methods from Pandas and mathplotlib::
 
 *--a stream hydrograph appears--*
 
-.. image:: HerringHydrograph.png
+.. image:: _static/HerringHydrograph.png
         :alt: a stream hydrograph for Herring Run
 
 Draw an interactive map in a Jupyter Notebook:
@@ -115,8 +121,8 @@ in the Users Guide to learn how to install
 Anaconda, or if you have problems using the Easy Installation method above.
 
 
-Credits
----------
+Other Projects You Should See
+-----------------------------
 
 `Hydropy <https://github.com/stijnvanhoey/hydropy>`_, a Python package that builds upon Pandas for enhanced data selection and plotting of hydrology data.
 
