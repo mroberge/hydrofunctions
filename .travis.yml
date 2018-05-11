@@ -4,9 +4,39 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+
+install:
+  # Travis has a pre-installed copy of numpy in their Python 3.5 & 3.6
+  # environments, but not for Python 3.4. The 3.5 & 3.6 builds took 70 seconds,
+  # but it could take 9 minutes to build numpy & pandas. SciPy failed.
+
+  # Solution #1 was to install miniconda and then use conda.
+  # Solution #2 was to cache a successful build and use that later. https://docs.travis-ci.com/user/caching/
+
+  # My solution: upgrade pip and then install some of the more difficult
+  # packages from binary wheels. my 3.4 build times dropped to seven minutes by
+  # doing this for numpy and scipy; Adding the rest dropped it to 1 minute!
+  # Reference: 
+  #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-252285413
+  #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-266721196
+
+  # the "--only-binary" option was added in pip 7 back in 2015; still to be safe
+  - pip install --upgrade pip setuptools wheel
+  - pip install --only-binary=numpy,scipy,pandas,Ipython numpy scipy pandas ipython
+
+  # Install codecov so I can use it (and coverage.py) to run setup.py
+  # However, keep codecov in setup.py so that it gets installed for local usage too.
+  - pip install codecov
+
 script: 
-  # consider using pytest: is it faster?
-  - python setup.py test
+  # Only run the coverage report for one build; all other builds just run test.
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then export RUN_COVERAGE=1; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coverage run --branch --source hydrofunctions setup.py test; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then python setup.py test; fi
+
+after_success:
+  # Only run codecov if we collected stats and set the coverage flag.
+  - if [[ "$RUN_COVERAGE" == 1 ]]; then codecov; fi
 
 deploy:
   distributions: sdist bdist_wheel
@@ -29,8 +59,15 @@ deploy:
   # cleanup was interfering with deployment.
   skip_cleanup: true
   on:
-    # deploy every time there is a commit to Master in hydrofunctions.
+    # Deployment only occurs when all of the following conditions are met:
+    
+    # 1- when there is a commit to Master
     repo: mroberge/hydrofunctions
-    #tags: true  # This line would only update PyPI if the version tag changed.
-    # only deploy to PyPI after the 3.6 set of tests, not after the other sets.
+    
+    # 2- when there is a new version tag (PyPI only accepts uploads with a new version anyway)
+    # See line 806 of Build 153.3 to see PyPI reject an upload of a package with the same version number
+    # https://travis-ci.org/mroberge/hydrofunctions/jobs/351813494#L806
+    tags: true
+    
+    # 3- when the Python 3.6 environment tests have completed. 
     python: '3.6'

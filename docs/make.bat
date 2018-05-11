@@ -61,6 +61,9 @@ if errorlevel 9009 (
 )
 
 if "%1" == "html" (
+	for /d %%i in (%BUILDDIR%\*) do rmdir /q /s %%i
+	del /q /s %BUILDDIR%\*
+	echo.Deleted contents of %BUILDDIR%
 	%SPHINXBUILD% -b html %ALLSPHINXOPTS% %BUILDDIR%/html
 	if errorlevel 1 exit /b 1
 	echo.
