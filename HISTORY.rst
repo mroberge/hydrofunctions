@@ -50,3 +50,10 @@ History
 * Revised pandas dataframe column names to be the name composed of the provider, site id, parameter, and statistic (for example. USGS:01638500:00060:0001). (jdh)
 * Added qualifiers for each station as a column in the dataframe. (jdh)
 * Added ability extract NWIS property data from the response object (for example, siteName). (jdh)
+
+0.1.7 (2018-05-XX)
+----------------------
+
+* Added a flow duration chart (mcr)
+* Added code coverage (mcr)
+* improved the build scripts for TravisCI (mcr)
