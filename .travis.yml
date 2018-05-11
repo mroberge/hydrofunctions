@@ -6,18 +6,21 @@ python:
   - "3.6"
 
 install:
-  # Travis has pre-installed numpy and scipy for Python 3.5 & 3.6, but not 3.4
-  # the following lines allow older Python & pip versions to use the binary
-  # wheels for numpy and scipy.  See: 
+  # Travis has a pre-installed copy of numpy in their Python 3.5 & 3.6
+  # environments, but not for Python 3.4. The 3.5 & 3.6 builds took 70 seconds,
+  # but it could take 9 minutes to build numpy & pandas. SciPy failed.
+
+  # Solution #1 was to install miniconda and then use conda.
+  # Solution #2 was to cache a successful build and use that later. https://docs.travis-ci.com/user/caching/
+
+  # My solution: upgrade pip and then install some of the more difficult
+  # packages from binary wheels. my 3.4 build times dropped to seven minutes by
+  # doing this for numpy and scipy; Adding the rest dropped it to 1 minute!
+  # Reference: 
   #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-252285413
   #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-266721196
-  
-  # An alternative solution is to cache my builds: https://docs.travis-ci.com/user/caching/
-  
-  # Question: Do these two lines slow down the runs for Python 3.5 & 3.6?
-  #     It takes about 1 min 10 seconds to run Python 3.5 & 3.6 tests without adding these two pip install lines.
-  #     Pip uses wheel binaries already during the Python 3.5 & 3.6 runs.
-  
+
+  # the "--only-binary" option was added in pip 7 back in 2015; still to be safe
   - pip install --upgrade pip setuptools wheel
   - pip install --only-binary=numpy,scipy,pandas,Ipython numpy scipy pandas ipython
 
@@ -26,15 +29,13 @@ install:
   - pip install codecov
 
 script: 
-  # consider using pytest: is it faster? (it's the pandas build that takes so long, not unittest)
-  # - python setup.py test
-  # add coverage
+  # Only run the coverage report for one build; all other builds just run test.
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then export RUN_COVERAGE=1; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coverage run --branch --source hydrofunctions setup.py test; fi
   - if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then python setup.py test; fi
 
 after_success:
-  # Only run codecov if we collected stats.
+  # Only run codecov if we collected stats and set the coverage flag.
   - if [[ "$RUN_COVERAGE" == 1 ]]; then codecov; fi
 
 deploy:

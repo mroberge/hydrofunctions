@@ -33,10 +33,10 @@ requirements = [
 ]
 
 test_requirements = [
-    # run coverage tests locally. Codecov set to run in Travis.
+    # Use coverage to run coverage tests locally.
+    # Do not list codecov here. It is only listed in .travis.yml because
+    # we only run codecov during Travis CI builds.
     'coverage'
-    # 'pytest'
-    # 'nose2' doesn't add any extra functionality for me right now.
 ]
 
 setup(
