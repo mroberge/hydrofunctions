@@ -37,7 +37,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
         yscale ('log' | 'linear'): The type of y scale for plotting discharge.
             Default is 'log'.
 
-        ylabel (str, default: 'Discharge'): The label for the Y axis.
+        ylabel (str, default: 'Stream Discharge (m³/s)'): The label for the Y axis.
 
         xlabel (not implemented)
 

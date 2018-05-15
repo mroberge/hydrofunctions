@@ -36,7 +36,7 @@ class TestFlowDuration(unittest.TestCase):
 
         self.assertEqual(actual_xscale, 'logit')
         self.assertEqual(actual_yscale, 'log')
-        self.assertEqual(actual_ylabel, 'Discharge')
+        self.assertEqual(actual_ylabel, 'Stream Discharge (m³/s)')
         self.assertEqual(actual_marker, '.')
 
     def test_charts_flowduration_accepts_params(self):
