@@ -18,7 +18,7 @@ import bokeh
 import seaborn
 
 
-def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Discharge', symbol='.'):
+def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.'):
     """Creates a flow duration chart from a dataframe of discharges.
 
     Args:
