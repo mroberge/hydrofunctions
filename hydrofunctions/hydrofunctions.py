@@ -340,6 +340,27 @@ def extract_nwis_df(response_obj):
                                   'qualifiers': tsqual})
         dfa[tsname] = dfa[tsname].astype(float)
         dfa[tsqual] = dfa[tsqual].apply(lambda x: ' '.join(x))
+
+        # TODO:
+
+        # The problem with adding all of these dataframes to a single large
+        # dataframe using pd.concat is that sites that collect less frequently
+        # will get padded with NANs for all of the time indecies that they
+        # don't have data for.
+
+        # A second problem is that every other column will have data, and the
+        # the other columns will have flags. There is no simple way to
+        # select only the data columns except to take the odd numbered columns.
+
+        # A POSSIBLE SOLUTION: create a data structure that is composed of 
+        # Stacked dataframes. Each data frame will correspond to a single site,
+        # The first column will correspond to discharge, the second to flags,
+        # and any others can be derived values like baseflow or other measured
+        # parameters. The dataframes will be stacked, and be part of an object
+        # that allows you to select by a range of dates, by sites, and by the
+        # type of column. In this respect, it might be similar to XArray,
+        # except that package requires their n-dimensional structures to all be
+        # the same datatype.
         DF = pd.concat([DF, dfa], axis=1)
 
     # replace missing values in the dataframe
