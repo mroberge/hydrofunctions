@@ -76,7 +76,71 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
 
 
 def cycleplot(DF, cycle='diurnal', compare=None):
-    # inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
+    """Creates a chart to illustrate annual and diurnal cycles.
+    
+    This chart will use the pandas groupby method to plot the mean and median
+    values for a time-indexed dataframe. It helps you identify diurnal patterns
+    by plotting the mean and median values over 24 hours for a diurnal pattern,
+    and over a year for annual patterns.
+    
+    This function will also use the 'compare' argument to create a series of
+    charts to compare how well these cycles appear in different groups. For
+    example, is the diurnal cycle more visible in December versus June? In this
+    case, you would use::
+
+        hf.cycleplot(myDataFrame, cycle='diurnal', compare = 'month')
+
+    This will produce twelve charts, each covering 24 hours. A line will
+    represent the mean values over 24 hours, another line represents the
+    median, and two grey stripes represent the 0.4 to 0.6 quantile, and the
+    0.2 to 0.8 quantile range.
+
+    Args:
+        DF (dataframe): a dataframe of discharge values.
+            * Values should be arranged in columns
+            * Should use a dateTimeIndex
+
+        cycle (str): The period of the cycle to be illustrated, along with the
+            method for binning. The options are:
+                * diurnal (default): plots the values for a 24 hour cycle.
+                * diurnal-smallest: uses the smallest increment of time \
+                available to bin the time units for a 24 hour cycle.
+                * diurnal-hour: uses hours to bin measurements for a 24-hour \
+                cycle.
+                * annual: plots values into a 365 day cycle.
+                * annual-day: the annual cycle using 365 day-long bins.
+                * annual-week: the annual cycle using 52 week-long bins.
+                * annual-month: the annual cycle using 12 month-long bins.
+                * weekly: a 7-day cycle using seven 24-hour long bins. Note \
+                that unlike the others, this is not a natural cycle, and is \
+                likely has anthropogenic origins.
+
+        compare (str): The system for splitting the data into
+            groups for a set of comparison charts.
+                * None (default): No comparison will be made; only one chart.
+                * month: twelve plots will be produced, one for each month.
+                * weekday: seven plots will be produced, one for each day of \
+                the week.
+                * weekend: two plots will be produced, one for the five weekdays, \
+                one for Saturday and Sunday.
+                * night: two plots will be produced, one for night (6pm to 6am), \
+                one for day (6am to 6pm).
+
+    Returns:
+        fig (matplotlib.figure.Figure):
+            a matplotlib figure. This will plot immediately in a Jupyter
+            notebook if the command '%matplotlib inline' was previously issued.
+            The figure may also be altered after it is returned.
+
+        ax (matplotlib.axes.Axes):
+            an array of matplotlib charts. This may be altered after it is returned.
+
+    Notes:
+        inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
+
+    """
+
+
 
     if cycle == 'annual':
         # aggregate into 365 bins to show annual cycles. Same as annual-date
