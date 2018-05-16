@@ -14,6 +14,7 @@ import unittest
 import pandas as pd
 
 import hydrofunctions as hf
+from .test_data import JSON15min2month as test_json
 
 
 class fakeResponse(object):
@@ -22,6 +23,9 @@ class fakeResponse(object):
         self.status_code = code
         self.url = "fake url"
         self.reason = "fake reason"
+        # .json will return a function
+        # .json() will return test_json
+        self.json = lambda: test_json
         if code == 200:
             pass
         else:
