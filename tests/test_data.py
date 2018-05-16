@@ -3067,8 +3067,8 @@ JSON15min2month = {
         'value': '211'},
        {'dateTime': '2016-09-11T09:45:00.000-04:00',
         'qualifiers': ['A'],
-        'value': '211'},
-       ...]}],
+        'value': '211'}
+       ]}],
     'variable': {'noDataValue': -999999.0,
      'note': [],
      'oid': '45807197',
