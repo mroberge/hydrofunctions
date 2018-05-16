@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
+import numpy as np
 
 # I don't need these yet, but soon...
 import bokeh
@@ -72,3 +73,112 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     #ax.set_xlabel('Probability of Exceedence')
     ax.xaxis.set_minor_formatter(NullFormatter())
     return fig, ax
+
+
+def cycleplot(DF, cycle='diurnal', compare=None):
+    # inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
+
+    if cycle == 'annual':
+        # aggregate into 365 bins to show annual cycles. Same as annual-date
+        aggregateby = DF.index.dayofyear
+        x_label = ' (day # of the year)'
+    elif cycle == 'annual-date':
+        aggregateby = DF.index.dayofyear
+        x_label = ' (day # of the year)'
+    elif cycle == 'annual-week':
+        # aggregate into 52 bins to show annual cycles.
+        aggregateby = DF.index.week
+        x_label = ' (week # of the year)'
+    elif cycle == 'annual-month':
+        # aggregate into 12 binds to show annual cycles.
+        aggregateby = DF.index.month
+        x_label = ' (month # of the year)'
+    elif cycle == 'weekly':
+        # aggregate into 7 bins to show week-long cycles.
+        # Note: 7-day cycles are not natural cycles.
+        aggregateby = DF.index.weekday
+        x_label = ' (day of the week, Monday = 0)'
+    elif cycle == 'diurnal':
+        # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
+        aggregateby = DF.index.hour
+        x_label = ' (hour of the day)'
+    elif cycle == 'diurnal-smallest':
+        # Uses the smallest unit available in the time index to show 24-hour diurnal cycles.
+        aggregateby = DF.index.time
+        x_label = ' (time of day)'
+    elif cycle == 'diurnal-hour':
+        # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
+        aggregateby = DF.index.hour
+        x_label = ' (hour of the day)'
+    else:
+        print("The cycle label '", cycle, "' is not recognized as an option. Using cycle='diurnal' instead.")
+        aggregateby = DF.index.hour
+        x_label = ' (hour of the day)'
+
+    if compare is None:
+        # Don't make a comparison plot.
+        # TODO: This is a silly categorization to force all values in the index into the same category.
+        compareby = np.where(DF.index.weekday < 20, 'A', 'B')
+        sub_titles = ['']
+    elif compare == 'month':
+        # Break the time series into 12 months to compare to each other.
+        compareby = DF.index.month
+        sub_titles = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    elif compare == 'weekday':
+        # Break the time series into 7 days of the week to compare to each other.
+        compareby = DF.index.weekday
+        sub_titles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    elif compare == 'weekend':
+        # Break the time series into 2 groups, Weekdays and Weekends for comparison.
+        compareby = np.where(DF.index.weekday < 5, 'Weekday', 'Weekend')
+        sub_titles = ['Weekdays', 'Weekends']
+    elif compare == 'night':
+        # Break the time series into 2 groups to compare day versus night.
+        compareby = np.where((DF.index.hour >= 6) & (DF.index.hour < 19), 'Day', 'Night')
+        sub_titles = ['Day', 'Night']
+    else:
+        print("The compare label '", compare, "' is not recognized as an option. Using compare=None instead.")
+        compareby = np.where(DF.index.weekday < 20, 'A', 'B')
+        sub_titles = ['data']
+
+    selection = [compareby, aggregateby]
+    compare = list(np.unique(compareby))
+
+    # group first by the compareby series, then by the cycle.
+    by_time = DF.groupby(selection)
+    mean = by_time.mean()
+    Q2 = by_time.quantile(.2)
+    Q4 = by_time.quantile(.4)
+    Q5 = by_time.quantile(.5)
+    Q6 = by_time.quantile(.6)
+    Q8 = by_time.quantile(.8)
+
+    Nplots = len(compare)
+    fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
+    if Nplots == 1:
+        # If there is only one subplot, it gets returned as a single subplot instead of as a numpy array. In this case, we convert it to an array.
+        axs = np.array([axs])
+
+    for i, item in enumerate(compare):
+        axs[i].plot(mean.loc[item], label='mean')
+        # axs[i].plot(Q2.loc[item], label='20th percentile', color='black', linestyle='dotted', linewidth=2)
+        axs[i].plot(Q5.loc[item], label='median', color='black', linestyle='dotted', linewidth=2)
+        # axs[i].plot(Q8.loc[item], label='80th percentile', color='grey', linestyle='dashed', linewidth=1)
+        axs[i].fill_between(Q2.loc[item].index, Q2.loc[item].values.flatten(), Q8.loc[item].values.flatten(), facecolor='grey', alpha=0.5)
+        axs[i].fill_between(Q4.loc[item].index, Q4.loc[item].values.flatten(), Q6.loc[item].values.flatten(), facecolor='grey', alpha=0.5)
+        axs[i].set_title(sub_titles[i])
+        # axs[i].xaxis.set_major_locator(plt.MaxNLocator(4))
+        # axs[i].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H'))
+
+    # Set the legend on either the ax or fig.
+    axs[0].legend(loc='best', fancybox=True, framealpha=0.5)
+    # fig.legend(loc='upper center', shadow=True, frameon=True, fancybox=True, framealpha=0.5)
+
+    # Get the yaxis limits, set bottom to zero.
+    ymin, ymax = axs[0].get_ylim()
+    axs[0].set_ylim(0, ymax)
+    axs[0].set_ylabel('Stream Discharge (m³/s)')
+    axs[0].set_xlabel('Time' + x_label)
+    plt.tight_layout()
+
+    return fig, axs
