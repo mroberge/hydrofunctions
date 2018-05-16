@@ -167,12 +167,12 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
     return response
 
 
-def get_nwis_property(response_obj, key=None, remove_duplicates=False):
+def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     """Returns a list containing property data from an NWIS response object.
 
     Args:
-        response_obj (obj):
-            a response object as returned by get_nwis().
+        nwis_dict (dict):
+            the json returned in a response object as produced by get_nwis().json().
 
         key (str):
             a valid NWIS response property key. Default is None. The index is \
@@ -204,7 +204,7 @@ def get_nwis_property(response_obj, key=None, remove_duplicates=False):
 
         ValueError when the key is not available in
     """
-    nwis_dict = response_obj.json()
+    #nwis_dict = response_obj.json()
 
     # strip header and all metadata.
     ts = nwis_dict['value']['timeSeries']
@@ -257,12 +257,12 @@ def get_nwis_property(response_obj, key=None, remove_duplicates=False):
     return vals
 
 
-def extract_nwis_df(response_obj):
+def extract_nwis_df(nwis_dict):
     """Returns a Pandas dataframe from an NWIS response object.
 
     Args:
-        response_obj (obj):
-            a response object as returned by get_nwis().
+        nwis_dict (obj):
+            the json from a response object as returned by get_nwis().json().
 
     Returns:
         a pandas dataframe.
@@ -271,7 +271,7 @@ def extract_nwis_df(response_obj):
         HydroNoDataError  when the request is valid, but NWIS has no data for
             the parameters provided in the request.
     """
-    nwis_dict = response_obj.json()
+    #nwis_dict = response_obj.json()
 
     # strip header and all metadata.
     ts = nwis_dict['value']['timeSeries']
@@ -296,8 +296,8 @@ def extract_nwis_df(response_obj):
                                           " have any data for this request.")
 
     # create lists of timeseries keys and noDataValues
-    keys = get_nwis_property(response_obj)
-    noDataValues = get_nwis_property(response_obj, key='noDataValue',
+    keys = get_nwis_property(nwis_dict)
+    noDataValues = get_nwis_property(nwis_dict, key='noDataValue',
                                      remove_duplicates=True)
     # determine the NWIS data item with the maximum amount of data so that
     # it can be processed first
