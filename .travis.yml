@@ -31,7 +31,7 @@ install:
 script: 
   # Only run the coverage report for one build; all other builds just run test.
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then export RUN_COVERAGE=1; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coverage run --branch --source hydrofunctions setup.py test; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coverage run --branch --source hydrofunctions pytest; fi
   - if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then python setup.py test; fi
 
 after_success:
