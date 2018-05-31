@@ -26,6 +26,9 @@ paste these into a web browser or use curl to use these URL's.
 
 List of URL's that Return Errors or Specific Conditions
 
+200: good request, but no data have been collected in this period.
+https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01541180&parameterCd=00060&period=P10D
+
 400: didn't select a site
  https://waterservices.usgs.gov/nwis/dv/?format=json%2C1.1&parameterCd=00060&startDT=2017-01-01&endDT=2017-12-31
 

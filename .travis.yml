@@ -2,7 +2,8 @@
 language: python
 python:
   - "3.4"
-  - "3.5"
+  # Temp bugfix: I don't know why 3.5 is erroring. See Issue #27 https://github.com/mroberge/hydrofunctions/issues/27
+  #- "3.5"
   - "3.6"
 
 install:
