@@ -27,8 +27,8 @@ readme = relative2absolute(readme, relative, stem)
 
 requirements = [
     'matplotlib',
-    'bokeh',
-    'seaborn',
+    #'bokeh',
+    #'seaborn',
     'numpy',
     'pandas',
     'requests',

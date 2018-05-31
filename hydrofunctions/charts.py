@@ -15,8 +15,8 @@ from matplotlib.ticker import NullFormatter
 import numpy as np
 
 # I don't need these yet, but soon...
-import bokeh
-import seaborn
+#import bokeh
+#import seaborn
 
 
 def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.'):
