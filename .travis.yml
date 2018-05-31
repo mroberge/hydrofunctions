@@ -20,7 +20,7 @@ install:
   #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-252285413
   #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-266721196
 
-  # the "--only-binary" option was added in pip 7 back in 2015; still to be safe
+  # the "--only-binary" option was added in pip 7 back in 2015; still to be safe, upgrade pip
   - pip install --upgrade pip setuptools wheel
   - pip install --only-binary=numpy,scipy,pandas,Ipython,matplotlib numpy scipy pandas ipython matplotlib
 
