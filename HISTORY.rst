@@ -55,5 +55,6 @@ History
 ----------------------
 
 * Added a flow duration chart (mcr)
+* Added the cycleplot chart (mcr)
 * Added code coverage (mcr)
 * improved the build scripts for TravisCI (mcr)

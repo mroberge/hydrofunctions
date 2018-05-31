@@ -130,7 +130,9 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
 
 #. After you've made a small change, make sure you didn't break anything by
    running the tests again. I find it easiest to run the tests from the command
-   line.
+   line::
+
+    > python setup.py tests
 
 #. Before you make too many changes, 'commit' what you've done. Ideally, each
    group of changes that you put into a commit will be logically related to each

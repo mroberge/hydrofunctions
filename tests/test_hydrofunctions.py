@@ -14,6 +14,7 @@ import unittest
 import pandas as pd
 
 import hydrofunctions as hf
+from .test_data import JSON15min2month as test_json
 
 
 class fakeResponse(object):
@@ -22,6 +23,9 @@ class fakeResponse(object):
         self.status_code = code
         self.url = "fake url"
         self.reason = "fake reason"
+        # .json will return a function
+        # .json() will return test_json
+        self.json = lambda: test_json
         if code == 200:
             pass
         else:
@@ -89,58 +93,43 @@ class TestHydrofunctions(unittest.TestCase):
                                          headers=expected_headers)
         self.assertEqual(actual, expected)
 
-    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_df(self):
-        # TODO: I need to make a response fixture to test this out!!
-        test = hf.get_nwis("01589440", "dv", "2013-01-01", "2013-01-05")
-        actual = hf.extract_nwis_df(test)
+        # TODO: I need to check this was parsed correctly!
+        actual = hf.extract_nwis_df(test_json)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
-    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_stations_df(self):
         sites = ["01638500", "01646502"]
         # TODO: test should be the json for a multiple site request.
-        test = hf.get_nwis(sites, "dv",
-                           "2013-01-01", "2013-01-05")
-        actual = hf.extract_nwis_df(test)
-        vD = hf.get_nwis_property(test, key='variableDescription')
+        actual = hf.extract_nwis_df(test_json)
+        vD = hf.get_nwis_property(test_json, key='variableDescription')
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
-    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_iv_gwstations_df(self):
         # TODO: I need to make a response fixture to test this out!!
         sites = ["380616075380701", "394008077005601"]
-        test = hf.get_nwis(sites, "iv",
-                           "2018-01-01", "2018-01-05", parameterCd='72019')
-        actual = hf.extract_nwis_df(test)
+        actual = hf.extract_nwis_df(test_json)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
-
-    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_bBox_df(self):
         sites = None
         bBox = (-105.430, 39.655, -104, 39.863)
         # TODO: test should be the json for a multiple site request.
-        test = hf.get_nwis(sites, "dv",
-                           "2013-01-01", "2013-01-05", bBox=bBox)
-        names = hf.get_nwis_property(test, key='name')
+        names = hf.get_nwis_property(test_json, key='name')
         self.assertIs(type(names), list, msg="Did not return a list")
-        actual = hf.extract_nwis_df(test)
+        actual = hf.extract_nwis_df(test_json)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
-    @unittest.skip('Stop requesting data during test.')
     def test_hf_extract_nwis_bBox2_df(self):
         sites = None
         bBox = '-105.430,39.655,-104,39.863'
         # TODO: test should be the json for a multiple site request.
-        test = hf.get_nwis(sites, "dv",
-                           "2013-01-01", "2013-01-05", bBox=bBox)
-        names = hf.get_nwis_property(test, key='name')
-        actual = hf.extract_nwis_df(test)
+        names = hf.get_nwis_property(test_json, key='name')
+        actual = hf.extract_nwis_df(test_json)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 

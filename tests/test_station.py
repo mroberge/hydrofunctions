@@ -21,6 +21,7 @@ class fakeResponse(object):
         self.status_code = code
         self.url = "fake url"
         self.reason = "fake reason"
+        self.json = lambda: {'data': 'fake json'}
         if code == 200:
             self.ok = True
         else:

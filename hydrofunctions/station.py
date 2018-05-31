@@ -114,7 +114,7 @@ class NWIS(Station):
         self.stateCd = stateCd
         self.countyCd = countyCd
         self.bBox = bBox
-        self.ok = None
+        self.ok = False
         self.parameterCd = parameterCd
         self.period = typing.check_period(period)
         self.response = None
@@ -164,16 +164,16 @@ class NWIS(Station):
         # set self.json without calling it.
         self.json = lambda: self.response.json()
         # set self.df without calling it.
-        self.df = lambda: hf.extract_nwis_df(self.response)
+        self.df = lambda: hf.extract_nwis_df(self.json())
 
         # Another option might be to do this:
         # self.df = hf.extract_nwis_df(self.response)
         # This would make myInstance.df return a plain df.
         self.ok = self.response.ok
-        self.siteName = hf.get_nwis_property(self.response,
+        self.siteName = hf.get_nwis_property(self.json(),
                                              key='siteName',
                                              remove_duplicates=True)
-        self.name = hf.get_nwis_property(self.response,
+        self.name = hf.get_nwis_property(self.json(),
                                          key='name',
                                          remove_duplicates=True)
 
