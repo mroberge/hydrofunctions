@@ -22,7 +22,7 @@ install:
 
   # the "--only-binary" option was added in pip 7 back in 2015; still to be safe
   - pip install --upgrade pip setuptools wheel
-  - pip install --only-binary=numpy,scipy,pandas,Ipython,matplotlib,seaborn numpy scipy pandas ipython matplotlib seaborn
+  - pip install --only-binary=numpy,scipy,pandas,Ipython,matplotlib numpy scipy pandas ipython matplotlib
 
   # Install codecov so I can use it (and coverage.py) to run setup.py
   # However, keep codecov in setup.py so that it gets installed for local usage too.
