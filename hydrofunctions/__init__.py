@@ -34,6 +34,7 @@ List all of the different attributes and methods with dir()::
 Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
 """
+from __future__ import absolute_import, print_function
 
 __title__ = 'hydrofunctions'
 __version__ = '0.1.6'

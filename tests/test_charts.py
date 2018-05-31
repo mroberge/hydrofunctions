@@ -7,7 +7,6 @@ Tests for the charts.py module.
 from __future__ import absolute_import, print_function
 import unittest
 import matplotlib
-# attempted matplotlib.use('Agg') here, but it was too late; backend already set
 import pandas as pd
 
 from hydrofunctions import charts
@@ -81,7 +80,6 @@ class TestCyclePlot(unittest.TestCase):
         self.assertEqual(actual_xscale, 'linear')
         self.assertEqual(actual_yscale, 'linear')
         self.assertEqual(actual_ylabel, 'Stream Discharge (m³/s)')
-
 
 
 if __name__ == '__main__':
