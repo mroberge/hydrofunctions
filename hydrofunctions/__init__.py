@@ -43,6 +43,7 @@ __license__ = 'MIT'
 __copyright__ = 'Copyright 2016 Martin Roberge and contributors'
 
 
+from __future__ import absolute_import, print_function
 from .exceptions import HydroNoDataError
 from .hydrofunctions import (
         get_nwis, extract_nwis_df, nwis_custom_status_codes,
