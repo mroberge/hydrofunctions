@@ -34,6 +34,7 @@ List all of the different attributes and methods with dir()::
 Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
 """
+from __future__ import absolute_import, print_function
 
 __title__ = 'hydrofunctions'
 __version__ = '0.1.6'
@@ -43,7 +44,6 @@ __license__ = 'MIT'
 __copyright__ = 'Copyright 2016 Martin Roberge and contributors'
 
 
-from __future__ import absolute_import, print_function
 from .exceptions import HydroNoDataError
 from .hydrofunctions import (
         get_nwis, extract_nwis_df, nwis_custom_status_codes,
