@@ -32,6 +32,7 @@ from IPython.display import display
 from scipy.ndimage.filters import minimum_filter1d, generic_filter
 from scipy.ndimage.measurements import label
 from scipy.signal import argrelextrema
+from scipy import signal
 
 
 def cleanDF(DF):
@@ -230,3 +231,49 @@ def _local_minimum(window):
         return win_center_val
     else:
         return np.nan
+
+
+# These three functions are from BaseflowSeparation3.ipynb
+
+def Nfreq(wavelength_days, sample_rate_per_hour):
+    # This uses my imaginary unit of 'Az', or cycles per year. A week has a frequency of 52 Az, and days are 365 Az.
+    Nyquist_freq_Az = sample_rate_per_hour * 24 * 365 / 2    # Nyquist_freq_Az should be 17520 if samples are taken every 15 minutes.
+    crit_freq_Az = 365/wavelength_days
+    Nratio = crit_freq_Az / Nyquist_freq_Az
+    return Nratio
+
+
+def estimate_filter_response_length(b, a):
+    # This is an approximation of how many samples it takes for an impulse to quiet down to almost zero using a particular filter.
+    # from bottom of https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.filtfilt.html
+    z, p, k = signal.tf2zpk(b, a)
+    eps = 1e-9
+    r = np.max(np.abs(p))
+    approx_impulse_len = int(np.ceil(np.log(eps) / np.log(r)))
+    return approx_impulse_len
+
+
+def butterworth(Qdata, order=2, low_wave_days=10, high_wave_days=1, sample_rate_per_hour=4, filter_type='lowpass'):
+    # The defaults are set to be reasonable for filtering out floods on watersheds smaller than 10,000km2 or so...
+    if filter_type == 'lowpass':
+        Nratio = Nfreq(low_wave_days, sample_rate_per_hour)
+        filter_label = str(low_wave_days) + '-day lowpass'
+    elif filter_type == 'highpass':
+        Nratio = Nfreq(high_wave_days, sample_rate_per_hour)
+        filter_label = str(high_wave_days) + '-day highpass'
+    elif filter_type == 'bandpass' or filter_type == 'bandstop':
+        Nratio = [Nfreq(low_wave_days, sample_rate_per_hour), Nfreq(high_wave_days, sample_rate_per_hour)]
+        filter_label = str(low_wave_days) + ' to ' + str(high_wave_days) + '-day ' + filter_type
+    else:
+        print('filter_type was set to "', filter_type, '", valid types are "lowpass", "highpass", "bandpass", and "bandstop".')
+
+    b, a = signal.butter(order, Nratio, btype=filter_type)
+    
+    # signal.filtfilt will return a zero-phase shift result;
+    # This uses the 'gust'  Gustopherson method for dealing with the edges of the observed data.
+    y = signal.filtfilt(b, a, Qdata, method="gust", irlen=estimate_filter_response_length(b,a))
+    df = pd.DataFrame(data=y, index=Qdata.index, columns=[Qdata.name])
+    label = str(order) + 'th-order ' + filter_label + ' Butterworth filter'
+    result = {'data': df, 'label': label}
+
+    return result
