@@ -148,13 +148,14 @@ def xcorr(x, y1, y2):
     # Do this for st dev too,
     # or maybe I should just simplify things and not worry about performance just yet.
     if (np.any(np.isnan(y1))):
-        print("replacing nan's in y1 with 0")
-        y1 = np.nan_to_num(y1)
+        print("replacing nan's in y1 through interpolation")
+        # y1 = np.nan_to_num(y1)  # replace Nan's with zero
+        y1 = y1.interpolate()
         assert(not np.any(np.isnan(y1)))
 
     if (np.any(np.isnan(y2))):
-        print("replacing nan's in y2 with 0")
-        y2 = np.nan_to_num(y2)
+        print("replacing nan's in y2 through interpolation")
+        y2 = y2.interpolate()
         assert(not np.any(np.isnan(y2)))
 
     y1mean = y1.mean()
@@ -185,7 +186,7 @@ def xcorr(x, y1, y2):
 
     axs[2].plot([0, 0], [-1, 1], color='r', linestyle='-', linewidth=1)
     axs[2].plot(lags, ccor, label='correlation')
-    axs[2].plot(maxlag, maxccor,'r+', markersize=12, markeredgewidth=1, label='max')
+    axs[2].plot(maxlag, maxccor, 'r+', markersize=12, markeredgewidth=1, label='max')
     axs[2].set_ylim(-1.1, 1.1)
     axs[2].set_ylabel('cross-correlation')
     axs[2].set_xlabel('lag of y1 relative to y2')
@@ -193,13 +194,14 @@ def xcorr(x, y1, y2):
 
     return maxlag
 
+
 def longdisplay(DF):
     """Temporarily display the entirety of a large dataframe.
-    
+
     See: 
         https://pandas.pydata.org/pandas-docs/stable/generated/pandas.option_context.html
-        
-    
+
+
     Usage:
         hf.longdisplay(my_data)
     """
