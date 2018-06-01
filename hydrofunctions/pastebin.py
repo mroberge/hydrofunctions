@@ -28,6 +28,7 @@ from __future__ import absolute_import, print_function
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from IPython.display import display
 
 
 def cleanDF(DF):
@@ -165,3 +166,17 @@ def xcorr(x, y1, y2):
     axs[2].legend(loc='upper right', ncol=2)
 
     return maxlag
+
+def longdisplay(DF):
+    """Temporarily display the entirety of a large dataframe.
+    
+    See: 
+        https://pandas.pydata.org/pandas-docs/stable/generated/pandas.option_context.html
+        
+    
+    Usage:
+        hf.longdisplay(my_data)
+    """
+    with pd.option_context('display.max_rows', None, 'display.max_columns', 3):
+        # display is from Ipython, and is automatically imported.
+        display(DF)
