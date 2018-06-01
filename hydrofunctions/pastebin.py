@@ -25,6 +25,7 @@ from my notebooks in one central location for later development.
             - Keep adding stuff to the paste-bin branch; repeat
 """
 from __future__ import absolute_import, print_function
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -108,3 +109,59 @@ def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
     # ax.set_xlabel('Probability of Exceedence')
     # ax.xaxis.set_minor_formatter(NullFormatter())
     return fig, (axAB, axA, axB)
+
+
+def xcorr(x, y1, y2):
+    npts = max(len(x), len(y1), len(y2))
+    print('number of points: ', npts)
+    lags = np.arange(-npts + 1, npts)
+    # np.correlate returns nan if any nan are present.
+    # replace nan with 0, mean, or interpolate
+    # It is faster to calculate y1.mean() than np.nanmean(y1), so only do it if  you need to. 
+    # Do this for st dev too,
+    # or maybe I should just simplify things and not worry about performance just yet.
+    if (np.any(np.isnan(y1))):
+        print("replacing nan's in y1 with 0")
+        y1 = np.nan_to_num(y1)
+        assert(not np.any(np.isnan(y1)))
+
+    if (np.any(np.isnan(y2))):
+        print("replacing nan's in y2 with 0")
+        y2 = np.nan_to_num(y2)
+        assert(not np.any(np.isnan(y2)))
+
+    y1mean = y1.mean()
+    y2mean = y2.mean()
+    print('y1mean: ', y1mean)
+    print('y2mean: ', y2mean)
+
+    # Subtract mean from value; but don't include all of our padded zeros, use orig values but ignore nans.
+    ccov = np.correlate(y1 - y1mean, y2 - y2mean, mode='full')
+    # matplotlib also has an acorr and xcorr plot for autocorrelation and xcorrelation, with some additional features, like
+    # detrending.
+    assert(not np.any(np.isnan(ccov)))
+    ccor = ccov / (npts * np.nanstd(y1) * np.nanstd(y2))
+    assert(not np.any(np.isnan(ccor)))
+
+    maxlag = lags[np.argmax(ccor)]
+    maxccor = np.max(ccor)
+    print("The second array must be shifted by a lag of {0} to match the first array.".format(maxlag))
+    print("The maximum correlation is {0}.".format(maxccor))
+
+    fig, axs = plt.subplots(nrows=3, figsize=(12, 14))
+    fig.subplots_adjust(hspace=0.2)
+    axs[0].plot(x, y1, 'blue', label='y1')
+    axs[0].legend(loc='upper right')
+
+    axs[1].plot(x, y2, 'red', label='y2')
+    axs[1].legend(loc='upper right')
+
+    axs[2].plot([0, 0], [-1, 1], color='r', linestyle='-', linewidth=1)
+    axs[2].plot(lags, ccor, label='correlation')
+    axs[2].plot(maxlag, maxccor,'r+', markersize=12, markeredgewidth=1, label='max')
+    axs[2].set_ylim(-1.1, 1.1)
+    axs[2].set_ylabel('cross-correlation')
+    axs[2].set_xlabel('lag of y1 relative to y2')
+    axs[2].legend(loc='upper right', ncol=2)
+
+    return maxlag
