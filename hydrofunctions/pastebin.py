@@ -24,16 +24,19 @@ from my notebooks in one central location for later development.
             - Cut and paste new files and modules from paste-bin branch into the new branch
             - Keep adding stuff to the paste-bin branch; repeat
 """
+from __future__ import absolute_import, print_function
+import pandas as pd
+import matplotlib.pyplot as plt
+
 
 def cleanDF(DF):
-    DF = pd.DataFrame(DF.iloc[:,0])
+    DF = pd.DataFrame(DF.iloc[:, 0])
     cols = DF.columns.values
     for i, col in enumerate(cols):
-        cols[i] = col[5:-12] # This works for siteID's of different lengths.
+        cols[i] = col[5:-12]  # This works for siteID's of different lengths.
     DF.columns = cols
     print(DF.columns)
     return DF
-
 
 
 def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
@@ -73,35 +76,35 @@ def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
     width = ABheight = 0.7
     Bheight = 0.2
     divider = 0.05
-    
+
     Adim = [left, bottom + ABheight + divider + Bheight + divider, width, Bheight]
     Bdim = [left, bottom + ABheight + divider, width, Bheight]
     ABdim = [left, bottom, width, ABheight]
-    
+
     # Set figure size and subplot sizes
-    #plt.figure(1)
-    plt.figure(1, figsize=(19, 14))
+    # plt.figure(1)
+    fig = plt.figure(1, figsize=(19, 14))
     axAB = plt.axes(ABdim)
     axA = plt.axes(Adim)
     axA.set_yscale(scale)
     axB = plt.axes(Bdim, sharey=axA)
-    
+
     # Create the plots
     axAB.plot(A, B, symbol)
-    axA.plot(A) # Plot A using its index, which should be a datetimeindex
-    axB.plot(B) # Plot B using its index, which should be a datetimeindex
-    
-    #fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
-    #fig.set_size_inches(8, 10)
-    #ax1()
-    #ax1.plot(Qx)
-    #ax2.plot(Qy)
-    #ax3.plot(Qx, Qy, symbol)
-    #ax.set_xscale(xscale)
-    #ax.set_yscale(yscale)
-    #ax.set_ylabel(ylabel)
-    #ax.legend()
+    axA.plot(A)  # Plot A using its index, which should be a datetimeindex
+    axB.plot(B)  # Plot B using its index, which should be a datetimeindex
+
+    # fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
+    # fig.set_size_inches(8, 10)
+    # ax1()
+    # ax1.plot(Qx)
+    # ax2.plot(Qy)
+    # ax3.plot(Qx, Qy, symbol)
+    # ax.set_xscale(xscale)
+    # ax.set_yscale(yscale)
+    # ax.set_ylabel(ylabel)
+    # ax.legend()
     # A pyplot bug causes a valueError value if the xlabel is set.
-    #ax.set_xlabel('Probability of Exceedence')
-    #ax.xaxis.set_minor_formatter(NullFormatter())
-    return fig, (axAB,axA,axB)
+    # ax.set_xlabel('Probability of Exceedence')
+    # ax.xaxis.set_minor_formatter(NullFormatter())
+    return fig, (axAB, axA, axB)
