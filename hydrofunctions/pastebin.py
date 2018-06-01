@@ -45,6 +45,28 @@ def cleanDF(DF):
     return DF
 
 
+def clean(DF):
+    DF.index.name = 'time'
+    # create a data dataframe with the discharge data.
+    data = DF.iloc[:, ::2]  # Select all rows, select all columns stepping by two.
+
+    # rename data columns
+    cols = data.columns.values
+    for i, col in enumerate(cols):
+        cols[i] = col[5:-12]
+    # create a metadata dataframe with data flags.
+    meta = DF.iloc[:, 1::2]  # Select all rows, select all columns starting at 1 and stepping by two.
+
+    # rename meta columns
+    cols = meta.columns.values
+    for i, col in enumerate(cols):
+        cols[i] = col[5:-23]+'_flag'
+
+    # Create new data structure
+    result = {'data': data, 'meta': meta}
+    return result
+
+
 def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
     """Creates a QQ chart from two series of discharges with the same time index.
     Args:
