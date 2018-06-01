@@ -29,6 +29,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from IPython.display import display
+from scipy.ndimage.filters import minimum_filter1d, generic_filter
+from scipy.ndimage.measurements import label
+from scipy.signal import argrelextrema
 
 
 def cleanDF(DF):
@@ -180,3 +183,50 @@ def longdisplay(DF):
     with pd.option_context('display.max_rows', None, 'display.max_columns', 3):
         # display is from Ipython, and is automatically imported.
         display(DF)
+
+
+def local_minimum_filter(ts, size):
+    """USGS HYSEP local minimum method
+        https://github.com/dadelforge/baseflow-separation/blob/master/physep/hysep.py
+        It might be possible to modify this procedure by using signal.find_peaks()
+        to find the troughs, and then connect them with a curved line instead.
+
+        The USGS HYSEP local minimum method as described in `Sloto & Crouse, 1996`_.
+
+    .. _Slot & Crouse, 1996:
+        Sloto, Ronald A., and Michele Y. Crouse. “HYSEP: A Computer Program for Streamflow Hydrograph Separation and 
+        Analysis.” USGS Numbered Series. Water-Resources Investigations Report. Geological Survey (U.S.), 1996. 
+        http://pubs.er.usgs.gov/publication/wri964040.
+
+    :param size:
+    :param ts:
+    :return:
+    """
+
+    origin = int(size) / 2
+    baseflow_min = pd.Series(generic_filter(ts, _local_minimum, footprint=np.ones(size)), index=ts.index)
+    baseflow = baseflow_min.interpolate(method='linear')
+    # interpolation between values may lead to baseflow > streamflow
+    errors = (baseflow > ts)
+    while errors.any():
+        print('hello world')
+        error_labelled, n_features = label(errors)
+        error_blocks = [ts[error_labelled == i] for i in range(1, n_features + 1)]
+        error_local_min = [argrelextrema(e.values, np.less)[0] for e in error_blocks]
+        print(error_local_min)
+        break
+    quickflow = ts - baseflow
+    baseflow.name = 'baseflow'
+    quickflow.name = 'quickflow'
+
+    return baseflow, quickflow
+
+
+def _local_minimum(window):
+    win_center_ix, rem = divmod(len(window), 2)
+    win_center_val = window[win_center_ix]
+    win_minimum = np.min(window)
+    if win_center_val == win_minimum:
+        return win_center_val
+    else:
+        return np.nan
