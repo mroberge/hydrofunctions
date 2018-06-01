@@ -25,3 +25,11 @@ from my notebooks in one central location for later development.
             - Keep adding stuff to the paste-bin branch; repeat
 """
 
+def cleanDF(DF):
+    DF = pd.DataFrame(DF.iloc[:,0])
+    cols = DF.columns.values
+    for i, col in enumerate(cols):
+        cols[i] = col[5:-12] # This works for siteID's of different lengths.
+    DF.columns = cols
+    print(DF.columns)
+    return DF
