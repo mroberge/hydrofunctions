@@ -35,27 +35,31 @@ from scipy.signal import argrelextrema
 from scipy import signal
 
 
-def cleanDF(DF):
-    DF = pd.DataFrame(DF.iloc[:, 0])
-    cols = DF.columns.values
+def clean_DF(df):
+    """Convert a hydrofunctions dataframe with mixed data & flag columns into purely data columns.
+    """
+    df = pd.DataFrame(DF.iloc[:, 0])
+    cols = df.columns.values
     for i, col in enumerate(cols):
         cols[i] = col[5:-12]  # This works for siteID's of different lengths.
-    DF.columns = cols
-    print(DF.columns)
-    return DF
+    df.columns = cols
+    print(df.columns)
+    return df
 
 
-def clean(DF):
-    DF.index.name = 'time'
+def clean(df):
+    """Convert a hydrofunctions dataframe with mixed data & flag columns into a dict with a meta & a data dataframe.
+    """
+    df.index.name = 'time'
     # create a data dataframe with the discharge data.
-    data = DF.iloc[:, ::2]  # Select all rows, select all columns stepping by two.
+    data = df.iloc[:, ::2]  # Select all rows, select all columns stepping by two.
 
     # rename data columns
     cols = data.columns.values
     for i, col in enumerate(cols):
         cols[i] = col[5:-12]
     # create a metadata dataframe with data flags.
-    meta = DF.iloc[:, 1::2]  # Select all rows, select all columns starting at 1 and stepping by two.
+    meta = df.iloc[:, 1::2]  # Select all rows, select all columns starting at 1 and stepping by two.
 
     # rename meta columns
     cols = meta.columns.values
@@ -144,19 +148,19 @@ def xcorr(x, y1, y2):
     lags = np.arange(-npts + 1, npts)
     # np.correlate returns nan if any nan are present.
     # replace nan with 0, mean, or interpolate
-    # It is faster to calculate y1.mean() than np.nanmean(y1), so only do it if  you need to. 
+    # It is faster to calculate y1.mean() than np.nanmean(y1), so only do it if  you need to.
     # Do this for st dev too,
     # or maybe I should just simplify things and not worry about performance just yet.
-    if (np.any(np.isnan(y1))):
+    if np.any(np.isnan(y1)):
         print("replacing nan's in y1 through interpolation")
         # y1 = np.nan_to_num(y1)  # replace Nan's with zero
         y1 = y1.interpolate()
-        assert(not np.any(np.isnan(y1)))
+        assert not np.any(np.isnan(y1))
 
-    if (np.any(np.isnan(y2))):
+    if np.any(np.isnan(y2)):
         print("replacing nan's in y2 through interpolation")
         y2 = y2.interpolate()
-        assert(not np.any(np.isnan(y2)))
+        assert not np.any(np.isnan(y2))
 
     y1mean = y1.mean()
     y2mean = y2.mean()
@@ -167,9 +171,9 @@ def xcorr(x, y1, y2):
     ccov = np.correlate(y1 - y1mean, y2 - y2mean, mode='full')
     # matplotlib also has an acorr and xcorr plot for autocorrelation and xcorrelation, with some additional features, like
     # detrending.
-    assert(not np.any(np.isnan(ccov)))
+    assert not np.any(np.isnan(ccov))
     ccor = ccov / (npts * np.nanstd(y1) * np.nanstd(y2))
-    assert(not np.any(np.isnan(ccor)))
+    assert not np.any(np.isnan(ccor))
 
     maxlag = lags[np.argmax(ccor)]
     maxccor = np.max(ccor)
@@ -198,7 +202,7 @@ def xcorr(x, y1, y2):
 def longdisplay(DF):
     """Temporarily display the entirety of a large dataframe.
 
-    See: 
+    See:
         https://pandas.pydata.org/pandas-docs/stable/generated/pandas.option_context.html
 
 
@@ -219,8 +223,8 @@ def local_minimum_filter(ts, size):
         The USGS HYSEP local minimum method as described in `Sloto & Crouse, 1996`_.
 
     .. _Slot & Crouse, 1996:
-        Sloto, Ronald A., and Michele Y. Crouse. “HYSEP: A Computer Program for Streamflow Hydrograph Separation and 
-        Analysis.” USGS Numbered Series. Water-Resources Investigations Report. Geological Survey (U.S.), 1996. 
+        Sloto, Ronald A., and Michele Y. Crouse. “HYSEP: A Computer Program for Streamflow Hydrograph Separation and
+        Analysis.” USGS Numbered Series. Water-Resources Investigations Report. Geological Survey (U.S.), 1996.
         http://pubs.er.usgs.gov/publication/wri964040.
 
     :param size:
@@ -252,9 +256,10 @@ def _local_minimum(window):
     win_center_val = window[win_center_ix]
     win_minimum = np.min(window)
     if win_center_val == win_minimum:
-        return win_center_val
+        result = win_center_val
     else:
-        return np.nan
+        result = np.nan
+    return result
 
 
 # These three functions are from BaseflowSeparation3.ipynb
@@ -292,12 +297,12 @@ def butterworth(Qdata, order=2, low_wave_days=10, high_wave_days=1, sample_rate_
         print('filter_type was set to "', filter_type, '", valid types are "lowpass", "highpass", "bandpass", and "bandstop".')
 
     b, a = signal.butter(order, Nratio, btype=filter_type)
-    
+
     # signal.filtfilt will return a zero-phase shift result;
     # This uses the 'gust'  Gustopherson method for dealing with the edges of the observed data.
-    y = signal.filtfilt(b, a, Qdata, method="gust", irlen=estimate_filter_response_length(b,a))
+    y = signal.filtfilt(b, a, Qdata, method="gust", irlen=estimate_filter_response_length(b, a))
     df = pd.DataFrame(data=y, index=Qdata.index, columns=[Qdata.name])
-    label = str(order) + 'th-order ' + filter_label + ' Butterworth filter'
-    result = {'data': df, 'label': label}
+    datalabel = str(order) + 'th-order ' + filter_label + ' Butterworth filter'
+    result = {'data': df, 'label': datalabel}
 
     return result
