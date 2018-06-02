@@ -73,6 +73,9 @@ def clean(df):
 
 def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
     """Creates a QQ chart from two series of discharges with the same time index.
+
+    Usually a QQplot means quantile-quantile plot, **NOT** discharge.
+
     Args:
         Qdf (dataframe): a dataframe of discharge values.
             * Values should be arranged in columns
