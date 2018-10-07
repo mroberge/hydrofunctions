@@ -71,6 +71,106 @@ def clean(df):
     return result
 
 
+def clean_verbose (DF, nans=False):
+    """
+    taken from SusquehannaDataPrep.ipynb on 10/7/2018
+    nans parameter is not used.
+    
+    note from 2018-7-31:
+    I Improved my clean() function when I read data.
+        - See SusquehannaDataPrep.ipynb
+        - It now prints lots of lovely information about the original dataset
+        - It improves the index so that if any rows are missing they get added.
+        - It sorts all of the indexes properly.
+        - It reports on how many NaN’s exist as an absolute count and as a percentage.
+        - The call signature is set up so that I can do some interpolation, but I haven’t created that functionality yet.
+    TODO: add interpolation functionality to clean.
+
+    """
+    DF.index.name = 'time'
+
+    # Remove all duplicated index values
+    print(f'Original data has {len(DF.index)} entries. There are no repeated index values: {DF.index.is_unique}')
+    DF = DF[~DF.index.duplicated(keep='first')]
+    print(f'There are now {len(DF.index)} entries.')
+    DF.sort_index(axis=0, inplace=True)
+    print(f'New index has no repeated values: {DF.index.is_unique}, and it is monotonic: {DF.index.is_monotonic}.')
+
+    new_freq = DF.index.freq
+    if DF.index.freq is None:
+        new_freq = pd.infer_freq(DF.index)
+        if new_freq is None:
+            guess1 = (DF.index.max() - DF.index.min())/len(DF.index)
+            if pd.Timedelta('13 minutes') < guess1 < pd.Timedelta('17minutes'):
+                new_freq = pd.Timedelta('15 minutes')
+            else:
+                raise ValueError("Cannot calculate the dataset frequency.")
+
+    print(f'Original frequency: {DF.index.freq}; New Frequency: {new_freq}')
+    orig_len = len(DF)
+    print(f'Re-organizing the time index. There should be {((DF.index.max()-DF.index.min())/new_freq) + 1} records.')
+    DF = DF.asfreq(new_freq)
+    new_len = len(DF)
+    print(f'original length: {orig_len}; new length: {new_len}; missing records: {new_len - orig_len}')
+    
+    nulls = DF.isnull().sum()
+    nulls = pd.DataFrame(nulls, columns=['NaN_count'])
+    nulls.index.name = 'columns'
+    nulls['percent'] = nulls / len(DF)
+    print(f'Missing data: ')
+    print(nulls)
+    
+
+    
+    # create a data dataframe with the discharge data.
+    # TODO: make this work when you ask for more than one type data (right now it assumes that only IV discharge has been requested.)
+    # TODO: It would be better to work with the original USGS JSON file than to re-parse this dataframe.
+    # TODO: for now, make a separate request for each parameter code.
+    
+    #     parse the column names
+    #        strip the 'USGS:'  (or check for it and raise an error if it is not there)
+    #        check for any summary type that isn't '0000'; raise error if they exist; get rid of them. I'll worry about these later.
+    #        separate columns into different stations
+    #        For each station name:
+    #            separate columns into different parameter codes
+    #            check that the _qualifiers columns for a station match; raise an error if they don't.
+    #            Add one of the _qualifiers columns into a new meta dataframe. get rid of the others.
+    #            For each parameter code:
+    #                Add the data column to a dataframe for that parameter.
+    data = DF.iloc[:, ::2] # Select all rows, select all columns stepping by two.
+    
+    # rename data columns
+    cols = data.columns.values
+    for i, col in enumerate(cols):
+        cols[i] = col[5:-12] # This gets rid of everything in the name except for the station ID.
+        #cols[i] = col[5:-6] # This gets rid of everything in the name except the station ID and the parameter code.
+    data.columns = cols
+    
+    # create a metadata dataframe with data flags.
+    meta = DF.iloc[:, 1::2] # Select all rows, select all columns starting at 1 and stepping by two.
+    
+    # rename meta columns
+    #cols = meta.columns.values
+    #for i, col in enumerate(cols):
+    #    cols[i] = col[5:-23]+'_qualifiers'
+    
+    #data = data[~data.index.duplicated(keep='first')]
+    #data.sort_index(axis=0, inplace=True)
+    data.sort_index(axis=1, inplace=True)
+    meta.sort_index(axis=1, inplace=True)
+    #data = data[sorted(data.columns)]
+    #meta = meta[sorted(meta.columns)]
+        
+    # Create new data structure
+    result = {'data':data, 'meta': meta}
+    
+    print(f'First observation: {data.index.min()}')
+    print(f'Last observation: {data.index.max()}')
+    print(f'Length: {data.index.max()-data.index.min()};   {len(data)} records x {len(data.columns)} sites.')
+    
+    return result
+
+
 def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
     """Creates a QQ chart from two series of discharges with the same time index.
 
