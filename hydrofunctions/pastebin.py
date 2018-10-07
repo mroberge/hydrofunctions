@@ -20,7 +20,7 @@ from my notebooks in one central location for later development.
             - delete this module (pastebin.py)
             - merge the new branch with the Develop branch
             - Keep adding stuff to the paste-bin branch; repeat
-    ==> OPTION 2: Create a branch off of Develop
+    ==> OPTION 2 (preferred): Create a branch off of Develop
             - Cut and paste new files and modules from paste-bin branch into the new branch
             - Keep adding stuff to the paste-bin branch; repeat
 """
@@ -169,6 +169,35 @@ def clean_verbose (DF, nans=False):
     print(f'Length: {data.index.max()-data.index.min()};   {len(data)} records x {len(data.columns)} sites.')
     
     return result
+
+
+def nwis_measurements(site):
+    """Load USGS stream discharge measurements into a Pandas dataframe.
+    Written on 2018-8-13 
+    Taken from Rating_Curve.ipynb on 2018-10-7
+    
+    Inputs: site
+        The gage number for the site.
+        
+    Outputs:
+    Will produce a table, each row represents an observation of river conditions at the gage by USGS personell. Values measured
+    include stream discharge, channel width, channel area, depth, and velocity. These data can be used to create a rating curve,
+    to estimate the gage height for a discharge of zero, and to get readings of water velocity.
+    
+    to plot a rating curve, use output.plot(x='gage_height_va', y='discharge_va', kind='scatter')
+    NOTE: Rating curves are typically plotted with the indepedent variable (gage_height) plotted on the Y axis.
+    """
+    url = f'https://waterdata.usgs.gov/pa/nwis/measurements?site_no={site}&agency_cd=USGS&format=rdb_expanded'
+    response = requests.get(url)
+    text = response.text
+    # It may be desireable to keep the original na_values, like 'unkn' for many of the columns. However, it is still
+    # a good idea to replace for the gage depth and discharge values, since these variables get used in plotting functions.
+    output = pandas.read_table(url, comment='#', keep_default_na=True, na_values=['UNSP', 'unkn', 'unspe', 'unkno'],
+                           skiprows=[15],
+                           dtype={'site_no':str},
+                           parse_dates=['measurement_dt'], infer_datetime_format=True
+                          )
+    return output
 
 
 def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
