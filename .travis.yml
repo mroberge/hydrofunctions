@@ -4,6 +4,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
 
 install:
   # Travis has a pre-installed copy of numpy in their Python 3.5 & 3.6
