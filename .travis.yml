@@ -4,7 +4,6 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7"
 
 install:
   # Travis has a pre-installed copy of numpy in their Python 3.5 & 3.6
@@ -22,8 +21,8 @@ install:
   #      https://github.com/travis-ci/travis-ci/issues/2650#issuecomment-266721196
 
   # the "--only-binary" option was added in pip 7 back in 2015; still to be safe, upgrade pip
-  - pip install --user --upgrade pip setuptools wheel
-  - pip install --user --only-binary=numpy,scipy,pandas,Ipython,matplotlib numpy scipy pandas ipython matplotlib
+  - pip install --upgrade pip setuptools wheel
+  - pip install --only-binary=numpy,scipy,pandas,Ipython,matplotlib numpy scipy pandas ipython matplotlib
 
   # Install codecov so I can use it (and coverage.py) to run setup.py
   # However, keep codecov in setup.py so that it gets installed for local usage too.
