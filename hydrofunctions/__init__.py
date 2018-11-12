@@ -37,7 +37,7 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 from __future__ import absolute_import, print_function
 
 __title__ = 'hydrofunctions'
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 __author__ = 'Martin Roberge'
 __email__ = 'mroberge.whois@gmail.com'
 __license__ = 'MIT'
