@@ -51,10 +51,11 @@ History
 * Added qualifiers for each station as a column in the dataframe. (jdh)
 * Added ability extract NWIS property data from the response object (for example, siteName). (jdh)
 
-0.1.7 (2018-05-XX)
+0.1.7 (2018-11-11)
 ----------------------
 
 * Added a flow duration chart (mcr)
 * Added the cycleplot chart (mcr)
 * Added code coverage (mcr)
-* improved the build scripts for TravisCI (mcr)
+* Improved the build scripts for TravisCI (mcr)
+* Updated to support Python 3.7

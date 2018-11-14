@@ -42,7 +42,7 @@ test_requirements = [
 
 setup(
     name='hydrofunctions',
-    version='0.1.6',
+    version='0.1.7',
     description="A suite of convenience functions for exploring water data in a Jupyter Notebook.",
     long_description=readme + '\n\n' + history,
     author="Martin Roberge",
@@ -70,6 +70,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Information Analysis',
         'Topic :: Scientific/Engineering :: Visualization',
         'Topic :: Utilities'
