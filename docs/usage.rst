@@ -42,9 +42,9 @@ Extract the full json response from the data provider::
      ...
     }
 
-Extract a Pandas dataframe from the response::
+Extract a Pandas dataframe from the json of the response::
 
-    >>> my_data_frame = hf.extract_nwis_df(response)
+    >>> my_data_frame = hf.extract_nwis_df(my_dict)
     >>> my_data_frame
                 value
     datetime
