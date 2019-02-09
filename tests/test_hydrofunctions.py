@@ -71,7 +71,7 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_get_nwis_calls_correct_url_multiple_sites(self, mock_get):
 
         site = ['site1', 'site2']
-        parsed_site = hf.check_NWIS_site(site)
+        parsed_site = hf.check_parameter_string(site, 'site')
         service = 'iv'
         start = 'C'
         end = 'D'

@@ -173,7 +173,7 @@ class TestNWIS(unittest.TestCase):
         start = "2017-01-01"
         end = "2017-12-31"
         cnty = ['51059', '51061']
-        cnty = typing.check_NWIS_site(cnty)
+        cnty = typing.check_parameter_string(cnty, 'county')
         service2 = 'dv'
 
         expected_url = 'http://waterservices.usgs.gov/nwis/dv/?'

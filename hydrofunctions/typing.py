@@ -21,6 +21,51 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import re
 
 
+def check_parameter_string(candidate, param):
+    parameters = {
+        'site': 'NWIS station id(s) should be a string or list of strings,' +
+                'often in the form of an eight digit number enclosed in quotes.',
+        'parameterCd':
+            "NWIS parameter codes are five-digit strings that specify " +
+            "the parameter that is being measured at the site. Common " +
+            "codes are '00060' for stream stage in feet, '00065' for " +
+            "stream discharge in cubic feet per second, and '72019' for " +
+            "groundwater levels. Not all sites collect data for all " +
+            "parameters. See a complete list of physical parameters here: " +
+            "https://help.waterdata.usgs.gov/parameter_cd?group_cd=PHY " +
+            "You may request multiple parameters by submitting a comma-" +
+            "delimited string of codes with no spaces, or by submitting " +
+            "a list of codes, like this: parameterCd = '00065,00060' or " +
+            "parameterCd = ['00065', '00060'] ",
+        'county':
+            "The NWIS county parameter accepts a five-digit string or " +
+            "a list of five-digit strings to select all of the sites " +
+            "within a county or list of counties. " +
+            "Example: '51059' or ['51059', '51061'] are acceptable.",
+        'state':
+            "This parameter uses US two-letter postal codes " +
+            "such as 'MD' for Maryland or 'AZ' for Arizona.",
+        'default':
+            'This parameter should be a string or a list of strings.'
+        }
+    if param in parameters:
+        msg = parameters[param] + ' Actual value: {}'.format(candidate)
+    else:
+        msg = 'This parameter should be a string or a list of strings.' + \
+          ' Actual value: {}'.format(candidate)
+
+    if candidate is None:
+        return None
+    elif isinstance(candidate, str) and candidate:
+        return candidate
+    elif (isinstance(candidate, list) or isinstance(candidate, tuple)) and candidate:
+        for s in candidate:
+            if not isinstance(s, str):
+                raise TypeError(msg + "   bad element: {}".format(s))
+        return ','.join([str(s) for s in candidate])
+    else:
+        raise TypeError(msg)
+
 def check_NWIS_bBox(input):
     """Checks that the USGS bBox is valid
     """
@@ -46,78 +91,6 @@ def check_NWIS_bBox(input):
             raise TypeError(msg)
         # format:  [-83.000000, 36.500000, -81.000000, 38.500000] ==> '-83.000000,36.500000,-81.000000,38.500000'
         return ','.join([str(s) for s in input])
-    else:
-        raise TypeError(msg)
-
-
-def check_NWIS_site(input):
-    """Checks that the USGS station site id is valid.
-    """
-    msg = "NWIS station id(s) should be a string or list of strings, \
-           often in the form of an eight digit number enclosed in quotes. \
-           Actual value: {}".format(input)
-    output = ""
-    if input is None:
-        return None
-    # assume that if it is a string it will be fine as is.
-    # don't accept a series of sites in a single string.
-    # Test for and reject empty strings: empty strings are falsy.
-    if isinstance(input, str) and input:
-        return input
-        # input = input.split(',')
-    # test for input is a list and it is not empty
-    elif isinstance(input, list) and input:
-        for s in input:
-            if isinstance(s, str) and s:
-                output = output + s + ','
-            else:
-                raise TypeError(msg + "   bad element: {}".format(s))
-        # format:  ['0123', '567'] ==> "0123,567"
-        # remove the last comma
-        return output[:-1]
-    else:
-        raise TypeError(msg)
-
-    # No longer accept strings with commas.
-    # format site(s)
-    # sites = '{}'.format(input[0])
-    # if len(input) > 1:
-    #     for s in input[1:]:
-    #         sites += ',{}'.format(s)
-    # return sites
-
-
-def check_NWIS_parameter_code(input):
-    """Checks that the parameterCd is valid: accept str or lists of str.
-    """
-    msg = "NWIS parameter codes are five-digit strings that specify \
-          the parameter that is being measured at the site. Common codes \
-          are '00060' for stream stage in feet, '00065' for stream discharge \
-          in cubic feet per second, and '72019' for groundwater levels. \
-          Not all sites collect data for all parameters. See a \
-          complete list of physical parameters here: \
-          https://help.waterdata.usgs.gov/parameter_cd?group_cd=PHY \
-          You may request multiple parameters by submitting a comma-delimited \
-          list of codes, or by submitting a list of codes, like this: \
-          parameterCd = '00065,00060' or parameterCd = ['00065', '00060'] \
-          \
-          Current parameterCd value: {}".format(input)
-    output = ""
-    if input is None:
-        return None
-    
-    # assume all non-empty strings are okay.
-    if isinstance(input, str) and input:
-        return input
-    elif isinstance(input, list) and input:
-        for s in input:
-            if isinstance(s,str) and s:
-                output = output + s + ','
-            else:
-                raise TypeError(msg +  '   bad element: {}'.format(s))
-        # format:  ['0123', '567'] ==> "0123,567"
-        # remove the last comma
-        return output[:-1]
     else:
         raise TypeError(msg)
 

@@ -107,15 +107,15 @@ class NWIS(Station):
                  parameterCd='00060',
                  period=None):
 
-        self.site = typing.check_NWIS_site(site)
+        self.site = typing.check_parameter_string(site, 'site')
         self.service = typing.check_NWIS_service(service)
         self.start_date = typing.check_datestr(start_date)
         self.end_date = typing.check_datestr(end_date)
         self.stateCd = stateCd
-        self.countyCd = countyCd
+        self.countyCd = typing.check_parameter_string(countyCd, 'county')
         self.bBox = bBox
         self.ok = False
-        self.parameterCd = typing.check_NWIS_parameter_code(parameterCd)
+        self.parameterCd = typing.check_parameter_string(parameterCd, 'parameterCd')
         self.period = typing.check_period(period)
         self.response = None
         self.df = lambda: print("You must successfully call .get_data() before calling .df().")
@@ -138,11 +138,6 @@ class NWIS(Station):
                              "but not both.")
 
     def get_data(self):
-        # Why check these again?
-        self.site = typing.check_NWIS_site(self.site)
-        self.service = typing.check_NWIS_service(self.service)
-        self.start_date = typing.check_datestr(self.start_date)
-        self.end_date = typing.check_datestr(self.end_date)
         self.response = hf.get_nwis(self.site,
                                     self.service,
                                     self.start_date,
