@@ -81,13 +81,13 @@ class NWIS(Station):
                 * The order of the boundaries should be: "West,South,East,North"
                 * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
-        parameterCd (str):
-            NWIS parameter code. Default is stream discharge '00060'
+        parameterCd (str or list of strings):
+            NWIS parameter code. Usually a five digit code. Default is stream discharge '00060'
+            a valid code can also be given as a list: parameterCd=['00060','00065']
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
-                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for \
-                full list
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
 
         period (str):
             NWIS period code. Default is None.
@@ -115,7 +115,7 @@ class NWIS(Station):
         self.countyCd = countyCd
         self.bBox = bBox
         self.ok = False
-        self.parameterCd = parameterCd
+        self.parameterCd = typing.check_NWIS_parameter_code(parameterCd)
         self.period = typing.check_period(period)
         self.response = None
         self.df = lambda: print("You must successfully call .get_data() before calling .df().")
@@ -138,6 +138,7 @@ class NWIS(Station):
                              "but not both.")
 
     def get_data(self):
+        # Why check these again?
         self.site = typing.check_NWIS_site(self.site)
         self.service = typing.check_NWIS_service(self.service)
         self.start_date = typing.check_datestr(self.start_date)

@@ -59,3 +59,8 @@ History
 * Added code coverage (mcr)
 * Improved the build scripts for TravisCI (mcr)
 * Updated to support Python 3.7
+
+0.1.8 (in development)
+----------------------
+
+* parameterCd now accepts multiple parameters in request.

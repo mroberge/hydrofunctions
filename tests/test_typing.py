@@ -21,9 +21,11 @@ class TestTyping(unittest.TestCase):
         test1 = 'any string'
         test2 = "any string"
         test3 = u'any unicode string'
+        test4 = 'a,comma,delimited,list'
         self.assertEqual(typing.check_NWIS_site(test1), test1, 'test 1 failed')
         self.assertEqual(typing.check_NWIS_site(test2), test2, 'test 2 failed')
         self.assertEqual(typing.check_NWIS_site(test3), test3, 'test 3 failed')
+        self.assertEqual(typing.check_NWIS_site(test4), test4, 'test 4 failed')
 
     def test_typing_check_NWIS_site_accepts_list_of_str(self):
         test1 = ["any string"]
@@ -52,6 +54,47 @@ class TestTyping(unittest.TestCase):
         self.assertRaises(TypeError, typing.check_NWIS_site, test5)
         self.assertRaises(TypeError, typing.check_NWIS_site, test6)
         self.assertRaises(TypeError, typing.check_NWIS_site, test7)
+
+    def test_typing_check_NWIS_parameterCd_None_returns_None(self):
+        self.assertIsNone(typing.check_NWIS_parameter_code(None))
+
+    def test_typing_check_NWIS_parameterCd_accepts_str_returns_str(self):
+        test1 = 'any string'
+        test2 = "any string"
+        test3 = u'any unicode string'
+        test4 = 'a,comma,delimited,list'
+        self.assertEqual(typing.check_NWIS_parameter_code(test1), test1, 'test 1 failed')
+        self.assertEqual(typing.check_NWIS_parameter_code(test2), test2, 'test 2 failed')
+        self.assertEqual(typing.check_NWIS_parameter_code(test3), test3, 'test 3 failed')
+        self.assertEqual(typing.check_NWIS_parameter_code(test4), test4, 'test 4 failed')
+
+    def test_typing_check_NWIS_parameterCd_accepts_list_of_str(self):
+        test1 = ["any string"]
+        test2 = ["any string", "any string"]
+        test3 = ["1", "2", "3", "4", "5", "6", "7", '8', '9']
+        self.assertTrue(typing.check_NWIS_parameter_code(test1), 'test 1 failed')
+        self.assertTrue(typing.check_NWIS_parameter_code(test2), 'test 2 failed')
+        self.assertTrue(typing.check_NWIS_parameter_code(test3), 'test 3 failed')
+
+    def test_typing_check_NWIS_parameterCd_raises_TypeError(self):
+        not_string = 5
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, not_string)
+
+    def test_typing_check_NWIS_parameterCd_rejects_bad_list(self):
+        test1 = []
+        test2 = [""]
+        test3 = ['']
+        test4 = [4]
+        test5 = ['good', None]
+        test6 = ['good', 9]
+        test7 = ["good", ""]
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, test1)
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, test2)
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, test3)
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, test4)
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, test5)
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, test6)
+        self.assertRaises(TypeError, typing.check_NWIS_parameter_code, test7)
 
     def test_typing_check_NWIS_bBox_accepts_list_tuple_string(self):
         b0 = (-105.43, 39.655, -104.0, 39.863)

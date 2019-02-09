@@ -87,6 +87,41 @@ def check_NWIS_site(input):
     # return sites
 
 
+def check_NWIS_parameter_code(input):
+    """Checks that the parameterCd is valid: accept str or lists of str.
+    """
+    msg = f"NWIS parameter codes are five-digit strings that specify \
+          the parameter that is being measured at the site. Common codes \
+          are '00060' for stream stage in feet, '00065' for stream discharge \
+          in cubic feet per second, and '72019' for groundwater levels. \
+          Not all sites collect data for all parameters. See a \
+          complete list of physical parameters here: \
+          https://help.waterdata.usgs.gov/parameter_cd?group_cd=PHY \
+          You may request multiple parameters by submitting a comma-delimited \
+          list of codes, or by submitting a list of codes, like this: \
+          parameterCd = '00065,00060' or parameterCd = ['00065', '00060'] \
+          \
+          Current parameterCd value: {input}"
+    output = ""
+    if input is None:
+        return None
+    
+    # assume all non-empty strings are okay.
+    if isinstance(input, str) and input:
+        return input
+    elif isinstance(input, list) and input:
+        for s in input:
+            if isinstance(s,str) and s:
+                output = output + s + ','
+            else:
+                raise TypeError(msg +  f'   bad element: {s}')
+        # format:  ['0123', '567'] ==> "0123,567"
+        # remove the last comma
+        return output[:-1]
+    else:
+        raise TypeError(msg)
+
+
 def check_NWIS_service(input):
     """Checks that the service is valid: either iv or dv"""
     if input is None:

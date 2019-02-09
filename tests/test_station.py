@@ -191,6 +191,31 @@ class TestNWIS(unittest.TestCase):
         mock_get.assert_called_once_with(expected_url, params=expected_params,
                                          headers=expected_headers)
 
+    @mock.patch('requests.get')
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_hf_get_nwis_accepts_parameterCd_array(self, mock_get_prop, mock_get):
+        site = '01541200'
+        start = "2017-01-01"
+        end = "2017-12-31"
+        service = 'iv'
+        parameterCd = ['00060','00065']
+        expected_parameterCd = '00060,00065'
+
+        expected_url = 'http://waterservices.usgs.gov/nwis/iv/?'
+        expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
+        expected_params = {'format': 'json,1.1', 'sites': site,
+                           'stateCd': None, 'countyCd': None, 'bBox': None,
+                           'parameterCd': expected_parameterCd, 'period': None,
+                           'startDT': start, 'endDT': end}
+
+        expected = fakeResponse(200)
+
+        mock_get.return_value = expected
+        actual = station.NWIS(site, service, start, end_date=end,
+                              parameterCd = parameterCd).get_data()
+        mock_get.assert_called_once_with(expected_url, params=expected_params,
+                                         headers=expected_headers)
+
     # Now test .df() and .json()
     @unittest.skip("Test this differently")
     def test_NWIS_df_returns_df(self):

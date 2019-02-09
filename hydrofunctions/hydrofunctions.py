@@ -52,8 +52,9 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
                 * The order of the boundaries should be: "West,South,East,North"
                 * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
-        parameterCd (str):
-            NWIS parameter code. Default is stream discharge '00060'
+        parameterCd (str or list of strings):
+            NWIS parameter code. Usually a five digit code. Default is stream discharge '00060'
+            a valid code can also be given as a list: parameterCd=['00060','00065']
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
@@ -132,7 +133,7 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
         'stateCd': stateCd,
         'countyCd': typing.check_NWIS_site(countyCd),
         'bBox': typing.check_NWIS_bBox(bBox),
-        'parameterCd': parameterCd,
+        'parameterCd': typing.check_NWIS_site(parameterCd),
         'period': period,
         'startDT': start_date,
         'endDT': end_date
