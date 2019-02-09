@@ -4,7 +4,7 @@ hydrofunctions.py
 
 This module contains the main functions used in an interactive session.
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
 import requests
 import numpy as np
 import pandas as pd

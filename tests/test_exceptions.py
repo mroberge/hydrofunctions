@@ -4,7 +4,7 @@ Created on Fri Aug 12 21:55:04 2016
 
 test_exceptions.py
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 
 from hydrofunctions import exceptions

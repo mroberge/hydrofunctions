@@ -7,7 +7,7 @@ Created on Tue Sep  6 11:20:51 2016
 test_typing.py
 tests for typing.py
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 from hydrofunctions import typing
 

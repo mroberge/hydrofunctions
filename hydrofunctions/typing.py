@@ -17,7 +17,7 @@ Suggested format for these functions:
 * then do a regular expression to check that the input is more or less valid.
 * raise exceptions when user input breaks format.
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
 import re
 
 
