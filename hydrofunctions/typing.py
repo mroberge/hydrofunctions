@@ -114,7 +114,7 @@ def check_NWIS_parameter_code(input):
             if isinstance(s,str) and s:
                 output = output + s + ','
             else:
-                raise TypeError(msg +  f'   bad element: {s}')
+                raise TypeError(msg +  '   bad element: {}'.format(s))
         # format:  ['0123', '567'] ==> "0123,567"
         # remove the last comma
         return output[:-1]
