@@ -5,7 +5,7 @@ station.py
 This module contains the Station class, which is used for organizing and
 managing data for a single USGS stream gauge.
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
 from . import typing
 from . import hydrofunctions as hf
 
@@ -81,13 +81,13 @@ class NWIS(Station):
                 * The order of the boundaries should be: "West,South,East,North"
                 * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
-        parameterCd (str):
-            NWIS parameter code. Default is stream discharge '00060'
+        parameterCd (str or list of strings):
+            NWIS parameter code. Usually a five digit code. Default is stream discharge '00060'
+            a valid code can also be given as a list: parameterCd=['00060','00065']
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
-                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for \
-                full list
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
 
         period (str):
             NWIS period code. Default is None.
@@ -107,15 +107,15 @@ class NWIS(Station):
                  parameterCd='00060',
                  period=None):
 
-        self.site = typing.check_NWIS_site(site)
+        self.site = typing.check_parameter_string(site, 'site')
         self.service = typing.check_NWIS_service(service)
         self.start_date = typing.check_datestr(start_date)
         self.end_date = typing.check_datestr(end_date)
         self.stateCd = stateCd
-        self.countyCd = countyCd
+        self.countyCd = typing.check_parameter_string(countyCd, 'county')
         self.bBox = bBox
         self.ok = False
-        self.parameterCd = parameterCd
+        self.parameterCd = typing.check_parameter_string(parameterCd, 'parameterCd')
         self.period = typing.check_period(period)
         self.response = None
         self.df = lambda: print("You must successfully call .get_data() before calling .df().")
@@ -138,10 +138,6 @@ class NWIS(Station):
                              "but not both.")
 
     def get_data(self):
-        self.site = typing.check_NWIS_site(self.site)
-        self.service = typing.check_NWIS_service(self.service)
-        self.start_date = typing.check_datestr(self.start_date)
-        self.end_date = typing.check_datestr(self.end_date)
         self.response = hf.get_nwis(self.site,
                                     self.service,
                                     self.start_date,

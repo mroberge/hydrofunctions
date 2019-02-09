@@ -8,7 +8,7 @@ session.
 Created on Sun Feb 25 19:51:58 2018
 @author: Marty
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
 from IPython.core.display import HTML
 
 

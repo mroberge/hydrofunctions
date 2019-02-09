@@ -5,7 +5,7 @@ Created on Mon Sep  5 21:13:34 2016
 @author: Marty
 """
 
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 from unittest import mock
 import pandas as pd
@@ -173,7 +173,7 @@ class TestNWIS(unittest.TestCase):
         start = "2017-01-01"
         end = "2017-12-31"
         cnty = ['51059', '51061']
-        cnty = typing.check_NWIS_site(cnty)
+        cnty = typing.check_parameter_string(cnty, 'county')
         service2 = 'dv'
 
         expected_url = 'http://waterservices.usgs.gov/nwis/dv/?'
@@ -188,6 +188,31 @@ class TestNWIS(unittest.TestCase):
         mock_get.return_value = expected
         actual = station.NWIS(None, service2, start, countyCd=cnty,
                               end_date=end).get_data()
+        mock_get.assert_called_once_with(expected_url, params=expected_params,
+                                         headers=expected_headers)
+
+    @mock.patch('requests.get')
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_hf_get_nwis_accepts_parameterCd_array(self, mock_get_prop, mock_get):
+        site = '01541200'
+        start = "2017-01-01"
+        end = "2017-12-31"
+        service = 'iv'
+        parameterCd = ['00060','00065']
+        expected_parameterCd = '00060,00065'
+
+        expected_url = 'http://waterservices.usgs.gov/nwis/iv/?'
+        expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
+        expected_params = {'format': 'json,1.1', 'sites': site,
+                           'stateCd': None, 'countyCd': None, 'bBox': None,
+                           'parameterCd': expected_parameterCd, 'period': None,
+                           'startDT': start, 'endDT': end}
+
+        expected = fakeResponse(200)
+
+        mock_get.return_value = expected
+        actual = station.NWIS(site, service, start, end_date=end,
+                              parameterCd = parameterCd).get_data()
         mock_get.assert_called_once_with(expected_url, params=expected_params,
                                          headers=expected_headers)
 
