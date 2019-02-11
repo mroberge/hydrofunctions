@@ -16,7 +16,7 @@ from . import typing
 
 
 def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
-             countyCd=None, bBox=None, parameterCd='00060', period=None):
+             countyCd=None, bBox=None, parameterCd=None, period=None):
     """Request stream gauge data from the USGS NWIS.
 
     Args:
@@ -53,8 +53,10 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
                 * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
         parameterCd (str or list of strings):
-            NWIS parameter code. Usually a five digit code. Default is stream discharge '00060'
-            a valid code can also be given as a list: parameterCd=['00060','00065']
+            NWIS parameter code. Usually a five digit code. Default is 'None'.
+            A valid code can also be given as a list: parameterCd=['00060','00065']
+                * if no value is submitted, then NWIS will return every \
+                parameter collected at this site. (default option)
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
