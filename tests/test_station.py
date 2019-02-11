@@ -142,7 +142,7 @@ class TestNWIS(unittest.TestCase):
         end = "2011-01-02"
         parameterCd = "00060"
 
-        actual = station.NWIS(site, service, start, end)
+        actual = station.NWIS(site, service, start, end, parameterCd=parameterCd)
         try_it_out = actual.get_data()
         # try_it_out should be a response object, I think
         mock_get_nwis.assert_called_once_with(site, service, start, end,
@@ -158,12 +158,12 @@ class TestNWIS(unittest.TestCase):
         service = "dv"
         start = "2011-01-01"
         end = "2011-01-02"
-        parameterCd = "00060"
+        parameterCd = None
         actual = station.NWIS(site, service, start, end)
         try_it_out = actual.get_data()
         # try_it_out should be an instance of NWIS.
         mock_get_nwis.assert_called_once_with(siteEx, service, start, end,
-                                              parameterCd=parameterCd,
+                                              parameterCd=None,
                                               period=None, stateCd=None,
                                               countyCd=None, bBox=None)
 
@@ -180,7 +180,7 @@ class TestNWIS(unittest.TestCase):
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': None,
                            'stateCd': None, 'countyCd': cnty, 'bBox': None,
-                           'parameterCd': '00060', 'period': None,
+                           'parameterCd': None, 'period': None,
                            'startDT': start, 'endDT': end}
 
         expected = fakeResponse(200)

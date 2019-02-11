@@ -54,7 +54,7 @@ class TestHydrofunctions(unittest.TestCase):
         expected_headers = {'Accept-encoding': 'gzip', 'max-age': '120'}
         expected_params = {'format': 'json,1.1', 'sites': 'A', 'stateCd': None,
                            'countyCd': None, 'bBox': None,
-                           'parameterCd': '00060', 'period': None,
+                           'parameterCd': None, 'period': None,
                            'startDT': 'C', 'endDT': 'D'}
 
         expected = fakeResponse()
@@ -80,7 +80,7 @@ class TestHydrofunctions(unittest.TestCase):
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': parsed_site,
                            'stateCd': None, 'countyCd': None,
-                           'bBox': None, 'parameterCd': '00060',
+                           'bBox': None, 'parameterCd': None,
                            'period': None, 'startDT': 'C', 'endDT': 'D'}
 
         expected = fakeResponse()
