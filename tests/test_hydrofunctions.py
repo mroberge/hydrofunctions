@@ -93,6 +93,29 @@ class TestHydrofunctions(unittest.TestCase):
                                          headers=expected_headers)
         self.assertEqual(actual, expected)
 
+    @mock.patch('requests.get')
+    def test_hf_get_nwis_converts_parameterCd_all_to_None(self, mock_get):
+        site = '01541200'
+        service = 'iv'
+        parameterCd = 'all'
+        expected_parameterCd = None
+        expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
+        expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
+        expected_params = {'format': 'json,1.1', 'sites': site,
+                           'stateCd': None, 'countyCd': None,
+                           'bBox': None, 'parameterCd': None,
+                           'period': None, 'startDT': None, 'endDT': None}
+        expected = fakeResponse()
+        expected.status_code = 200
+        expected.reason = "any text"
+
+        mock_get.return_value = expected
+        actual = hf.get_nwis(site, service, parameterCd=parameterCd)
+        mock_get.assert_called_once_with(expected_url, params=expected_params,
+                                         headers=expected_headers)
+        self.assertEqual(actual, expected)
+
+
     def test_hf_extract_nwis_df(self):
         # TODO: I need to check this was parsed correctly!
         actual = hf.extract_nwis_df(test_json)

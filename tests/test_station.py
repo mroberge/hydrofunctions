@@ -163,13 +163,13 @@ class TestNWIS(unittest.TestCase):
         try_it_out = actual.get_data()
         # try_it_out should be an instance of NWIS.
         mock_get_nwis.assert_called_once_with(siteEx, service, start, end,
-                                              parameterCd=None,
+                                              parameterCd='all',
                                               period=None, stateCd=None,
                                               countyCd=None, bBox=None)
 
     @mock.patch('requests.get')
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
-    def test_hf_get_nwis_accepts_countyCd_array(self, mock_get_prop, mock_get):
+    def test_NWIS_get_data_accepts_countyCd_array(self, mock_get_prop, mock_get):
         start = "2017-01-01"
         end = "2017-12-31"
         cnty = ['51059', '51061']
@@ -193,7 +193,7 @@ class TestNWIS(unittest.TestCase):
 
     @mock.patch('requests.get')
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
-    def test_hf_get_nwis_accepts_parameterCd_array(self, mock_get_prop, mock_get):
+    def test_NWIS_get_data_accepts_parameterCd_array(self, mock_get_prop, mock_get):
         site = '01541200'
         start = "2017-01-01"
         end = "2017-12-31"
@@ -212,7 +212,26 @@ class TestNWIS(unittest.TestCase):
 
         mock_get.return_value = expected
         actual = station.NWIS(site, service, start, end_date=end,
-                              parameterCd = parameterCd).get_data()
+                              parameterCd=parameterCd).get_data()
+        mock_get.assert_called_once_with(expected_url, params=expected_params,
+                                         headers=expected_headers)
+
+    @mock.patch('requests.get')
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_NWIS_get_data_converts_parameterCd_all_to_None(self, mock_get_prop, mock_get):
+        site = '01541200'
+        service = 'iv'
+        parameterCd = 'all'
+        expected_parameterCd = None
+        expected_url = 'http://waterservices.usgs.gov/nwis/' + service + '/?'
+        expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
+        expected_params = {'format': 'json,1.1', 'sites': site,
+                           'stateCd': None, 'countyCd': None, 'bBox': None,
+                           'parameterCd': expected_parameterCd, 'period': None,
+                           'startDT': None, 'endDT': None}
+        expected = fakeResponse(200)
+        mock_get.return_value = expected
+        actual = station.NWIS(site, service, parameterCd = parameterCd).get_data()
         mock_get.assert_called_once_with(expected_url, params=expected_params,
                                          headers=expected_headers)
 

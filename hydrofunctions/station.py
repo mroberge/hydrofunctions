@@ -82,10 +82,10 @@ class NWIS(Station):
                 * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
         parameterCd (str or list of strings):
-            NWIS parameter code. Usually a five digit code. Default is 'None'.
+            NWIS parameter code. Usually a five digit code. Default is 'all'.
             A valid code can also be given as a list: parameterCd=['00060','00065']
-                * if no value is submitted, then NWIS will return every \
-                parameter collected at this site. (default option)
+                * if value is 'all', or no value is submitted, then NWIS will \
+                return every parameter collected at this site. (default option)
                 * stage: '00065'
                 * discharge: '00060'
                 * not all sites collect all parameters!
@@ -106,7 +106,7 @@ class NWIS(Station):
                  stateCd=None,
                  countyCd=None,
                  bBox=None,
-                 parameterCd=None,
+                 parameterCd='all',
                  period=None):
 
         self.site = typing.check_parameter_string(site, 'site')
