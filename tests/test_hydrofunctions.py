@@ -115,6 +115,9 @@ class TestHydrofunctions(unittest.TestCase):
                                          headers=expected_headers)
         self.assertEqual(actual, expected)
 
+    def test_hf_get_nwis_raises_ValueError_too_many_locations(self):
+        with self.assertRaises(ValueError):
+            hf.get_nwis('01541000', stateCd='MD')
 
     def test_hf_extract_nwis_df(self):
         # TODO: I need to check this was parsed correctly!

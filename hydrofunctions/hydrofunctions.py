@@ -13,6 +13,7 @@ import pandas as pd
 from . import exceptions
 import warnings
 from . import typing
+from . import helpers
 
 
 def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
@@ -144,11 +145,16 @@ def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
         'endDT': end_date
     }
 
-    # Check that site selcetion parameters are exclusive!
-    if (site and stateCd) or (stateCd and countyCd) or (site and countyCd) \
-        or (site and bBox):
+    # Check that site selection parameters are exclusive!
+    total = helpers.count_number_of_truthy([site, stateCd, countyCd, bBox])
+    if total == 1:
+        pass
+    elif (total > 1):
         raise ValueError("Select sites using either site, stateCd, "
                          "countyCd, or bBox, but not more than one.")
+    elif (total < 1):
+        raise ValueError("Select sites using at least one of the following"
+                         " arguments: site, stateCd, countyCd or bBox.")
 
     # Check that time parameters are not both set.
     # If neither is set, then NWIS will return the most recent observation.

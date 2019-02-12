@@ -54,3 +54,7 @@ def draw_map(width=700, height=400, url="http://hydrocloud.org"):
                   '</iframe>'.format(width, height))
 
     return output
+
+
+def count_number_of_truthy(my_list):
+    return sum(bool(item) for item in my_list)

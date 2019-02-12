@@ -29,3 +29,27 @@ class TestMap(unittest.TestCase):
         self.assertTrue(widthRE.search(actual.data))
         self.assertTrue(heightRE.search(actual.data))
         self.assertTrue(urlRE.search(actual.data))
+
+    def test_helpers_count_truthy_two_true(self):
+        expect_two1 = [False, True, False, True]
+        self.assertEqual(hf.count_number_of_truthy(expect_two1), 2, 'test 1 failed.')
+
+        expect_two2 = ['text', False, False, True]
+        self.assertEqual(hf.count_number_of_truthy(expect_two2), 2, 'test 2 failed.')
+
+        expect_two3 = [True, True]
+        self.assertEqual(hf.count_number_of_truthy(expect_two3), 2, 'test 3 failed.')
+
+        expect_two4 = [5, 'text', False, False]
+        self.assertEqual(hf.count_number_of_truthy(expect_two4), 2, 'test 4 failed.')
+
+
+    def test_helpers_count_truthy_no_true(self):
+        expect_no_true1 = [False, False, False, False]
+        self.assertEqual(hf.count_number_of_truthy(expect_no_true1), 0, 'test 1 failed.')
+
+        expect_no_true2 = [None, False, False, None]
+        self.assertEqual(hf.count_number_of_truthy(expect_no_true2), 0, 'test 2 failed.')
+
+        expect_no_true3 = []
+        self.assertEqual(hf.count_number_of_truthy(expect_no_true3), 0, 'test 3 failed.')

@@ -8,6 +8,7 @@ managing data for a single USGS stream gauge.
 from __future__ import absolute_import, print_function, division, unicode_literals
 from . import typing
 from . import hydrofunctions as hf
+from . import helpers
 
 
 class Station(object):
@@ -125,13 +126,16 @@ class NWIS(Station):
         self.name = None
         self.siteName = None
 
-        # Check that site selcetion parameters are exclusive!
-        if (self.site and self.stateCd) \
-            or (self.stateCd and self.countyCd) \
-            or (self.site and self.countyCd) \
-            or (self.site and self.bBox):
-            raise ValueError("Select sites using either site, stateCd, or "
-                             "countyCd, but not more than one.")
+        # Check that site selection parameters are exclusive!
+        total = helpers.count_number_of_truthy([self.site, self.stateCd, self.countyCd, self.bBox])
+        if total == 1:
+            pass
+        elif (total > 1):
+            raise ValueError("Select sites using either site, stateCd, "
+                             "countyCd, or bBox, but not more than one.")
+        elif (total < 1):
+            raise ValueError("Select sites using at least one of the following"
+                             " arguments: site, stateCd, countyCd or bBox.")
 
         # Check that time parameters are not both set.
         # If neither is set, then NWIS will return the most recent observation.

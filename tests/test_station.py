@@ -92,18 +92,15 @@ class TestNWIS(unittest.TestCase):
 
     def test_NWIS_service_defaults_to_dv(self):
         site = "01582500"
-        service = "dv"
-        start = "2011-01-01"
-        end = "2011-01-02"
-        actual = station.NWIS(site, service, start, end)
+        actual = station.NWIS(site)
         self.assertEqual(actual.service, "dv")
 
     def test_NWIS_start_defaults_to_None(self):
-        actual = station.NWIS()
+        actual = station.NWIS('01541200')
         self.assertIsNone(actual.start_date)
 
     def test_NWIS_end_defaults_to_None(self):
-        actual = station.NWIS()
+        actual = station.NWIS('01541200')
         self.assertIsNone(actual.end_date)
 
     def test_NWIS_setters_work(self):
@@ -250,6 +247,9 @@ class TestNWIS(unittest.TestCase):
         self.assertIs(type(actualdf), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
+    def test_NWIS_raises_ValueError_too_many_location_arguments(self):
+        with self.assertRaises(ValueError):
+            station.NWIS('01541000', stateCd='MD')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

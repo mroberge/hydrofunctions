@@ -55,7 +55,8 @@ from .typing import (
         check_period
         )
 from .helpers import (
-        draw_map
+        draw_map,
+        count_number_of_truthy
         )
 from .charts import (
         flow_duration
