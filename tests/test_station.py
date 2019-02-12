@@ -251,5 +251,9 @@ class TestNWIS(unittest.TestCase):
         with self.assertRaises(ValueError):
             station.NWIS('01541000', stateCd='MD')
 
+    def test_NWIS_raises_ValueError_start_and_period_arguments(self):
+        with self.assertRaises(ValueError):
+            station.NWIS('01541000', start_date='2013-02-02', period='P9D')
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

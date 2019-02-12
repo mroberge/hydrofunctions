@@ -119,6 +119,10 @@ class TestHydrofunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             hf.get_nwis('01541000', stateCd='MD')
 
+    def test_hf_get_nwis_raises_ValueError_start_and_period(self):
+        with self.assertRaises(ValueError):
+            hf.get_nwis('01541000', start_date='2014-01-01', period='P1D')
+
     def test_hf_extract_nwis_df(self):
         # TODO: I need to check this was parsed correctly!
         actual = hf.extract_nwis_df(test_json)
