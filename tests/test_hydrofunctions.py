@@ -184,10 +184,12 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
-    @unittest.skip("What happens if NWIS returns valid response with no data?")
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         # See line 78 in hydrofunctions
-        pass
+        empty_response = {'value': {'timeSeries': []}}
+
+        with self.assertRaises(hf.HydroNoDataError):
+            hf.extract_nwis_df(empty_response)
 
     def test_hf_nwis_custom_status_codes_returns_None_for_200(self):
         fake = fakeResponse()
