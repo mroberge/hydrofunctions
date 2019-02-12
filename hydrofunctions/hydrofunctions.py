@@ -16,7 +16,7 @@ from . import typing
 from . import helpers
 
 
-def get_nwis(site, service, start_date=None, end_date=None, stateCd=None,
+def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
              countyCd=None, bBox=None, parameterCd='all', period=None):
     """Request stream gauge data from the USGS NWIS.
 
