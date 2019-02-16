@@ -14,7 +14,7 @@ import unittest
 import pandas as pd
 
 import hydrofunctions as hf
-from .test_data import JSON15min2month as test_json
+from .test_data import JSON15min2month, two_sites_two_params_iv, nothing_avail, mult_flags
 
 
 class fakeResponse(object):
@@ -24,8 +24,8 @@ class fakeResponse(object):
         self.url = "fake url"
         self.reason = "fake reason"
         # .json will return a function
-        # .json() will return test_json
-        self.json = lambda: test_json
+        # .json() will return JSON15min2month
+        self.json = lambda: JSON15min2month
         if code == 200:
             pass
         else:
@@ -33,6 +33,61 @@ class fakeResponse(object):
 
     def raise_for_status(self):
         return self.status_code
+
+
+class TestHydrofunctionsParsing(unittest.TestCase):
+    """Test the parsing of hf.extract_nwis_df()
+
+    test the following:
+        Can it handle multiple qualifier flags?
+        how does it encode mult params & mult sites?
+        Does it raise HydroNoDataError if nothing returned?
+        
+        """
+
+    def test_hf_extract_nwis_df_parse_multiple_flags(self):
+        actual = hf.extract_nwis_df(mult_flags)
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+        #TODO: test if flags are preserved.
+
+    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
+        actual = hf.extract_nwis_df(two_sites_two_params_iv)
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+        #TODO: test that data is organized correctly
+
+    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df_w_two_sites(self):
+        actual = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual_len, actual_width = actual.shape
+        self.assertEqual(actual_len, 1, "Wrong length for dataframe")
+        self.assertEqual(actual_width, 8, "Wrong width for dataframe")
+        expected_columns = ['USGS:01541000:00060:00000',
+                            'USGS:01541000:00060:00000_qualifiers',
+                            'USGS:01541000:00065:00000',
+                            'USGS:01541000:00065:00000_qualifiers',
+                            'USGS:01541200:00060:00000',
+                            'USGS:01541200:00060:00000_qualifiers',
+                            'USGS:01541200:00065:00000',
+                            'USGS:01541200:00065:00000_qualifiers']
+        actual_columns = actual.columns.values
+        self.assertCountEqual(actual_columns, expected_columns, "column names don't match expected")
+
+    def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
+        empty_response = {'value': {'timeSeries': []}}
+        with self.assertRaises(hf.HydroNoDataError):
+            hf.extract_nwis_df(empty_response)
+
+    def test_hf_extract_nwis_raises_exception_when_df_is_empty_nothing_avail(self):
+        with self.assertRaises(hf.HydroNoDataError):
+            hf.extract_nwis_df(nothing_avail)
+
+    def test_hf_get_nwis_property(self):
+        sites = None
+        bBox = (-105.430, 39.655, -104, 39.863)
+        # TODO: test should be the json for a multiple site request.
+        names = hf.get_nwis_property(JSON15min2month, key='name')
+        self.assertIs(type(names), list, msg="Did not return a list")
 
 
 class TestHydrofunctions(unittest.TestCase):
@@ -143,53 +198,6 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_get_nwis_raises_ValueError_start_and_period(self):
         with self.assertRaises(ValueError):
             hf.get_nwis('01541000', start_date='2014-01-01', period='P1D')
-
-    def test_hf_extract_nwis_df(self):
-        # TODO: I need to check this was parsed correctly!
-        actual = hf.extract_nwis_df(test_json)
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
-                      msg="Did not return a df")
-
-    def test_hf_extract_nwis_stations_df(self):
-        sites = ["01638500", "01646502"]
-        # TODO: test should be the json for a multiple site request.
-        actual = hf.extract_nwis_df(test_json)
-        vD = hf.get_nwis_property(test_json, key='variableDescription')
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
-                      msg="Did not return a df")
-
-    def test_hf_extract_nwis_iv_gwstations_df(self):
-        # TODO: I need to make a response fixture to test this out!!
-        sites = ["380616075380701", "394008077005601"]
-        actual = hf.extract_nwis_df(test_json)
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
-                      msg="Did not return a df")
-
-    def test_hf_extract_nwis_bBox_df(self):
-        sites = None
-        bBox = (-105.430, 39.655, -104, 39.863)
-        # TODO: test should be the json for a multiple site request.
-        names = hf.get_nwis_property(test_json, key='name')
-        self.assertIs(type(names), list, msg="Did not return a list")
-        actual = hf.extract_nwis_df(test_json)
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
-                      msg="Did not return a df")
-
-    def test_hf_extract_nwis_bBox2_df(self):
-        sites = None
-        bBox = '-105.430,39.655,-104,39.863'
-        # TODO: test should be the json for a multiple site request.
-        names = hf.get_nwis_property(test_json, key='name')
-        actual = hf.extract_nwis_df(test_json)
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
-                      msg="Did not return a df")
-
-    def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
-        # See line 78 in hydrofunctions
-        empty_response = {'value': {'timeSeries': []}}
-
-        with self.assertRaises(hf.HydroNoDataError):
-            hf.extract_nwis_df(empty_response)
 
     def test_hf_nwis_custom_status_codes_returns_None_for_200(self):
         fake = fakeResponse()
