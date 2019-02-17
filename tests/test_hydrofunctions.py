@@ -57,9 +57,11 @@ class TestHydrofunctionsParsing(unittest.TestCase):
                       msg="Did not return a df")
         #TODO: test that data is organized correctly
 
-    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df_w_two_sites(self):
+    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
         actual = hf.extract_nwis_df(two_sites_two_params_iv)
         actual_len, actual_width = actual.shape
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
         self.assertEqual(actual_len, 1, "Wrong length for dataframe")
         self.assertEqual(actual_width, 8, "Wrong width for dataframe")
         expected_columns = ['USGS:01541000:00060:00000',
@@ -71,7 +73,40 @@ class TestHydrofunctionsParsing(unittest.TestCase):
                             'USGS:01541200:00065:00000',
                             'USGS:01541200:00065:00000_qualifiers']
         actual_columns = actual.columns.values
-        self.assertCountEqual(actual_columns, expected_columns, "column names don't match expected")
+        self.assertCountEqual(actual_columns, expected_columns,
+                              "column names don't match expected")
+        self.assertTrue(actual.index.is_unique, "index has repeated values.")
+        self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
+
+    def test_hf_extract_nwis_df_parse_JSON15min2month_return_df(self):
+        actual = hf.extract_nwis_df(JSON15min2month)
+        actual_len, actual_width = actual.shape
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+        self.assertEqual(actual_len, 1000, "Wrong length for dataframe")
+        self.assertEqual(actual_width, 2, "Wrong width for dataframe")
+        expected_columns = ['USGS:03213700:00060:00000',
+                            'USGS:03213700:00060:00000_qualifiers']
+        actual_columns = actual.columns.values
+        self.assertCountEqual(actual_columns, expected_columns,
+                              "column names don't match expected")
+        self.assertTrue(actual.index.is_unique, "index has repeated values.")
+        self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
+
+    def test_hf_extract_nwis_df_parse_mult_flags_return_df(self):
+        actual = hf.extract_nwis_df(mult_flags)
+        actual_len, actual_width = actual.shape
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+        self.assertEqual(actual_len, 438, "Wrong length for dataframe")
+        self.assertEqual(actual_width, 2, "Wrong width for dataframe")
+        expected_columns = ['USGS:01542500:00060:00000',
+                            'USGS:01542500:00060:00000_qualifiers']
+        actual_columns = actual.columns.values
+        self.assertCountEqual(actual_columns, expected_columns,
+                              "column names don't match expected")
+        self.assertTrue(actual.index.is_unique, "index has repeated values.")
+        self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         empty_response = {'value': {'timeSeries': []}}
