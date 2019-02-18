@@ -12,6 +12,7 @@ from unittest import mock
 import unittest
 
 import pandas as pd
+import numpy as np
 
 import hydrofunctions as hf
 from .test_data import JSON15min2day, two_sites_two_params_iv, nothing_avail, mult_flags
@@ -116,6 +117,23 @@ class TestHydrofunctionsParsing(unittest.TestCase):
     def test_hf_extract_nwis_raises_exception_when_df_is_empty_nothing_avail(self):
         with self.assertRaises(hf.HydroNoDataError):
             hf.extract_nwis_df(nothing_avail)
+
+    def test_hf_extract_nwis_returns_comma_separated_qualifiers_1(self):
+        actual = hf.extract_nwis_df(mult_flags)
+        actual_flags_1 = actual.loc['2019-01-24T10:30:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
+        expected_flags_1 = 'P,e'
+        self.assertEqual(actual_flags_1, expected_flags_1, "The data qualifier flags were not parsed correctly.")
+
+    def test_hf_extract_nwis_returns_comma_separated_qualifiers_2(self):
+        actual = hf.extract_nwis_df(mult_flags)
+        actual_flags_2 = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
+        expected_flags_2 = 'P,Ice'
+        self.assertEqual(actual_flags_2, expected_flags_2, "The data qualifier flags were not parsed correctly.")
+
+    def test_hf_extract_nwis_replaces_NWIS_noDataValue_with_npNan(self):
+        actual = hf.extract_nwis_df(mult_flags)
+        actual_nodata = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000']
+        self.assertTrue(np.isnan(actual_nodata), "The NWIS no data value was not replaced with np.nan. ")
 
     def test_hf_get_nwis_property(self):
         sites = None
