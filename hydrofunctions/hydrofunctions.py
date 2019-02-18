@@ -333,7 +333,7 @@ def extract_nwis_df(nwis_dict):
     DF = DF.rename(columns={'value': tsname,
                             'qualifiers': tsqual})
     DF[tsname] = DF[tsname].astype(float)
-    DF[tsqual] = DF[tsqual].apply(lambda x: ' '.join(x))
+    DF[tsqual] = DF[tsqual].apply(lambda x: ','.join(x))
 
     # set index name for dataframe
     DF.index.name = 'datetime'
@@ -364,7 +364,7 @@ def extract_nwis_df(nwis_dict):
         # the other columns will have flags. There is no simple way to
         # select only the data columns except to take the odd numbered columns.
 
-        # A POSSIBLE SOLUTION: create a data structure that is composed of 
+        # A POSSIBLE SOLUTION: create a data structure that is composed of
         # Stacked dataframes. Each data frame will correspond to a single site,
         # The first column will correspond to discharge, the second to flags,
         # and any others can be derived values like baseflow or other measured
