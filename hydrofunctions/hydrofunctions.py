@@ -162,7 +162,7 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
         raise ValueError("Use either start_date or period, or neither, "
                          "but not both.")
 
-    url = 'http://waterservices.usgs.gov/nwis/'
+    url = 'https://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'
     response = requests.get(url, params=values, headers=header)
     # requests will raise a 'ConnectionError' if the connection is refused

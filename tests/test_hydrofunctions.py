@@ -140,7 +140,7 @@ class TestHydrofunctions(unittest.TestCase):
         start = 'C'
         end = 'D'
 
-        expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
+        expected_url = 'https://waterservices.usgs.gov/nwis/'+service+'/?'
         expected_headers = {'Accept-encoding': 'gzip', 'max-age': '120'}
         expected_params = {'format': 'json,1.1', 'sites': 'A', 'stateCd': None,
                            'countyCd': None, 'bBox': None,
@@ -166,7 +166,7 @@ class TestHydrofunctions(unittest.TestCase):
         start = 'C'
         end = 'D'
 
-        expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
+        expected_url = 'https://waterservices.usgs.gov/nwis/'+service+'/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': parsed_site,
                            'stateCd': None, 'countyCd': None,
@@ -188,7 +188,7 @@ class TestHydrofunctions(unittest.TestCase):
         site = '01541200'
         expected_service = 'dv'
 
-        expected_url = 'http://waterservices.usgs.gov/nwis/'+expected_service+'/?'
+        expected_url = 'https://waterservices.usgs.gov/nwis/'+expected_service+'/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': site,
                            'stateCd': None, 'countyCd': None,
@@ -210,7 +210,7 @@ class TestHydrofunctions(unittest.TestCase):
         service = 'iv'
         parameterCd = 'all'
         expected_parameterCd = None
-        expected_url = 'http://waterservices.usgs.gov/nwis/'+service+'/?'
+        expected_url = 'https://waterservices.usgs.gov/nwis/'+service+'/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': site,
                            'stateCd': None, 'countyCd': None,

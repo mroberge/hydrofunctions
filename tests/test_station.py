@@ -173,7 +173,7 @@ class TestNWIS(unittest.TestCase):
         cnty = typing.check_parameter_string(cnty, 'county')
         service2 = 'dv'
 
-        expected_url = 'http://waterservices.usgs.gov/nwis/dv/?'
+        expected_url = 'https://waterservices.usgs.gov/nwis/dv/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': None,
                            'stateCd': None, 'countyCd': cnty, 'bBox': None,
@@ -198,7 +198,7 @@ class TestNWIS(unittest.TestCase):
         parameterCd = ['00060','00065']
         expected_parameterCd = '00060,00065'
 
-        expected_url = 'http://waterservices.usgs.gov/nwis/iv/?'
+        expected_url = 'https://waterservices.usgs.gov/nwis/iv/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': site,
                            'stateCd': None, 'countyCd': None, 'bBox': None,
@@ -220,7 +220,7 @@ class TestNWIS(unittest.TestCase):
         service = 'iv'
         parameterCd = 'all'
         expected_parameterCd = None
-        expected_url = 'http://waterservices.usgs.gov/nwis/' + service + '/?'
+        expected_url = 'https://waterservices.usgs.gov/nwis/' + service + '/?'
         expected_headers = {'max-age': '120', 'Accept-encoding': 'gzip'}
         expected_params = {'format': 'json,1.1', 'sites': site,
                            'stateCd': None, 'countyCd': None, 'bBox': None,
