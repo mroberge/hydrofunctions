@@ -14,7 +14,7 @@ import unittest
 import pandas as pd
 
 import hydrofunctions as hf
-from .test_data import JSON15min2month, two_sites_two_params_iv, nothing_avail, mult_flags
+from .test_data import JSON15min2day, two_sites_two_params_iv, nothing_avail, mult_flags
 
 
 class fakeResponse(object):
@@ -24,8 +24,8 @@ class fakeResponse(object):
         self.url = "fake url"
         self.reason = "fake reason"
         # .json will return a function
-        # .json() will return JSON15min2month
-        self.json = lambda: JSON15min2month
+        # .json() will return JSON15min2day
+        self.json = lambda: JSON15min2day
         if code == 200:
             pass
         else:
@@ -42,7 +42,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         Can it handle multiple qualifier flags?
         how does it encode mult params & mult sites?
         Does it raise HydroNoDataError if nothing returned?
-        
+
         """
 
     def test_hf_extract_nwis_df_parse_multiple_flags(self):
@@ -62,7 +62,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        self.assertEqual(actual_len, 1, "Wrong length for dataframe")
+        self.assertEqual(actual_len, 93, "Wrong length for dataframe")
         self.assertEqual(actual_width, 8, "Wrong width for dataframe")
         expected_columns = ['USGS:01541000:00060:00000',
                             'USGS:01541000:00060:00000_qualifiers',
@@ -78,12 +78,12 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         self.assertTrue(actual.index.is_unique, "index has repeated values.")
         self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
 
-    def test_hf_extract_nwis_df_parse_JSON15min2month_return_df(self):
-        actual = hf.extract_nwis_df(JSON15min2month)
+    def test_hf_extract_nwis_df_parse_JSON15min2day_return_df(self):
+        actual = hf.extract_nwis_df(JSON15min2day)
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        self.assertEqual(actual_len, 1000, "Wrong length for dataframe")
+        self.assertEqual(actual_len, 192, "Wrong length for dataframe")
         self.assertEqual(actual_width, 2, "Wrong width for dataframe")
         expected_columns = ['USGS:03213700:00060:00000',
                             'USGS:03213700:00060:00000_qualifiers']
@@ -121,7 +121,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         sites = None
         bBox = (-105.430, 39.655, -104, 39.863)
         # TODO: test should be the json for a multiple site request.
-        names = hf.get_nwis_property(JSON15min2month, key='name')
+        names = hf.get_nwis_property(JSON15min2day, key='name')
         self.assertIs(type(names), list, msg="Did not return a list")
 
 
