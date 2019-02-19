@@ -284,7 +284,8 @@ def extract_nwis_df(nwis_dict):
         HydroNoDataError  when the request is valid, but NWIS has no data for
             the parameters provided in the request.
     """
-    #nwis_dict = response_obj.json()
+    if type(nwis_dict) is not dict:
+        nwis_dict = nwis_dict.json()
 
     # strip header and all metadata.
     ts = nwis_dict['value']['timeSeries']

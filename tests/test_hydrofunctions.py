@@ -46,11 +46,16 @@ class TestHydrofunctionsParsing(unittest.TestCase):
 
         """
 
+    def test_hf_extract_nwis_df_accepts_response_obj(self):
+        fake_response = fakeResponse()
+        actual = hf.extract_nwis_df(fake_response)
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
+
     def test_hf_extract_nwis_df_parse_multiple_flags(self):
         actual = hf.extract_nwis_df(mult_flags)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        #TODO: test if flags are preserved.
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
         actual = hf.extract_nwis_df(two_sites_two_params_iv)
