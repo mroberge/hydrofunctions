@@ -99,7 +99,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        self.assertEqual(actual_len, 438, "Wrong length for dataframe")
+        self.assertEqual(actual_len, 480, "Wrong length for dataframe")
         self.assertEqual(actual_width, 2, "Wrong width for dataframe")
         expected_columns = ['USGS:01542500:00060:00000',
                             'USGS:01542500:00060:00000_qualifiers']

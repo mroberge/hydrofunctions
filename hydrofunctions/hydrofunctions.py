@@ -218,7 +218,8 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     """
     #nwis_dict = response_obj.json()
 
-    # strip header and all metadata.
+    # strip header and all metadata. ts is the 'timeSeries' element of the
+    # response; it is an array of objects that contain time series data.
     ts = nwis_dict['value']['timeSeries']
     msg = 'The NWIS reports that it does not' + \
           ' have any data for this request.'
@@ -294,7 +295,6 @@ def extract_nwis_df(nwis_dict):
         # is first returned, but I do it here so that the data doesn't get
         # extracted twice.
         # TODO: raise this exception earlier??
-        # TODO: find a URL will result an empty set like this.
         #
         # ** Interactive sessions should have an error raised.
         #
@@ -303,82 +303,55 @@ def extract_nwis_df(nwis_dict):
         # needs to be reconsidered. The request was valid somehow, but
         # there is no data being collected.
 
-        # TODO: this if clause needs to be tested.
         raise exceptions.HydroNoDataError("The NWIS reports that it does not"
                                           " have any data for this request.")
 
-    # create lists of timeseries keys and noDataValues
-    keys = get_nwis_property(nwis_dict)
-    noDataValues = get_nwis_property(nwis_dict, key='noDataValue',
-                                     remove_duplicates=True)
-    # determine the NWIS data item with the maximum amount of data so that
-    # it can be processed first
-    idxmx = 0
-    emax = 0
-    for idx, key in enumerate(keys):
-        data = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
-        if len(data) > emax:
-            emax = len(data)
-            idxmx = idx
-    # empty json
-    if emax < 1:
-        return None
+    # create a list of time series;
+    # set the index, set the data types, replace NaNs, sort, find the first and last
 
-    # process data for the first NWIS site
-    tsname = nwis_dict['value']['timeSeries'][idxmx]['name']
-    tsqual = tsname + '_qualifiers'
-    data = nwis_dict['value']['timeSeries'][idxmx]['values'][0]['value']
-    DF = pd.DataFrame(data, columns=['dateTime', 'value', 'qualifiers'])
-    DF.index = pd.to_datetime(DF.pop('dateTime'))
-    DF = DF.rename(columns={'value': tsname,
-                            'qualifiers': tsqual})
-    DF[tsname] = DF[tsname].astype(float)
-    DF[tsqual] = DF[tsqual].apply(lambda x: ','.join(x))
+    collection = []
+    starts = []
+    ends = []
+    for series in ts:
+        series_name = series['name']
+        noDataValues = series['variable']['noDataValue']
+        data = series['values'][0]['value']
+        qualifiers = series_name + "_qualifiers"
+        DF = pd.DataFrame(data=data)
+        DF.index = pd.to_datetime(DF.pop('dateTime'))
+        DF['value'] = DF['value'].astype(float)
+        DF = DF.replace(to_replace=noDataValues, value=np.nan)
+        DF['qualifiers'] = DF['qualifiers'].apply(lambda x: ','.join(x))
+        DF.rename({'qualifiers': qualifiers, 'value': series_name}, axis=1, inplace=True)
+        DF.sort_index(inplace=True)
+        starts.append(DF.index.min())
+        ends.append(DF.index.max())
+        # series_dict = {'df': DF, 'start': start, 'end': end}
+        collection.append(DF)
 
-    # set index name for dataframe
-    DF.index.name = 'datetime'
+    startmin = min(starts)
+    endmax = max(ends)
+    # TODO: find most frequently sampled dataset.
+    freqmax = '15T'  # Assume for now that frequency is every 15 minutes.
+    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmax)
+    cleanDF = pd.DataFrame(index=clean_index)
+    for dataset in collection:
+        cleanDF = pd.concat([cleanDF, dataset], axis=1)
+    cleanDF.index.name = 'datetime'
 
-    # process data for the remaining NWIS sites
-    for key in keys:
-        # skip data processing if key has already been processed
-        if key == idxmx:
-            continue
-        tsname = nwis_dict['value']['timeSeries'][key]['name']
-        tsqual = tsname + '_qualifiers'
-        da = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
-        dfa = pd.DataFrame(da, columns=['dateTime', 'value', 'qualifiers'])
-        dfa.index = pd.to_datetime(dfa.pop('dateTime'))
-        dfa = dfa.rename(columns={'value': tsname,
-                                  'qualifiers': tsqual})
-        dfa[tsname] = dfa[tsname].astype(float)
-        dfa[tsqual] = dfa[tsqual].apply(lambda x: ' '.join(x))
+# TODO:
+    # once all of the dataframes have been concat'ed, some dataframes will
+    # have empty values for some index values. Fill data value with NaNs or
+    # interpolate, then set the qualifier flag. Right now, the qualifier flag
+    # is set to NaN.
 
-        # TODO:
+# TODO:
+# The problem with adding all of these dataframes to a single large
+# dataframe using pd.concat is that sites that collect less frequently
+# will get padded with NANs for all of the time indecies that they
+# don't have data for.
 
-        # The problem with adding all of these dataframes to a single large
-        # dataframe using pd.concat is that sites that collect less frequently
-        # will get padded with NANs for all of the time indecies that they
-        # don't have data for.
-
-        # A second problem is that every other column will have data, and the
-        # the other columns will have flags. There is no simple way to
-        # select only the data columns except to take the odd numbered columns.
-
-        # A POSSIBLE SOLUTION: create a data structure that is composed of
-        # Stacked dataframes. Each data frame will correspond to a single site,
-        # The first column will correspond to discharge, the second to flags,
-        # and any others can be derived values like baseflow or other measured
-        # parameters. The dataframes will be stacked, and be part of an object
-        # that allows you to select by a range of dates, by sites, and by the
-        # type of column. In this respect, it might be similar to XArray,
-        # except that package requires their n-dimensional structures to all be
-        # the same datatype.
-        DF = pd.concat([DF, dfa], axis=1)
-
-    # replace missing values in the dataframe
-    DF = DF.replace(to_replace=noDataValues, value=np.nan)
-
-    return DF
+    return cleanDF
 
 
 def nwis_custom_status_codes(response):
