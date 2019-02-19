@@ -323,7 +323,7 @@ def extract_nwis_df(nwis_dict):
         DF['value'] = DF['value'].astype(float)
         DF = DF.replace(to_replace=noDataValues, value=np.nan)
         DF['qualifiers'] = DF['qualifiers'].apply(lambda x: ','.join(x))
-        DF.rename({'qualifiers': qualifiers, 'value': series_name}, axis=1, inplace=True)
+        DF.rename(columns={'qualifiers': qualifiers, 'value': series_name}, inplace=True)
         DF.sort_index(inplace=True)
         starts.append(DF.index.min())
         ends.append(DF.index.max())
