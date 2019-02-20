@@ -34,6 +34,7 @@ Example::
 https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
+import warnings
 
 
 class HydroException(Exception):
@@ -76,3 +77,18 @@ try:
 except HydroException:
     '''blanked condition to handle all errors from your package'''
 """
+
+
+class HydroUserWarning(UserWarning):
+    """
+        This is the base class for all warnings created for the HydroFunctions
+        package. This class can be used if there is no more specific warning
+        available.
+
+        Usage::
+
+            import warnings
+            ... code
+            warnings.warn('This is my warning message.', HydroUserWarning)
+    """
+    pass
