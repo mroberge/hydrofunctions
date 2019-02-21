@@ -321,6 +321,9 @@ def extract_nwis_df(nwis_dict):
         series_name = series['name']
         noDataValues = series['variable']['noDataValue']
         data = series['values'][0]['value']
+        if data == []:
+            # This parameter has no data. Skip to next series.
+            continue
         qualifiers = series_name + "_qualifiers"
         DF = pd.DataFrame(data=data)
         DF.index = pd.to_datetime(DF.pop('dateTime'))
@@ -337,6 +340,18 @@ def extract_nwis_df(nwis_dict):
         # series_dict = {'df': DF, 'start': start, 'end': end}
         collection.append(DF)
 
+    if len(collection) < 1:
+        # It seems like this condition should not occur. The NWIS trims the
+        # response and returns an empty nwis_dict['value']['timeSeries']
+        # if none of the parameters requested have data.
+        # If at least one of the paramters have data,
+        # then the empty series will get delivered, but with no data.
+        # Compare these requests:
+        # empty:               https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=01570500&startDT=2018-06-01&endDT=2018-06-01&parameterCd=00045
+        # one empty, one full: https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=01570500&startDT=2018-06-01&endDT=2018-06-01&parameterCd=00045,00060
+        raise exceptions.HydroNoDataError("The NWIS does not have any data for"
+                                          " the requested combination of sites"
+                                          ", parameters, and dates.")
     startmin = min(starts)
     endmax = max(ends)
     freqmin = min(freqs)
