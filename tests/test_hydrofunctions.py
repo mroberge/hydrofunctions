@@ -15,7 +15,7 @@ import pandas as pd
 import numpy as np
 
 import hydrofunctions as hf
-from .test_data import JSON15min2day, two_sites_two_params_iv, nothing_avail, mult_flags
+from .test_data import JSON15min2day, two_sites_two_params_iv, nothing_avail, mult_flags, diff_freq
 
 
 class fakeResponse(object):
@@ -122,6 +122,10 @@ class TestHydrofunctionsParsing(unittest.TestCase):
     def test_hf_extract_nwis_raises_exception_when_df_is_empty_nothing_avail(self):
         with self.assertRaises(hf.HydroNoDataError):
             hf.extract_nwis_df(nothing_avail)
+
+    def test_hf_extract_nwis_warns_when_diff_series_have_diff_freq(self):
+        with self.assertWarns(hf.HydroUserWarning):
+            hf.extract_nwis_df(diff_freq)
 
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_1(self):
         actual = hf.extract_nwis_df(mult_flags)
