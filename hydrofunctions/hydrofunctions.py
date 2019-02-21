@@ -353,6 +353,10 @@ def extract_nwis_df(nwis_dict):
         cleanDF = pd.concat([cleanDF, dataset], axis=1)
     cleanDF.index.name = 'datetime'
 
+    if (not DF.index.is_unique):
+        DF = DF[~DF.index.duplicated(keep='first')]
+    if (not DF.index.is_monotonic):
+        DF.sort_index(axis=0, inplace=True)
 # TODO:
     # once all of the dataframes have been concat'ed, some dataframes will
     # have empty values for some index values. Fill data value with NaNs or
