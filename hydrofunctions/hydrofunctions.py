@@ -283,6 +283,9 @@ def extract_nwis_df(nwis_dict):
     Raises:
         HydroNoDataError  when the request is valid, but NWIS has no data for
             the parameters provided in the request.
+
+        HydroUserWarning  when one dataset is at a lower frequency than another
+            dataset in the same request.
     """
     if type(nwis_dict) is not dict:
         nwis_dict = nwis_dict.json()
@@ -313,6 +316,7 @@ def extract_nwis_df(nwis_dict):
     collection = []
     starts = []
     ends = []
+    freqs = []
     for series in ts:
         series_name = series['name']
         noDataValues = series['variable']['noDataValue']
@@ -327,14 +331,23 @@ def extract_nwis_df(nwis_dict):
         DF.sort_index(inplace=True)
         starts.append(DF.index.min())
         ends.append(DF.index.max())
+        if DF.index.freq is None:
+            DF.index.freq = pd.infer_freq(DF.index)
+        freqs.append(DF.index.freq)
         # series_dict = {'df': DF, 'start': start, 'end': end}
         collection.append(DF)
 
     startmin = min(starts)
     endmax = max(ends)
-    # TODO: find most frequently sampled dataset.
-    freqmax = '15T'  # Assume for now that frequency is every 15 minutes.
-    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmax)
+    freqmin = min(freqs)
+    freqmax = max(freqs)
+    if (freqmin != freqmax):
+        # issue a warning that one of the datasets will be resampled.
+        warnings.warn("One or more datasets in this request is going to be "
+                      "'upsampled' to " + str(freqmin) + " because the data "
+                      "were collected at a lower frequency of " + str(freqmax),
+                      exceptions.HydroUserWarning)
+    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin)
     cleanDF = pd.DataFrame(index=clean_index)
     for dataset in collection:
         cleanDF = pd.concat([cleanDF, dataset], axis=1)
