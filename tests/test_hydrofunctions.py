@@ -281,6 +281,11 @@ class TestHydrofunctions(unittest.TestCase):
         # Does the function return the bad status_code?
         self.assertEqual(actual, expected)
 
+    def test_hf_select_data_returns_data_cols(self):
+        DF = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual = hf.select_data(DF)
+        expected = [False, True, False, True, False, True, False, True]
+        self.assertListEqual(actual.tolist(), expected, "select_data should return an array of which columns contain the data, not the qualifiers.")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

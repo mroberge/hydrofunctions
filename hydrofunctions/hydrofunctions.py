@@ -16,6 +16,28 @@ from . import typing
 from . import helpers
 
 
+def select_data(nwis_df):
+    """Create a boolean array of columns that contain data.
+
+    Args:
+        nwis_df:
+            A pandas dataframe created by extract_nwis_df.
+
+    Returns:
+        an array of Boolean values corresponding to the columns in the
+        original dataframe.
+
+    Example:
+        >>> my_dataframe[:, select_data(my_dataframe)]
+
+        returns a dataframe with only the data columns; the qualifier columns
+        do not show.
+    """
+    data_regex = r'[0-9]$'
+    return nwis_df.columns.str.contains(data_regex)
+
+
+
 def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
              countyCd=None, bBox=None, parameterCd='all', period=None):
     """Request stream gauge data from the USGS NWIS.
