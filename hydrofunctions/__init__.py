@@ -37,7 +37,7 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 from __future__ import absolute_import, print_function
 
 __title__ = 'hydrofunctions'
-__version__ = '0.1.7'
+__version__ = '0.1.8dev'
 __author__ = 'Martin Roberge'
 __email__ = 'mroberge.whois@gmail.com'
 __license__ = 'MIT'
@@ -49,7 +49,7 @@ from .exceptions import (
         HydroUserWarning
         )
 from .hydrofunctions import (
-        get_nwis, extract_nwis_df, nwis_custom_status_codes,
+        get_nwis, select_data, extract_nwis_df, nwis_custom_status_codes,
         get_nwis_property
         )
 from .station import Station, NWIS
