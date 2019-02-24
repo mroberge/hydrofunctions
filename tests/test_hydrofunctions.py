@@ -48,23 +48,23 @@ class TestHydrofunctionsParsing(unittest.TestCase):
 
     def test_hf_extract_nwis_df_accepts_response_obj(self):
         fake_response = fakeResponse()
-        actual = hf.extract_nwis_df(fake_response)
+        actual = hf.extract_nwis_df(fake_response, interpolate=False)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
     def test_hf_extract_nwis_df_parse_multiple_flags(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
-        actual = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
         #TODO: test that data is organized correctly
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
-        actual = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
@@ -85,7 +85,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_df_parse_JSON15min2day_return_df(self):
-        actual = hf.extract_nwis_df(JSON15min2day)
+        actual = hf.extract_nwis_df(JSON15min2day, interpolate=False)
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
@@ -100,11 +100,11 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_df_parse_mult_flags_return_df(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        self.assertEqual(actual_len, 438, "Wrong length for dataframe")
+        self.assertEqual(actual_len, 480, "Wrong length for dataframe")
         self.assertEqual(actual_width, 2, "Wrong width for dataframe")
         expected_columns = ['USGS:01542500:00060:00000',
                             'USGS:01542500:00060:00000_qualifiers']
@@ -117,32 +117,56 @@ class TestHydrofunctionsParsing(unittest.TestCase):
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         empty_response = {'value': {'timeSeries': []}}
         with self.assertRaises(hf.HydroNoDataError):
-            hf.extract_nwis_df(empty_response)
+            hf.extract_nwis_df(empty_response, interpolate=False)
 
     def test_hf_extract_nwis_raises_exception_when_df_is_empty_nothing_avail(self):
         with self.assertRaises(hf.HydroNoDataError):
-            hf.extract_nwis_df(nothing_avail)
+            hf.extract_nwis_df(nothing_avail, interpolate=False)
 
     def test_hf_extract_nwis_warns_when_diff_series_have_diff_freq(self):
         with self.assertWarns(hf.HydroUserWarning):
-            hf.extract_nwis_df(diff_freq)
+            hf.extract_nwis_df(diff_freq, interpolate=False)
 
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_1(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_flags_1 = actual.loc['2019-01-24T10:30:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
         expected_flags_1 = 'P,e'
         self.assertEqual(actual_flags_1, expected_flags_1, "The data qualifier flags were not parsed correctly.")
 
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_2(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_flags_2 = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
         expected_flags_2 = 'P,Ice'
         self.assertEqual(actual_flags_2, expected_flags_2, "The data qualifier flags were not parsed correctly.")
 
     def test_hf_extract_nwis_replaces_NWIS_noDataValue_with_npNan(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_nodata = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000']
         self.assertTrue(np.isnan(actual_nodata), "The NWIS no data value was not replaced with np.nan. ")
+
+    def test_hf_extract_nwis_adds_missing_tags(self):
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
+        actual_missing = actual.loc['2019-01-24 17:00:00-05:00', 'USGS:01542500:00060:00000_qualifiers']
+        self.assertEqual(actual_missing, 'hf.missing', "Missing records should be given 'hf.missing' _qualifier tags.")
+
+    def test_hf_extract_nwis_adds_upsample_tags(self):
+        actual = hf.extract_nwis_df(diff_freq, interpolate=False)
+        actual_upsample = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
+        self.assertEqual(actual_upsample, 'hf.upsampled', "New records created by upsampling should be given 'hf.upsample' _qualifier tags.")
+
+    def test_hf_extract_nwis_interpolates(self):
+        actual = hf.extract_nwis_df(diff_freq, interpolate=True)
+        actual_upsample_interpolate = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000']
+        self.assertEqual(actual_upsample_interpolate, 42200.0, "New records created by upsampling should have NaNs replaced with interpolated values.")
+
+    @unittest.skip("This feature is not implemented yet.")
+    def test_hf_extract_nwis_interpolates_and_adds_tags(self):
+        # Ideally, every data value that was interpolated should have a tag
+        # added to the qualifiers that says it was interpolated.
+        actual = hf.extract_nwis_df(diff_freq, interpolate=True)
+        actual_upsample_interpolate_flag = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
+        expected_flag = "hf.interpolated"
+        self.assertEqual(actual_upsample_interpolate_flag, expected_flag, "Interpolated values should be marked with a flag.")
 
     def test_hf_get_nwis_property(self):
         sites = None

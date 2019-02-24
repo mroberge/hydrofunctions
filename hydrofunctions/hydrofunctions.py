@@ -292,7 +292,7 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     return vals
 
 
-def extract_nwis_df(nwis_dict):
+def extract_nwis_df(nwis_dict, interpolate=True):
     """Returns a Pandas dataframe from an NWIS response object.
 
     Args:
@@ -354,12 +354,30 @@ def extract_nwis_df(nwis_dict):
         DF['qualifiers'] = DF['qualifiers'].apply(lambda x: ','.join(x))
         DF.rename(columns={'qualifiers': qualifiers, 'value': series_name}, inplace=True)
         DF.sort_index(inplace=True)
-        starts.append(DF.index.min())
-        ends.append(DF.index.max())
-        if DF.index.freq is None:
-            DF.index.freq = pd.infer_freq(DF.index)
-        freqs.append(DF.index.freq)
-        # series_dict = {'df': DF, 'start': start, 'end': end}
+        local_start = DF.index.min()
+        local_end = DF.index.max()
+        starts.append(local_start)
+        ends.append(local_end)
+        local_freq = DF.index.freq
+        if local_freq is None:
+            local_freq = pd.infer_freq(DF.index)
+            if local_freq is None:
+                #TODO: perhaps there is a better way to figure out the freq.
+                warnings.warn("It is not possible to determine the frequency"
+                              "for one of the datasets in this request."
+                              "This dataset will be set to a frequency of "
+                              "15 minutes", exceptions.HydroUserWarning)
+                local_freq = '15T'
+        freqs.append(local_freq)
+        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq)
+
+        DF = DF.reindex(index=local_clean_index, copy=True)
+        qual_cols = DF.columns.str.contains('_qualifiers')
+        # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
+        # Instead, create a temporary dataframe, fillna, then copy back into original.
+        DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
+        DF.loc[:, qual_cols] = DFquals
+
         collection.append(DF)
 
     if len(collection) < 1:
@@ -379,7 +397,6 @@ def extract_nwis_df(nwis_dict):
     freqmin = min(freqs)
     freqmax = max(freqs)
     if (freqmin != freqmax):
-        # issue a warning that one of the datasets will be resampled.
         warnings.warn("One or more datasets in this request is going to be "
                       "'upsampled' to " + str(freqmin) + " because the data "
                       "were collected at a lower frequency of " + str(freqmax),
@@ -389,22 +406,23 @@ def extract_nwis_df(nwis_dict):
     for dataset in collection:
         cleanDF = pd.concat([cleanDF, dataset], axis=1)
     cleanDF.index.name = 'datetime'
+    # Replace lines with missing _qualifier flags with hf.upsampled
+    qual_cols = cleanDF.columns.str.contains('_qualifiers')
+    cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
+    cleanDF.loc[:, qual_cols] = cleanDFquals
+
+    if interpolate:
+        #TODO: mark interpolated values with 'hf.interp'
+
+        #select data, then replace Nans with interpolated values.
+        data_cols = cleanDF.columns.str.contains(r'[0-9]$')
+        cleanDFdata = cleanDF.loc[:,data_cols].interpolate()
+        cleanDF.loc[:,data_cols] = cleanDFdata
 
     if (not DF.index.is_unique):
         DF = DF[~DF.index.duplicated(keep='first')]
     if (not DF.index.is_monotonic):
         DF.sort_index(axis=0, inplace=True)
-# TODO:
-    # once all of the dataframes have been concat'ed, some dataframes will
-    # have empty values for some index values. Fill data value with NaNs or
-    # interpolate, then set the qualifier flag. Right now, the qualifier flag
-    # is set to NaN.
-
-# TODO:
-# The problem with adding all of these dataframes to a single large
-# dataframe using pd.concat is that sites that collect less frequently
-# will get padded with NANs for all of the time indecies that they
-# don't have data for.
 
     return cleanDF
 
