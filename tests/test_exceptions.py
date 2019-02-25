@@ -28,11 +28,13 @@ class TestExceptions(unittest.TestCase):
             actual = True
         self.assertTrue(actual, "The HydroNoDataError should have been caught, but wasn't.")
 
+
 class TestWarnings(unittest.TestCase):
 
     def test_exceptions_HydroUserWarning_can_be_called(self):
         with self.assertWarns(exceptions.HydroUserWarning):
             warnings.warn("test warning message", exceptions.HydroUserWarning)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
