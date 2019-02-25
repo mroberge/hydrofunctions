@@ -348,7 +348,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
             continue
         qualifiers = series_name + "_qualifiers"
         DF = pd.DataFrame(data=data)
-        DF.index = pd.to_datetime(DF.pop('dateTime'))
+        DF.index = pd.to_datetime(DF.pop('dateTime'), utc=True)
         DF['value'] = DF['value'].astype(float)
         DF = DF.replace(to_replace=noDataValues, value=np.nan)
         DF['qualifiers'] = DF['qualifiers'].apply(lambda x: ','.join(x))

@@ -15,7 +15,15 @@ import pandas as pd
 import numpy as np
 
 import hydrofunctions as hf
-from .test_data import JSON15min2day, two_sites_two_params_iv, nothing_avail, mult_flags, diff_freq
+from .test_data import (
+        JSON15min2day,
+        two_sites_two_params_iv,
+        nothing_avail,
+        mult_flags,
+        diff_freq,
+        startDST,
+        endDST
+        )
 
 
 class fakeResponse(object):
@@ -167,6 +175,18 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         actual_upsample_interpolate_flag = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
         expected_flag = "hf.interpolated"
         self.assertEqual(actual_upsample_interpolate_flag, expected_flag, "Interpolated values should be marked with a flag.")
+
+    def test_hf_extract_nwis_corrects_for_start_of_DST(self):
+        actualDF = hf.extract_nwis_df(startDST, interpolate=False)
+        actual_len, width = actualDF.shape
+        expected = 284
+        self.assertEqual(actual_len, expected, "Three days including the start of DST should have 3 * 24 * 4 = 288 observations, minus 4 = 284")
+
+    def test_hf_extract_nwis_corrects_for_end_of_DST(self):
+        actualDF = hf.extract_nwis_df(endDST, interpolate=False)
+        actual_len, width = actualDF.shape
+        expected = 292
+        self.assertEqual(actual_len, expected, "Three days including the end of DST should have 3 * 24 * 4 = 288 observations, plus 4 = 292")
 
     def test_hf_get_nwis_property(self):
         sites = None
