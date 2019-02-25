@@ -46,32 +46,47 @@ def calc_freq(index):
     except AttributeError:
         freq = None
 
+    #print("Try 0: ", freq)
+
     if freq is None:
         try:
             # Second attempt using built-in. I've crashed this before, so
             # let's catch exceptions.
             freq = pd.infer_freq(index)
+            freq = pd.Timedelta(freq)
         except ValueError:
             pass
 
+    #print("Try 1: ", freq)
+
     if freq is None:
         freq = (index.max() - index.min())/len(index)
-        if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17minutes'):
+        if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17 minutes'):
             freq = pd.Timedelta('15 minutes')
+        elif pd.Timedelta('27 minutes') < freq < pd.Timedelta('33 minutes'):
+            freq = pd.Timedelta('30 minutes')
+        elif pd.Timedelta('55 minutes') < freq < pd.Timedelta('65 minutes'):
+            freq = pd.Timedelta('60 minutes')
         else:
             freq = None
 
+    #print("Try 2: ", freq)
+
     if freq is None:
         freq = index[2] - index[3]
+
+    #print("Try 3: ", freq)
 
     if freq is None:
         warnings.warn("It is not possible to determine the frequency"
                       "for one of the datasets in this request."
                       "This dataset will be set to a frequency of "
                       "15 minutes", exceptions.HydroUserWarning)
-        freq = '15T'
+        freq = pd.timeDelta('15 minutes')
 
-    return freq
+    #print("Try 4: ", freq)
+
+    return pd.Timedelta(freq)
 
 
 def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
