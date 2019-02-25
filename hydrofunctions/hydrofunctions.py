@@ -8,6 +8,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import requests
 import numpy as np
 import pandas as pd
+from pandas.tseries.frequencies import to_offset
 # Change to relative import: from . import exceptions
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
@@ -46,18 +47,13 @@ def calc_freq(index):
     except AttributeError:
         freq = None
 
-    #print("Try 0: ", freq)
-
     if freq is None:
         try:
             # Second attempt using built-in. I've crashed this before, so
             # let's catch exceptions.
-            freq = pd.infer_freq(index)
-            freq = pd.Timedelta(freq)
+            freq = to_offset(pd.infer_freq(index))
         except ValueError:
             pass
-
-    #print("Try 1: ", freq)
 
     if freq is None:
         freq = (index.max() - index.min())/len(index)
@@ -70,12 +66,8 @@ def calc_freq(index):
         else:
             freq = None
 
-    #print("Try 2: ", freq)
-
     if freq is None:
         freq = index[2] - index[3]
-
-    #print("Try 3: ", freq)
 
     if freq is None:
         warnings.warn("It is not possible to determine the frequency"
@@ -83,8 +75,6 @@ def calc_freq(index):
                       "This dataset will be set to a frequency of "
                       "15 minutes", exceptions.HydroUserWarning)
         freq = pd.timeDelta('15 minutes')
-
-    #print("Try 4: ", freq)
 
     return pd.Timedelta(freq)
 

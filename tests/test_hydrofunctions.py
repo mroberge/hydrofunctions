@@ -325,6 +325,84 @@ class TestHydrofunctions(unittest.TestCase):
         # Does the function return the bad status_code?
         self.assertEqual(actual, expected)
 
+    def test_hf_calc_freq_returns_Timedelta_and_60min(self):
+        test_index = pd.date_range('2014-12-29', '2015-01-03', freq='60T')
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('60 minutes')
+        self.assertEqual(actual, expected, "Calc_freq() should have converted 60T to 60 minutes.")
+
+    def test_hf_calc_freq_accepts_Day(self):
+        test_index = pd.date_range('2014-12-29',  periods=3)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 day')
+        self.assertEqual(actual, expected, "Calc_freq() should have found a 1 day frequency.")
+
+    def test_hf_calc_freq_accepts_hour(self):
+        test_index = pd.date_range('2014-12-29', freq='1H', periods=30)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 hour')
+        self.assertEqual(actual, expected, "Calc_freq() should have found a 1 hour frequency.")
+
+    def test_hf_calc_freq_accepts_1Day_1hour(self):
+        test_index = pd.date_range('2014-12-29', freq='1D1H2T', periods=30)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 day 1 hour 2 minutes')
+        self.assertEqual(actual, expected, "Calc_freq() should have found a 1 day, 1 hour, 2 minutes frequency.")
+
+    def test_hf_calc_freq_accepts_freq_None(self):
+        test_index = pd.date_range('2014-12-29', '2015-01-03', periods=3)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('60 hours') # 5 days * 24 hrs/day = 120 hrs; 120/(3-1) = 60
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 60 hour period.")
+
+    def test_hf_calc_freq_accepts_df(self):
+        test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1T')
+        test_df = pd.DataFrame(index=test_index)
+        actual = hf.calc_freq(test_df)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 minute')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 1 minute period.")
+
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted(self):
+        test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1H')
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 hour')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 1 hour frequency.")
+
+    @unittest.skip("Difficulty dropping rows.")
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted_row_dropped(self):
+        test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1H')
+        test_df = pd.DataFrame(index=test_index)
+        #Can't get this to work.
+        test_df.drop('2014-12-30', axis=0)
+        actual = hf.calc_freq(test_df)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 hour')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 1 hour frequency.")
+
+    @unittest.skip("")
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted_no_rows(self):
+        pass
+
+    @unittest.skip("")
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted_no_time_index(self):
+        pass
+
+    @unittest.skip("Not sure how to trigger a warning.")
+    def test_hf_calc_freq_raises_warning(self):
+        test_df = pd.DataFrame(data={'A':[1,2,3], 'B':[4,5,6]})
+        actual = hf.calc_freq(test_df)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('15 minutes')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 15 minute frequency.")
+
+
     def test_hf_select_data_returns_data_cols(self):
         DF = hf.extract_nwis_df(two_sites_two_params_iv)
         actual = hf.select_data(DF)

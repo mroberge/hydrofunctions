@@ -49,8 +49,12 @@ from .exceptions import (
         HydroUserWarning
         )
 from .hydrofunctions import (
-        get_nwis, select_data, extract_nwis_df, nwis_custom_status_codes,
-        get_nwis_property
+        get_nwis,
+        select_data,
+        extract_nwis_df,
+        nwis_custom_status_codes,
+        get_nwis_property,
+        calc_freq
         )
 from .station import Station, NWIS
 from .typing import (
