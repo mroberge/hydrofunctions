@@ -20,6 +20,13 @@ class TestExceptions(unittest.TestCase):
     def test_exceptions_HydroNoDataError_can_be_raised(self):
         self.assertRaises(exceptions.HydroNoDataError, raiseHydroNoDataError)
 
+    def test_exceptions_HydroNoDataError_can_be_caught(self):
+        actual = False
+        try:
+            raiseHydroNoDataError()
+        except exceptions.HydroNoDataError as err:
+            actual = True
+        self.assertTrue(actual, "The HydroNoDataError should have been caught, but wasn't.")
 
 class TestWarnings(unittest.TestCase):
 
