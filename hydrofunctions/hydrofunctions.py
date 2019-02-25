@@ -37,6 +37,42 @@ def select_data(nwis_df):
     return nwis_df.columns.str.contains(data_regex)
 
 
+def calc_freq(index):
+    if (isinstance(index, pd.DataFrame)):
+        index = index.index
+    try:
+        # Try the direct approach first.
+        freq = index.freq
+    except AttributeError:
+        freq = None
+
+    if freq is None:
+        try:
+            # Second attempt using built-in. I've crashed this before, so
+            # let's catch exceptions.
+            freq = pd.infer_freq(index)
+        except ValueError:
+            pass
+
+    if freq is None:
+        freq = (index.max() - index.min())/len(index)
+        if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17minutes'):
+            freq = pd.Timedelta('15 minutes')
+        else:
+            freq = None
+
+    if freq is None:
+        freq = index[2] - index[3]
+
+    if freq is None:
+        warnings.warn("It is not possible to determine the frequency"
+                      "for one of the datasets in this request."
+                      "This dataset will be set to a frequency of "
+                      "15 minutes", exceptions.HydroUserWarning)
+        freq = '15T'
+
+    return freq
+
 
 def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
              countyCd=None, bBox=None, parameterCd='all', period=None):
@@ -358,16 +394,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         local_end = DF.index.max()
         starts.append(local_start)
         ends.append(local_end)
-        local_freq = DF.index.freq
-        if local_freq is None:
-            local_freq = pd.infer_freq(DF.index)
-            if local_freq is None:
-                #TODO: perhaps there is a better way to figure out the freq.
-                warnings.warn("It is not possible to determine the frequency"
-                              "for one of the datasets in this request."
-                              "This dataset will be set to a frequency of "
-                              "15 minutes", exceptions.HydroUserWarning)
-                local_freq = '15T'
+        local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
         local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq)
 
