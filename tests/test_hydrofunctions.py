@@ -15,7 +15,15 @@ import pandas as pd
 import numpy as np
 
 import hydrofunctions as hf
-from .test_data import JSON15min2day, two_sites_two_params_iv, nothing_avail, mult_flags
+from .test_data import (
+        JSON15min2day,
+        two_sites_two_params_iv,
+        nothing_avail,
+        mult_flags,
+        diff_freq,
+        startDST,
+        endDST
+        )
 
 
 class fakeResponse(object):
@@ -46,20 +54,25 @@ class TestHydrofunctionsParsing(unittest.TestCase):
 
         """
 
-    def test_hf_extract_nwis_df_parse_multiple_flags(self):
-        actual = hf.extract_nwis_df(mult_flags)
+    def test_hf_extract_nwis_df_accepts_response_obj(self):
+        fake_response = fakeResponse()
+        actual = hf.extract_nwis_df(fake_response, interpolate=False)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        #TODO: test if flags are preserved.
+
+    def test_hf_extract_nwis_df_parse_multiple_flags(self):
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="Did not return a df")
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
-        actual = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
         #TODO: test that data is organized correctly
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
-        actual = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
@@ -80,7 +93,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_df_parse_JSON15min2day_return_df(self):
-        actual = hf.extract_nwis_df(JSON15min2day)
+        actual = hf.extract_nwis_df(JSON15min2day, interpolate=False)
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
@@ -95,11 +108,11 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_df_parse_mult_flags_return_df(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_len, actual_width = actual.shape
         self.assertIs(type(actual), pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        self.assertEqual(actual_len, 438, "Wrong length for dataframe")
+        self.assertEqual(actual_len, 480, "Wrong length for dataframe")
         self.assertEqual(actual_width, 2, "Wrong width for dataframe")
         expected_columns = ['USGS:01542500:00060:00000',
                             'USGS:01542500:00060:00000_qualifiers']
@@ -112,28 +125,68 @@ class TestHydrofunctionsParsing(unittest.TestCase):
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         empty_response = {'value': {'timeSeries': []}}
         with self.assertRaises(hf.HydroNoDataError):
-            hf.extract_nwis_df(empty_response)
+            hf.extract_nwis_df(empty_response, interpolate=False)
 
     def test_hf_extract_nwis_raises_exception_when_df_is_empty_nothing_avail(self):
         with self.assertRaises(hf.HydroNoDataError):
-            hf.extract_nwis_df(nothing_avail)
+            hf.extract_nwis_df(nothing_avail, interpolate=False)
+
+    def test_hf_extract_nwis_warns_when_diff_series_have_diff_freq(self):
+        with self.assertWarns(hf.HydroUserWarning):
+            hf.extract_nwis_df(diff_freq, interpolate=False)
 
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_1(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_flags_1 = actual.loc['2019-01-24T10:30:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
         expected_flags_1 = 'P,e'
         self.assertEqual(actual_flags_1, expected_flags_1, "The data qualifier flags were not parsed correctly.")
 
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_2(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_flags_2 = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
         expected_flags_2 = 'P,Ice'
         self.assertEqual(actual_flags_2, expected_flags_2, "The data qualifier flags were not parsed correctly.")
 
     def test_hf_extract_nwis_replaces_NWIS_noDataValue_with_npNan(self):
-        actual = hf.extract_nwis_df(mult_flags)
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_nodata = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000']
         self.assertTrue(np.isnan(actual_nodata), "The NWIS no data value was not replaced with np.nan. ")
+
+    def test_hf_extract_nwis_adds_missing_tags(self):
+        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
+        actual_missing = actual.loc['2019-01-24 17:00:00-05:00', 'USGS:01542500:00060:00000_qualifiers']
+        self.assertEqual(actual_missing, 'hf.missing', "Missing records should be given 'hf.missing' _qualifier tags.")
+
+    def test_hf_extract_nwis_adds_upsample_tags(self):
+        actual = hf.extract_nwis_df(diff_freq, interpolate=False)
+        actual_upsample = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
+        self.assertEqual(actual_upsample, 'hf.upsampled', "New records created by upsampling should be given 'hf.upsample' _qualifier tags.")
+
+    def test_hf_extract_nwis_interpolates(self):
+        actual = hf.extract_nwis_df(diff_freq, interpolate=True)
+        actual_upsample_interpolate = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000']
+        self.assertEqual(actual_upsample_interpolate, 42200.0, "New records created by upsampling should have NaNs replaced with interpolated values.")
+
+    @unittest.skip("This feature is not implemented yet.")
+    def test_hf_extract_nwis_interpolates_and_adds_tags(self):
+        # Ideally, every data value that was interpolated should have a tag
+        # added to the qualifiers that says it was interpolated.
+        actual = hf.extract_nwis_df(diff_freq, interpolate=True)
+        actual_upsample_interpolate_flag = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
+        expected_flag = "hf.interpolated"
+        self.assertEqual(actual_upsample_interpolate_flag, expected_flag, "Interpolated values should be marked with a flag.")
+
+    def test_hf_extract_nwis_corrects_for_start_of_DST(self):
+        actualDF = hf.extract_nwis_df(startDST, interpolate=False)
+        actual_len, width = actualDF.shape
+        expected = 284
+        self.assertEqual(actual_len, expected, "Three days including the start of DST should have 3 * 24 * 4 = 288 observations, minus 4 = 284")
+
+    def test_hf_extract_nwis_corrects_for_end_of_DST(self):
+        actualDF = hf.extract_nwis_df(endDST, interpolate=False)
+        actual_len, width = actualDF.shape
+        expected = 292
+        self.assertEqual(actual_len, expected, "Three days including the end of DST should have 3 * 24 * 4 = 288 observations, plus 4 = 292")
 
     def test_hf_get_nwis_property(self):
         sites = None
@@ -272,6 +325,89 @@ class TestHydrofunctions(unittest.TestCase):
         # Does the function return the bad status_code?
         self.assertEqual(actual, expected)
 
+    def test_hf_calc_freq_returns_Timedelta_and_60min(self):
+        test_index = pd.date_range('2014-12-29', '2015-01-03', freq='60T')
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('60 minutes')
+        self.assertEqual(actual, expected, "Calc_freq() should have converted 60T to 60 minutes.")
+
+    def test_hf_calc_freq_accepts_Day(self):
+        test_index = pd.date_range('2014-12-29',  periods=3)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 day')
+        self.assertEqual(actual, expected, "Calc_freq() should have found a 1 day frequency.")
+
+    def test_hf_calc_freq_accepts_hour(self):
+        test_index = pd.date_range('2014-12-29', freq='1H', periods=30)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 hour')
+        self.assertEqual(actual, expected, "Calc_freq() should have found a 1 hour frequency.")
+
+    def test_hf_calc_freq_accepts_1Day_1hour(self):
+        test_index = pd.date_range('2014-12-29', freq='1D1H2T', periods=30)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 day 1 hour 2 minutes')
+        self.assertEqual(actual, expected, "Calc_freq() should have found a 1 day, 1 hour, 2 minutes frequency.")
+
+    def test_hf_calc_freq_accepts_freq_None(self):
+        test_index = pd.date_range('2014-12-29', '2015-01-03', periods=3)
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('60 hours') # 5 days * 24 hrs/day = 120 hrs; 120/(3-1) = 60
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 60 hour period.")
+
+    def test_hf_calc_freq_accepts_df(self):
+        test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1T')
+        test_df = pd.DataFrame(index=test_index)
+        actual = hf.calc_freq(test_df)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 minute')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 1 minute period.")
+
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted(self):
+        test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1H')
+        actual = hf.calc_freq(test_index)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 hour')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 1 hour frequency.")
+
+    @unittest.skip("Difficulty dropping rows.")
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted_row_dropped(self):
+        test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1H')
+        test_df = pd.DataFrame(index=test_index)
+        #Can't get this to work.
+        test_df.drop('2014-12-30', axis=0)
+        actual = hf.calc_freq(test_df)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('1 hour')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 1 hour frequency.")
+
+    @unittest.skip("")
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted_no_rows(self):
+        pass
+
+    @unittest.skip("")
+    def test_hf_calc_freq_accepts_difficult_ts_freq_deleted_no_time_index(self):
+        pass
+
+    @unittest.skip("Not sure how to trigger a warning.")
+    def test_hf_calc_freq_raises_warning(self):
+        test_df = pd.DataFrame(data={'A':[1,2,3], 'B':[4,5,6]})
+        actual = hf.calc_freq(test_df)
+        self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
+        expected = pd.Timedelta('15 minutes')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 15 minute frequency.")
+
+
+    def test_hf_select_data_returns_data_cols(self):
+        DF = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual = hf.select_data(DF)
+        expected = [False, True, False, True, False, True, False, True]
+        self.assertListEqual(actual.tolist(), expected, "select_data should return an array of which columns contain the data, not the qualifiers.")
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

@@ -34,6 +34,7 @@ Example::
 https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
+import warnings
 
 
 class HydroException(Exception):
@@ -59,20 +60,49 @@ class HydroNoDataError(HydroException):
         Catch this error in automated systems so that the system can reconsider
         the request and either fix the request or move on to the next
         request.
+
+        try:
+            hf.NWIS('666666666').get_data()
+        except HydroNoDataError as err:
+            print("This is just to illustrate how to capture this error.")
+            print(err)
     """
     pass
 
 
 class HydroEncodeError(HydroException):
-    """An error occured while encoding or decoding an argument"""
+    """Raised when an error occurs while encoding or decoding an argument.
+
+    example code::
+
+        try:
+            # bunch of code from your package
+        except HydroException:
+            # blanked condition to handle all errors from your package
+    """
     pass
 
 
-"""
-example code::
+class HydroUserWarning(UserWarning):
+    """Warn user of a hazardous condition or when an action has been triggered\
+        that may be unexpected.
 
-try:
-    #bunch of code from your package
-except HydroException:
-    '''blanked condition to handle all errors from your package'''
-"""
+        This is the base class for all warnings created for the HydroFunctions
+        package. This class can be used if there is no more specific warning
+        available.
+
+        Usage::
+
+            import warnings
+            ... code
+            warnings.warn('This is my warning message.', HydroUserWarning)
+
+        Note::
+            Warnings can be hidden or turned off depending on how the user is
+            accessing Python and the settings for their interface.
+
+            Use HydroException if a process must be shut down, or is doomed to
+            fail anyway. This will at least give the user a helpful error
+            message.
+    """
+    pass

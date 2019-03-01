@@ -8,12 +8,75 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import requests
 import numpy as np
 import pandas as pd
+from pandas.tseries.frequencies import to_offset
 # Change to relative import: from . import exceptions
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
 import warnings
 from . import typing
 from . import helpers
+
+
+def select_data(nwis_df):
+    """Create a boolean array of columns that contain data.
+
+    Args:
+        nwis_df:
+            A pandas dataframe created by extract_nwis_df.
+
+    Returns:
+        an array of Boolean values corresponding to the columns in the
+        original dataframe.
+
+    Example:
+        >>> my_dataframe[:, select_data(my_dataframe)]
+
+        returns a dataframe with only the data columns; the qualifier columns
+        do not show.
+    """
+    data_regex = r'[0-9]$'
+    return nwis_df.columns.str.contains(data_regex)
+
+
+def calc_freq(index):
+    if (isinstance(index, pd.DataFrame)):
+        index = index.index
+    try:
+        # Try the direct approach first.
+        freq = index.freq
+    except AttributeError:
+        freq = None
+
+    if freq is None:
+        try:
+            # Second attempt using built-in. I've crashed this before, so
+            # let's catch exceptions.
+            freq = to_offset(pd.infer_freq(index))
+        except ValueError:
+            pass
+
+    if freq is None:
+        freq = (index.max() - index.min())/len(index)
+        if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17 minutes'):
+            freq = pd.Timedelta('15 minutes')
+        elif pd.Timedelta('27 minutes') < freq < pd.Timedelta('33 minutes'):
+            freq = pd.Timedelta('30 minutes')
+        elif pd.Timedelta('55 minutes') < freq < pd.Timedelta('65 minutes'):
+            freq = pd.Timedelta('60 minutes')
+        else:
+            freq = None
+
+    if freq is None:
+        freq = index[2] - index[3]
+
+    if freq is None:
+        warnings.warn("It is not possible to determine the frequency"
+                      "for one of the datasets in this request."
+                      "This dataset will be set to a frequency of "
+                      "15 minutes", exceptions.HydroUserWarning)
+        freq = pd.timeDelta('15 minutes')
+
+    return pd.Timedelta(freq)
 
 
 def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
@@ -218,7 +281,8 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     """
     #nwis_dict = response_obj.json()
 
-    # strip header and all metadata.
+    # strip header and all metadata. ts is the 'timeSeries' element of the
+    # response; it is an array of objects that contain time series data.
     ts = nwis_dict['value']['timeSeries']
     msg = 'The NWIS reports that it does not' + \
           ' have any data for this request.'
@@ -269,7 +333,7 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     return vals
 
 
-def extract_nwis_df(nwis_dict):
+def extract_nwis_df(nwis_dict, interpolate=True):
     """Returns a Pandas dataframe from an NWIS response object.
 
     Args:
@@ -282,8 +346,12 @@ def extract_nwis_df(nwis_dict):
     Raises:
         HydroNoDataError  when the request is valid, but NWIS has no data for
             the parameters provided in the request.
+
+        HydroUserWarning  when one dataset is at a lower frequency than another
+            dataset in the same request.
     """
-    #nwis_dict = response_obj.json()
+    if type(nwis_dict) is not dict:
+        nwis_dict = nwis_dict.json()
 
     # strip header and all metadata.
     ts = nwis_dict['value']['timeSeries']
@@ -294,7 +362,6 @@ def extract_nwis_df(nwis_dict):
         # is first returned, but I do it here so that the data doesn't get
         # extracted twice.
         # TODO: raise this exception earlier??
-        # TODO: find a URL will result an empty set like this.
         #
         # ** Interactive sessions should have an error raised.
         #
@@ -303,82 +370,93 @@ def extract_nwis_df(nwis_dict):
         # needs to be reconsidered. The request was valid somehow, but
         # there is no data being collected.
 
-        # TODO: this if clause needs to be tested.
         raise exceptions.HydroNoDataError("The NWIS reports that it does not"
                                           " have any data for this request.")
 
-    # create lists of timeseries keys and noDataValues
-    keys = get_nwis_property(nwis_dict)
-    noDataValues = get_nwis_property(nwis_dict, key='noDataValue',
-                                     remove_duplicates=True)
-    # determine the NWIS data item with the maximum amount of data so that
-    # it can be processed first
-    idxmx = 0
-    emax = 0
-    for idx, key in enumerate(keys):
-        data = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
-        if len(data) > emax:
-            emax = len(data)
-            idxmx = idx
-    # empty json
-    if emax < 1:
-        return None
+    # create a list of time series;
+    # set the index, set the data types, replace NaNs, sort, find the first and last
 
-    # process data for the first NWIS site
-    tsname = nwis_dict['value']['timeSeries'][idxmx]['name']
-    tsqual = tsname + '_qualifiers'
-    data = nwis_dict['value']['timeSeries'][idxmx]['values'][0]['value']
-    DF = pd.DataFrame(data, columns=['dateTime', 'value', 'qualifiers'])
-    DF.index = pd.to_datetime(DF.pop('dateTime'))
-    DF = DF.rename(columns={'value': tsname,
-                            'qualifiers': tsqual})
-    DF[tsname] = DF[tsname].astype(float)
-    DF[tsqual] = DF[tsqual].apply(lambda x: ','.join(x))
-
-    # set index name for dataframe
-    DF.index.name = 'datetime'
-
-    # process data for the remaining NWIS sites
-    for key in keys:
-        # skip data processing if key has already been processed
-        if key == idxmx:
+    collection = []
+    starts = []
+    ends = []
+    freqs = []
+    for series in ts:
+        series_name = series['name']
+        noDataValues = series['variable']['noDataValue']
+        data = series['values'][0]['value']
+        if data == []:
+            # This parameter has no data. Skip to next series.
             continue
-        tsname = nwis_dict['value']['timeSeries'][key]['name']
-        tsqual = tsname + '_qualifiers'
-        da = nwis_dict['value']['timeSeries'][key]['values'][0]['value']
-        dfa = pd.DataFrame(da, columns=['dateTime', 'value', 'qualifiers'])
-        dfa.index = pd.to_datetime(dfa.pop('dateTime'))
-        dfa = dfa.rename(columns={'value': tsname,
-                                  'qualifiers': tsqual})
-        dfa[tsname] = dfa[tsname].astype(float)
-        dfa[tsqual] = dfa[tsqual].apply(lambda x: ' '.join(x))
+        qualifiers = series_name + "_qualifiers"
+        DF = pd.DataFrame(data=data)
+        DF.index = pd.to_datetime(DF.pop('dateTime'), utc=True)
+        DF['value'] = DF['value'].astype(float)
+        DF = DF.replace(to_replace=noDataValues, value=np.nan)
+        DF['qualifiers'] = DF['qualifiers'].apply(lambda x: ','.join(x))
+        DF.rename(columns={'qualifiers': qualifiers, 'value': series_name}, inplace=True)
+        DF.sort_index(inplace=True)
+        local_start = DF.index.min()
+        local_end = DF.index.max()
+        starts.append(local_start)
+        ends.append(local_end)
+        local_freq = calc_freq(DF.index)
+        freqs.append(local_freq)
+        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq)
 
-        # TODO:
+        DF = DF.reindex(index=local_clean_index, copy=True)
+        qual_cols = DF.columns.str.contains('_qualifiers')
+        # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
+        # Instead, create a temporary dataframe, fillna, then copy back into original.
+        DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
+        DF.loc[:, qual_cols] = DFquals
 
-        # The problem with adding all of these dataframes to a single large
-        # dataframe using pd.concat is that sites that collect less frequently
-        # will get padded with NANs for all of the time indecies that they
-        # don't have data for.
+        collection.append(DF)
 
-        # A second problem is that every other column will have data, and the
-        # the other columns will have flags. There is no simple way to
-        # select only the data columns except to take the odd numbered columns.
+    if len(collection) < 1:
+        # It seems like this condition should not occur. The NWIS trims the
+        # response and returns an empty nwis_dict['value']['timeSeries']
+        # if none of the parameters requested have data.
+        # If at least one of the paramters have data,
+        # then the empty series will get delivered, but with no data.
+        # Compare these requests:
+        # empty:               https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=01570500&startDT=2018-06-01&endDT=2018-06-01&parameterCd=00045
+        # one empty, one full: https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=01570500&startDT=2018-06-01&endDT=2018-06-01&parameterCd=00045,00060
+        raise exceptions.HydroNoDataError("The NWIS does not have any data for"
+                                          " the requested combination of sites"
+                                          ", parameters, and dates.")
+    startmin = min(starts)
+    endmax = max(ends)
+    freqmin = min(freqs)
+    freqmax = max(freqs)
+    if (freqmin != freqmax):
+        warnings.warn("One or more datasets in this request is going to be "
+                      "'upsampled' to " + str(freqmin) + " because the data "
+                      "were collected at a lower frequency of " + str(freqmax),
+                      exceptions.HydroUserWarning)
+    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin)
+    cleanDF = pd.DataFrame(index=clean_index)
+    for dataset in collection:
+        cleanDF = pd.concat([cleanDF, dataset], axis=1)
+    cleanDF.index.name = 'datetime'
+    # Replace lines with missing _qualifier flags with hf.upsampled
+    qual_cols = cleanDF.columns.str.contains('_qualifiers')
+    cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
+    cleanDF.loc[:, qual_cols] = cleanDFquals
 
-        # A POSSIBLE SOLUTION: create a data structure that is composed of
-        # Stacked dataframes. Each data frame will correspond to a single site,
-        # The first column will correspond to discharge, the second to flags,
-        # and any others can be derived values like baseflow or other measured
-        # parameters. The dataframes will be stacked, and be part of an object
-        # that allows you to select by a range of dates, by sites, and by the
-        # type of column. In this respect, it might be similar to XArray,
-        # except that package requires their n-dimensional structures to all be
-        # the same datatype.
-        DF = pd.concat([DF, dfa], axis=1)
+    if interpolate:
+        #TODO: mark interpolated values with 'hf.interp'
 
-    # replace missing values in the dataframe
-    DF = DF.replace(to_replace=noDataValues, value=np.nan)
+        #select data, then replace Nans with interpolated values.
+        data_cols = cleanDF.columns.str.contains(r'[0-9]$')
+        cleanDFdata = cleanDF.loc[:,data_cols].interpolate()
+        cleanDF.loc[:,data_cols] = cleanDFdata
 
-    return DF
+    if (not DF.index.is_unique):
+        DF = DF[~DF.index.duplicated(keep='first')]
+    if (not DF.index.is_monotonic):
+        DF.sort_index(axis=0, inplace=True)
+
+    return cleanDF
 
 
 def nwis_custom_status_codes(response):

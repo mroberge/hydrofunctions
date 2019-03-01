@@ -63,4 +63,12 @@ History
 0.1.8 (in development)
 ----------------------
 
+* Dropped Python 3.4 support.
 * parameterCd now accepts multiple parameters in request.
+* Improved parsing of data from NWIS:
+    - missing observations are noted
+    - duplicates found & removed
+    - unsorted data found & cleaned.
+    - different frequencies raise a warning when resampled
+* Missing data can now be replaced with interpolated values.
+

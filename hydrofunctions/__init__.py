@@ -37,17 +37,24 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 from __future__ import absolute_import, print_function
 
 __title__ = 'hydrofunctions'
-__version__ = '0.1.7'
+__version__ = '0.1.8dev'
 __author__ = 'Martin Roberge'
 __email__ = 'mroberge.whois@gmail.com'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2016 Martin Roberge and contributors'
 
 
-from .exceptions import HydroNoDataError
+from .exceptions import (
+        HydroNoDataError,
+        HydroUserWarning
+        )
 from .hydrofunctions import (
-        get_nwis, extract_nwis_df, nwis_custom_status_codes,
-        get_nwis_property
+        get_nwis,
+        select_data,
+        extract_nwis_df,
+        nwis_custom_status_codes,
+        get_nwis_property,
+        calc_freq
         )
 from .station import Station, NWIS
 from .typing import (
