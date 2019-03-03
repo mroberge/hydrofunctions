@@ -75,7 +75,7 @@ def clean_verbose (DF, nans=False):
     """
     taken from SusquehannaDataPrep.ipynb on 10/7/2018
     nans parameter is not used.
-    
+
     note from 2018-7-31:
     I Improved my clean() function when I read data.
         - See SusquehannaDataPrep.ipynb
@@ -112,21 +112,21 @@ def clean_verbose (DF, nans=False):
     DF = DF.asfreq(new_freq)
     new_len = len(DF)
     print(f'original length: {orig_len}; new length: {new_len}; missing records: {new_len - orig_len}')
-    
+
     nulls = DF.isnull().sum()
     nulls = pd.DataFrame(nulls, columns=['NaN_count'])
     nulls.index.name = 'columns'
     nulls['percent'] = nulls / len(DF)
     print(f'Missing data: ')
     print(nulls)
-    
 
-    
+
+
     # create a data dataframe with the discharge data.
     # TODO: make this work when you ask for more than one type data (right now it assumes that only IV discharge has been requested.)
     # TODO: It would be better to work with the original USGS JSON file than to re-parse this dataframe.
     # TODO: for now, make a separate request for each parameter code.
-    
+
     #     parse the column names
     #        strip the 'USGS:'  (or check for it and raise an error if it is not there)
     #        check for any summary type that isn't '0000'; raise error if they exist; get rid of them. I'll worry about these later.
@@ -138,66 +138,40 @@ def clean_verbose (DF, nans=False):
     #            For each parameter code:
     #                Add the data column to a dataframe for that parameter.
     data = DF.iloc[:, ::2] # Select all rows, select all columns stepping by two.
-    
+
     # rename data columns
     cols = data.columns.values
     for i, col in enumerate(cols):
         cols[i] = col[5:-12] # This gets rid of everything in the name except for the station ID.
         #cols[i] = col[5:-6] # This gets rid of everything in the name except the station ID and the parameter code.
     data.columns = cols
-    
+
     # create a metadata dataframe with data flags.
     meta = DF.iloc[:, 1::2] # Select all rows, select all columns starting at 1 and stepping by two.
-    
+
     # rename meta columns
     #cols = meta.columns.values
     #for i, col in enumerate(cols):
     #    cols[i] = col[5:-23]+'_qualifiers'
-    
+
     #data = data[~data.index.duplicated(keep='first')]
     #data.sort_index(axis=0, inplace=True)
     data.sort_index(axis=1, inplace=True)
     meta.sort_index(axis=1, inplace=True)
     #data = data[sorted(data.columns)]
     #meta = meta[sorted(meta.columns)]
-        
+
     # Create new data structure
     result = {'data':data, 'meta': meta}
-    
+
     print(f'First observation: {data.index.min()}')
     print(f'Last observation: {data.index.max()}')
     print(f'Length: {data.index.max()-data.index.min()};   {len(data)} records x {len(data.columns)} sites.')
-    
+
     return result
 
 
-def nwis_measurements(site):
-    """Load USGS stream discharge measurements into a Pandas dataframe.
-    Written on 2018-8-13 
-    Taken from Rating_Curve.ipynb on 2018-10-7
-    
-    Inputs: site
-        The gage number for the site.
-        
-    Outputs:
-    Will produce a table, each row represents an observation of river conditions at the gage by USGS personell. Values measured
-    include stream discharge, channel width, channel area, depth, and velocity. These data can be used to create a rating curve,
-    to estimate the gage height for a discharge of zero, and to get readings of water velocity.
-    
-    to plot a rating curve, use output.plot(x='gage_height_va', y='discharge_va', kind='scatter')
-    NOTE: Rating curves are typically plotted with the indepedent variable (gage_height) plotted on the Y axis.
-    """
-    url = f'https://waterdata.usgs.gov/pa/nwis/measurements?site_no={site}&agency_cd=USGS&format=rdb_expanded'
-    response = requests.get(url)
-    text = response.text
-    # It may be desireable to keep the original na_values, like 'unkn' for many of the columns. However, it is still
-    # a good idea to replace for the gage depth and discharge values, since these variables get used in plotting functions.
-    output = pandas.read_table(url, comment='#', keep_default_na=True, na_values=['UNSP', 'unkn', 'unspe', 'unkno'],
-                           skiprows=[15],
-                           dtype={'site_no':str},
-                           parse_dates=['measurement_dt'], infer_datetime_format=True
-                          )
-    return output
+
 
 
 def QQplot(A, B, scale='log', ylabel='Discharge', symbol='.'):
