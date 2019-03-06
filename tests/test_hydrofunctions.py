@@ -336,11 +336,13 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertEqual(actual, expected, "Calc_freq() should have found a 1 day, 1 hour, 2 minutes frequency.")
 
     def test_hf_calc_freq_accepts_freq_None(self):
-        test_index = pd.date_range('2014-12-29', '2015-01-03', periods=3)
+        dates = ['2014-12-20', '2014-12-22', '2014-12-24', '2014-12-26']
+        test_index = pd.DatetimeIndex(dates)
+        self.assertIsNone(test_index.freq, msg="The test_index was not properly set up so that test_index.freq is None.")
         actual = hf.calc_freq(test_index)
         self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
-        expected = pd.Timedelta('60 hours') # 5 days * 24 hrs/day = 120 hrs; 120/(3-1) = 60
-        self.assertEqual(actual, expected, "Calc_freq() should have returned a 60 hour period.")
+        expected = pd.Timedelta('48 hours')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 48 hour period.")
 
     def test_hf_calc_freq_accepts_df(self):
         test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1T')
