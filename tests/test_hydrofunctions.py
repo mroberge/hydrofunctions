@@ -298,17 +298,14 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertIsNone(hf.nwis_custom_status_codes(fake))
 
     def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
-        bad_response = fakeResponse()
-        bad_response.status_code = 400
-        bad_response.reason = "any text"
-        bad_response.url = "any text"
-        expected = 400
+        expected_status_code = 400
+        bad_response = fakeResponse(code=expected_status_code)
         # bad_response should raise a warning that should be caught during test
         actual = None
         with self.assertWarns(SyntaxWarning) as cm:
             actual = hf.nwis_custom_status_codes(bad_response)
         # Does the function return the bad status_code?
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual, expected_status_code)
 
     def test_hf_calc_freq_returns_Timedelta_and_60min(self):
         test_index = pd.date_range('2014-12-29', '2015-01-03', freq='60T')
