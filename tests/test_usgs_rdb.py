@@ -28,6 +28,9 @@ import pandas as pd
 import numpy as np
 
 import hydrofunctions as hf
+from .fixtures import (
+        fakeResponse
+        )
 
 
 # shortened response from this URL: https://waterdata.usgs.gov/pa/nwis/measurements?site_no=01541200&agency_cd=USGS&format=rdb_expanded
@@ -109,19 +112,6 @@ INDEP	SHIFT	DEP	STOR
 """
 
 
-class fakeResponse(object):
-
-    def __init__(self, code=200, text=field_fixture):
-        self.status_code = code
-        self.url = "fake url"
-        self.reason = "fake reason"
-        self.text = text
-        self.code = code
-
-    def raise_for_status(self):
-        return self.status_code
-
-
 class TestReadRdb(unittest.TestCase):
     """Test the functions that request and parse rdb files from the USGS.
 
@@ -158,9 +148,11 @@ class TestFieldMeas(unittest.TestCase):
         expected_url = 'https://waterdata.usgs.gov/pa/nwis/measurements?site_no='\
                        + sample_site_id + '&agency_cd=USGS&format=rdb_expanded'
 
-        expected = fakeResponse()
-        expected.status_code = 200
-        expected.reason = "any text"
+
+        expected_status_code = 200
+        expected_text = field_fixture
+
+        expected = fakeResponse(code=expected_status_code, text=expected_text)
         expected_headers = {'Accept-encoding': 'gzip'}
 
         mock_get.return_value = expected

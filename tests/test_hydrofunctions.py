@@ -24,24 +24,9 @@ from .test_data import (
         startDST,
         endDST
         )
-
-
-class fakeResponse(object):
-
-    def __init__(self, code=200):
-        self.status_code = code
-        self.url = "fake url"
-        self.reason = "fake reason"
-        # .json will return a function
-        # .json() will return JSON15min2day
-        self.json = lambda: JSON15min2day
-        if code == 200:
-            pass
-        else:
-            self.status_code = code
-
-    def raise_for_status(self):
-        return self.status_code
+from .fixtures import (
+        fakeResponse
+        )
 
 
 class TestHydrofunctionsParsing(unittest.TestCase):
