@@ -85,6 +85,7 @@ class NWIS(Station):
         parameterCd (str or list of strings):
             NWIS parameter code. Usually a five digit code. Default is 'all'.
             A valid code can also be given as a list: parameterCd=['00060','00065']
+
                 * if value is 'all', or no value is submitted, then NWIS will \
                 return every parameter collected at this site. (default option)
                 * stage: '00065'
