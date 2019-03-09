@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+
 """
-hydrofunctions.py
+hydrofunctions.hydrofunctions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains the main functions used in an interactive session.
+
+-----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import requests

@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-typing.py
 
-Functions for testing that user input is valid. Why do this instead of standard
+"""
+hydrofunctions.typing
+~~~~~~~~~~~~~~~~~~~~~
+
+This module contains functions for testing that user input is valid.
+
+Why 'pre-check' user imputs, instead of using standard
 python duck typing? These functions are meant to enhance an interactive
-session for the user. These functions are meant to check a user's parameters
+session for the user, and will check a user's parameters
 before requesting data from an onlie resource. Otherwise, the server will
 return a 404 code and the user will have no idea why. This tries to raise
 an exception (usually a TypeError) before a request is made, so that the user
@@ -16,6 +20,8 @@ Suggested format for these functions:
 * first check that the input is a string,
 * then do a regular expression to check that the input is more or less valid.
 * raise exceptions when user input breaks format.
+
+-----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import re
@@ -66,8 +72,9 @@ def check_parameter_string(candidate, param):
     else:
         raise TypeError(msg)
 
+
 def check_NWIS_bBox(input):
-    """Checks that the USGS bBox is valid
+    """Checks that the USGS bBox is valid.
     """
     msg = 'NWIS bBox should be a string, list of strings, or tuple ' + \
           'containing the longitude and latitude at the lower left corner ' + \

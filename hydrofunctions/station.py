@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-"""
-station.py
 
-This module contains the Station class, which is used for organizing and
-managing data for a single USGS stream gauge.
+"""
+hydrofunctions.station
+~~~~~~~~~~~~~~~~~~~~~~
+
+This module contains the Station and NWIS classes, which are used for
+organizing and managing data for data collection sites.
+
+-----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 from . import typing

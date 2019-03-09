@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-charts.py
 
-Charting functions for Hydrofunctions.
+"""
+hydrofunctions.charts
+~~~~~~~~~~~~~~~~~~~~~
+
+This module contains charting functions for Hydrofunctions.
+
+-----
 """
 # Recommended that I use this line to avoid errors in TravisCI
 # See https://matplotlib.org/faq/howto_faq.html
@@ -74,12 +78,12 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
 
 def cycleplot(DF, cycle='diurnal', compare=None):
     """Creates a chart to illustrate annual and diurnal cycles.
-    
+
     This chart will use the pandas groupby method to plot the mean and median
     values for a time-indexed dataframe. It helps you identify diurnal patterns
     by plotting the mean and median values over 24 hours for a diurnal pattern,
     and over a year for annual patterns.
-    
+
     This function will also use the 'compare' argument to create a series of
     charts to compare how well these cycles appear in different groups. For
     example, is the diurnal cycle more visible in December versus June? In this
