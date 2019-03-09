@@ -15,7 +15,7 @@ First Step: Automatic Display of Charts in Jupyter
 --------------------------------------------------
 
 The first step for creating a graph is to import Hydrofunctions, and then
-provide Jupyter with a directive to automatically display all charts from 
+provide Jupyter with a directive to automatically display all charts from
 matplotlib::
 
     >>> import hydrofunctions as hf
@@ -30,7 +30,7 @@ The next step is to request some data from the NWIS for us to plot:
 
 Next, we create a dataframe called 'data' from our request:
 
-    >> data = request.hf()
+    >> data = request.df()
 
     The rest of the examples will assume that we have a dataframe called data.
 
