@@ -12,10 +12,10 @@
 #    choke when they try to import and build numpy and pandas, due to these
 #    relying extensively on C modules. So I need to mock these out.
 #
-#    Update 2018-02-15: Importing MagicMock during by docs build using 
+#    Update 2018-02-15: Importing MagicMock during by docs build using
 #    'make html' is leading to a RecursionError:
 #    'maximum recursion depth exceeded while calling a Python object'.
-#    I was able to avoid the RecursionError during 'make html' by commenting out 
+#    I was able to avoid the RecursionError during 'make html' by commenting out
 #    the following block, which imports MagicMock.
 #    Now we need to see if the original
 #    error during the ReadTheDocs build still occurs.
@@ -174,7 +174,9 @@ html_theme_options = {
     'analytics_id': 'UA-73178522-4',
     'head_font_family': 'Roboto, Tahoma, Verdana, Segoe, sans-serif',
     'font_family': 'Tahoma, Verdana, Segoe, sans-serif',
-    'code_font_family': 'Lucida Console, Lucida Sans Typewriter, monospace'
+    'code_font_family': 'Lucida Console, Lucida Sans Typewriter, monospace',
+    'show_relbars': True,
+    #'prev_next_buttons_location': 'bottom'
 }
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
