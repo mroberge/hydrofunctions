@@ -176,6 +176,7 @@ html_theme_options = {
     'font_family': 'Tahoma, Verdana, Segoe, sans-serif',
     'code_font_family': 'Lucida Console, Lucida Sans Typewriter, monospace',
     'show_relbars': True,
+    'show_powered_by': False,
     #'prev_next_buttons_location': 'bottom'
 }
 # Theme options are theme-specific and customize the look and feel of a
