@@ -37,8 +37,7 @@ test_requirements = [
     # Use coverage to run coverage tests locally.
     # Do not list codecov here. It is only listed in .travis.yml because
     # we only run codecov during Travis CI builds.
-    'coverage',
-    'pytest'
+    'coverage'
 ]
 
 setup(
@@ -76,6 +75,5 @@ setup(
         'Topic :: Utilities'
     ],
     test_suite='tests',
-    tests_require=test_requirements,
-    setup_requires=['pytest-runner']
+    tests_require=test_requirements
 )
