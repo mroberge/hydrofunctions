@@ -117,6 +117,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         with self.assertRaises(hf.HydroNoDataError):
             hf.extract_nwis_df(nothing_avail, interpolate=False)
 
+    @unittest.skip("assertWarns errors on Linux. See https://bugs.python.org/issue29620")
     def test_hf_extract_nwis_warns_when_diff_series_have_diff_freq(self):
         with self.assertWarns(hf.HydroUserWarning):
             hf.extract_nwis_df(diff_freq, interpolate=False)
@@ -298,17 +299,17 @@ class TestHydrofunctions(unittest.TestCase):
         fake.url = "any text"
         self.assertIsNone(hf.nwis_custom_status_codes(fake))
 
+    @unittest.skip("assertWarns errors on Linux. See https://bugs.python.org/issue29620")
+    def test_hf_nwis_custom_status_codes_raises_warning_for_non200(self):
+        expected_status_code = 400
+        bad_response = fakeResponse(code=expected_status_code)
+        with self.assertWarns(SyntaxWarning) as cm:
+            hf.nwis_custom_status_codes(bad_response)
+
     def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
         expected_status_code = 400
-        #bad_response = fakeResponse(code=expected_status_code)
-        bad_response = fakeResponse()
-        # bad_response should raise a warning that should be caught during test
-        actual = None
-        #with self.assertWarns(SyntaxWarning) as cm:
+        bad_response = fakeResponse(code=expected_status_code)
         actual = hf.nwis_custom_status_codes(bad_response)
-
-        # Does the function return the bad status_code?
-        actual = 400
         self.assertEqual(actual, expected_status_code)
 
     def test_hf_calc_freq_returns_Timedelta_and_60min(self):
