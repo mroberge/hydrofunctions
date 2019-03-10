@@ -129,7 +129,7 @@ class TestReadRdb(unittest.TestCase):
         - Are strings recorded as strings?
         - Are dates recorded as dates?
         - Are dates recorded with the proper time zone and converted to UTC?
-"""
+    """
     def test_read_rdb_returns_4_tuple_of_DF_list_list_list(self):
         test_data = field_fixture
         outputDF, columns, dtype, header = hf.read_rdb(test_data)
@@ -139,15 +139,11 @@ class TestReadRdb(unittest.TestCase):
         self.assertIs(type(dtype), list, msg="read_dbf did not return dtype as a list.")
         self.assertIs(type(header), list, msg="read_dbf did not return header as a list.")
 
-
-class TestFieldMeas(unittest.TestCase):
-
     @mock.patch('requests.get')
     def test_field_meas_request_proper_url(self, mock_get):
         sample_site_id = '666'
         expected_url = 'https://waterdata.usgs.gov/pa/nwis/measurements?site_no='\
                        + sample_site_id + '&agency_cd=USGS&format=rdb_expanded'
-
 
         expected_status_code = 200
         expected_text = field_fixture
@@ -186,7 +182,6 @@ class TestFieldMeas(unittest.TestCase):
                           np.nan, np.nan, np.nan, 'UNSP', 'UNSP', 'UNSP', 'unkn',
                           'UNSP', 'UNSP', 'UNSP', np.nan]
 
-
         mock_get.return_value = expected
         actual = hf.field_meas(sample_site_id)
 
@@ -199,14 +194,11 @@ class TestFieldMeas(unittest.TestCase):
                          msg="field_meas returned the wrong number of columns.")
         actual_col_names = actual.columns.values.tolist()
         self.assertListEqual(actual_col_names, expected_col_names,
-                              msg="field_meas returned the wrong set of column names.")
+                             msg="field_meas returned the wrong set of column names.")
         actual_row_2 = actual.iloc[2].values.tolist()
         # This works better when comparing nans, sometimes.
         np.testing.assert_array_equal(actual_row_2, expected_row_2,
-                              err_msg="field_meas returned the wrong values for row 2.")
-
-
-class TestRatingCurve(unittest.TestCase):
+                                      err_msg="field_meas returned the wrong values for row 2.")
 
     @mock.patch('requests.get')
     def test_rating_curve_requests_proper_url(self, mock_get):
@@ -249,8 +241,7 @@ class TestRatingCurve(unittest.TestCase):
                          msg="rating_curve returned the wrong number of columns.")
         actual_col_names = actual.columns.values.tolist()
         self.assertListEqual(actual_col_names, expected_col_names,
-                              msg="rating_curve returned the wrong set of column names.")
+                             msg="rating_curve returned the wrong set of column names.")
         actual_row_2 = actual.loc[2].values.tolist()
         self.assertListEqual(actual_row_2, expected_row_2,
                               msg="rating_curve returned the wrong values for row 2.")
-
