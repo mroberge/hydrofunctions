@@ -31,6 +31,7 @@ class TestExceptions(unittest.TestCase):
 
 class TestWarnings(unittest.TestCase):
 
+    @unittest.skip("assertWarns errors on Linux. See https://bugs.python.org/issue29620")
     def test_exceptions_HydroUserWarning_can_be_called(self):
         with self.assertWarns(exceptions.HydroUserWarning):
             warnings.warn("test warning message", exceptions.HydroUserWarning)
