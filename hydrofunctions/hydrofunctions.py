@@ -68,11 +68,11 @@ def calc_freq(index):
         # Method 3: divide the length of time by the number of observations.
         freq = (index.max() - index.min())/len(index)
         if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17 minutes'):
-            freq = pd.Timedelta('15 minutes')
+            freq = to_offset('15min')
         elif pd.Timedelta('27 minutes') < freq < pd.Timedelta('33 minutes'):
-            freq = pd.Timedelta('30 minutes')
+            freq = to_offset('30min')
         elif pd.Timedelta('55 minutes') < freq < pd.Timedelta('65 minutes'):
-            freq = pd.Timedelta('60 minutes')
+            freq = to_offset('60min')
         else:
             freq = None
         method = 3
@@ -418,7 +418,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         ends.append(local_end)
         local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
-        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq)
+        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
 
         DF = DF.reindex(index=local_clean_index, copy=True)
         qual_cols = DF.columns.str.contains('_qualifiers')
@@ -450,11 +450,11 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                       "'upsampled' to " + str(freqmin) + " because the data "
                       "were collected at a lower frequency of " + str(freqmax),
                       exceptions.HydroUserWarning)
-    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin)
+    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz='UTC')
     cleanDF = pd.DataFrame(index=clean_index)
     for dataset in collection:
         cleanDF = pd.concat([cleanDF, dataset], axis=1)
-    cleanDF.index.name = 'datetime'
+    cleanDF.index.name = 'datetimeUTC'
     # Replace lines with missing _qualifier flags with hf.upsampled
     qual_cols = cleanDF.columns.str.contains('_qualifiers')
     cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
