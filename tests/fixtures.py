@@ -24,8 +24,8 @@ class fakeResponse(object):
         self.text = text
         # .json will return a function
         # .json() will return JSON15min2day
-        if code == 200:
-            pass
+        self.json = lambda: json
+        if self.status_code == 200:
             self.ok = True
         else:
             self.ok = False
