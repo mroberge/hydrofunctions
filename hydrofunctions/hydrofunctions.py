@@ -13,12 +13,20 @@ import requests
 import numpy as np
 import pandas as pd
 from pandas.tseries.frequencies import to_offset
+import logging
+
 # Change to relative import: from . import exceptions
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
 import warnings
 from . import typing
 from . import helpers
+
+logging.basicConfig(
+    filename="hydrofunctions_testing.log",
+    level=logging.DEBUG,
+    format="%(asctime)s:%(levelname)s:%(message)s"
+    )
 
 
 def select_data(nwis_df):
@@ -82,6 +90,7 @@ def calc_freq(index):
         if len(index) > 3:
             freq = to_offset(index[3] - index[2])
         method = 4
+        logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
 
     if freq is None:
         # Method 5: If all else fails, freq is 15 minutes!
@@ -92,6 +101,8 @@ def calc_freq(index):
         freq = pd.timeDelta('15 minutes')
         method = 5
 
+    debug_msg = "Calc_freq method:" + str(method) + "freq:" + str(freq)
+    logging.debug(debug_msg)
     return pd.Timedelta(freq)
 
 
