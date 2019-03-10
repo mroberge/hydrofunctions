@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+
 """
-exceptions.py
+hydrofunctions.exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains all of the custom exceptions defined in this package. The
-base class is HydroException, and all custom exceptions are subclasses of
+base class is HydroException and all custom exceptions are subclasses of
 HydroException.
 
 Use the errors like this::
@@ -32,6 +34,8 @@ Example::
     raise HydroNoDataError("Oh no, NWIS doesn't have this data for you!")
 
 https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
+
+-----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import warnings

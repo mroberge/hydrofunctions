@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+
 """
-hydrofunctions.py
+hydrofunctions.hydrofunctions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains the main functions used in an interactive session.
+
+-----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import requests
@@ -119,12 +123,13 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
         parameterCd (str or list of strings):
             NWIS parameter code. Usually a five digit code. Default is 'all'.
             A valid code can also be given as a list: parameterCd=['00060','00065']
-                * if value of 'all' is submitted, then NWIS will return every \
-                parameter collected at this site. (default option)
-                * stage: '00065'
-                * discharge: '00060'
-                * not all sites collect all parameters!
-                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
+
+            * if value of 'all' is submitted, then NWIS will return every \
+            parameter collected at this site. (default option)
+            * stage: '00065'
+            * discharge: '00060'
+            * not all sites collect all parameters!
+            * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
 
         period (str):
             NWIS period code. Default is None.

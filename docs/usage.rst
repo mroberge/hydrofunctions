@@ -62,7 +62,7 @@ Using the NWIS object to request data
 A second method for requesting data is to use the NWIS object to store your
 response and the extracted data.
 
-First, import hydrofunctions into your project and enable automatic chart 
+First, import hydrofunctions into your project and enable automatic chart
 display::
 
     >>> import hydrofunctions as hf
@@ -114,9 +114,9 @@ As long as you had `%matplotlib inline` enabled earlier, you will get a graph.
 Example Notebooks
 -----------------
 
-- `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_
-- `Selecting Sites <https://github.com/mroberge/hydrofunctions/blob/master/Selecting_Sites.ipynb>`_
-- `Writing Valid Requests for NWIS <https://github.com/mroberge/hydrofunctions/blob/master/Writing_Valid_Requests_for_NWIS.ipynb>`_
-- `Draw Map Demo <https://github.com/mroberge/hydrofunctions/blob/master/Draw_Map_Demo.ipynb>`_
-- `Comparing Urban and Rural Streams <https://github.com/mroberge/hydrofunctions/blob/master/Comparing_Urban_and_Rural_Streams.ipynb>`_
-- `NWIS Trial Run <https://github.com/mroberge/hydrofunctions/blob/master/NWIS%20trial%20run.ipynb>`_
+- `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Introduction%20to%20Hydrofunctions.ipynb>`_
+- `Selecting Sites <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Selecting_Sites.ipynb>`_
+- `Writing Valid Requests for NWIS <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Writing_Valid_Requests_for_NWIS.ipynb>`_
+- `Draw Map Demo <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Draw_Map_Demo.ipynb>`_
+- `Comparing Urban and Rural Streams <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Comparing_Urban_and_Rural_Streams.ipynb>`_
+- `NWIS Trial Run <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/NWIS%20trial%20run.ipynb>`_
