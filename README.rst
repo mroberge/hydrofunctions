@@ -33,6 +33,7 @@ Features
 * Helpful error messages to help you write valid requests
 * Extracts data into a Pandas dataframe, json, or dict
 * Plotting and manipulation through Pandas dataframes
+* Retrieve rating curves and field notes for sites
 * Interactive map for finding stream gage ID numbers
 * Still in early development! More features to come!
 
@@ -42,7 +43,7 @@ Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for mo
 Basic Usage
 -----------
 
-First, import hydrofunctions into your project and enable automatic chart 
+First, import hydrofunctions into your project and enable automatic chart
 display::
 
     >>> import hydrofunctions as hf
@@ -102,7 +103,7 @@ Learn more:
 Easy Installation
 -----------------
 
-The easiest way to install Hydrofunctions is by typing this from your 
+The easiest way to install Hydrofunctions is by typing this from your
 command line:
 
 .. code-block:: console
@@ -111,12 +112,12 @@ command line:
 
 
 Hydrofunctions depends upon Pandas and numerous other scientific packages
-for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_ 
+for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_
 is an easy, safe, open-source method for downloading everything and avoiding
 conflicts with other versions of Python that might be running on your
 computer.
 
-Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_ 
+Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_
 in the Users Guide to learn how to install
 Anaconda, or if you have problems using the Easy Installation method above.
 
