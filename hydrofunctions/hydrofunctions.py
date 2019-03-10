@@ -80,7 +80,7 @@ def calc_freq(index):
     if freq is None:
         # Method 4: Subtract two adjacent values and use the difference!
         if len(index) > 3:
-            freq = index[2] - index[3]
+            freq = to_offset(index[3] - index[2])
         method = 4
 
     if freq is None:
