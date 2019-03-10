@@ -10,6 +10,7 @@ Tests for `hydrofunctions` module.
 from __future__ import absolute_import, print_function, division, unicode_literals
 from unittest import mock
 import unittest
+import warnings
 
 import pandas as pd
 import numpy as np
@@ -24,24 +25,9 @@ from .test_data import (
         startDST,
         endDST
         )
-
-
-class fakeResponse(object):
-
-    def __init__(self, code=200):
-        self.status_code = code
-        self.url = "fake url"
-        self.reason = "fake reason"
-        # .json will return a function
-        # .json() will return JSON15min2day
-        self.json = lambda: JSON15min2day
-        if code == 200:
-            pass
-        else:
-            self.status_code = code
-
-    def raise_for_status(self):
-        return self.status_code
+from .fixtures import (
+        fakeResponse
+        )
 
 
 class TestHydrofunctionsParsing(unittest.TestCase):
@@ -131,6 +117,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         with self.assertRaises(hf.HydroNoDataError):
             hf.extract_nwis_df(nothing_avail, interpolate=False)
 
+    @unittest.skip("assertWarns errors on Linux. See https://bugs.python.org/issue29620")
     def test_hf_extract_nwis_warns_when_diff_series_have_diff_freq(self):
         with self.assertWarns(hf.HydroUserWarning):
             hf.extract_nwis_df(diff_freq, interpolate=False)
@@ -312,18 +299,18 @@ class TestHydrofunctions(unittest.TestCase):
         fake.url = "any text"
         self.assertIsNone(hf.nwis_custom_status_codes(fake))
 
-    def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
-        bad_response = fakeResponse()
-        bad_response.status_code = 400
-        bad_response.reason = "any text"
-        bad_response.url = "any text"
-        expected = 400
-        # bad_response should raise a warning that should be caught during test
-        actual = None
+    @unittest.skip("assertWarns errors on Linux. See https://bugs.python.org/issue29620")
+    def test_hf_nwis_custom_status_codes_raises_warning_for_non200(self):
+        expected_status_code = 400
+        bad_response = fakeResponse(code=expected_status_code)
         with self.assertWarns(SyntaxWarning) as cm:
-            actual = hf.nwis_custom_status_codes(bad_response)
-        # Does the function return the bad status_code?
-        self.assertEqual(actual, expected)
+            hf.nwis_custom_status_codes(bad_response)
+
+    def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
+        expected_status_code = 400
+        bad_response = fakeResponse(code=expected_status_code)
+        actual = hf.nwis_custom_status_codes(bad_response)
+        self.assertEqual(actual, expected_status_code)
 
     def test_hf_calc_freq_returns_Timedelta_and_60min(self):
         test_index = pd.date_range('2014-12-29', '2015-01-03', freq='60T')
@@ -354,11 +341,13 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertEqual(actual, expected, "Calc_freq() should have found a 1 day, 1 hour, 2 minutes frequency.")
 
     def test_hf_calc_freq_accepts_freq_None(self):
-        test_index = pd.date_range('2014-12-29', '2015-01-03', periods=3)
+        dates = ['2014-12-20', '2014-12-22', '2014-12-24', '2014-12-26']
+        test_index = pd.DatetimeIndex(dates)
+        self.assertIsNone(test_index.freq, msg="The test_index was not properly set up so that test_index.freq is None.")
         actual = hf.calc_freq(test_index)
         self.assertIsInstance(actual, pd.Timedelta, "Calc_freq() should return pd.Timedelta.")
-        expected = pd.Timedelta('60 hours') # 5 days * 24 hrs/day = 120 hrs; 120/(3-1) = 60
-        self.assertEqual(actual, expected, "Calc_freq() should have returned a 60 hour period.")
+        expected = pd.Timedelta('48 hours')
+        self.assertEqual(actual, expected, "Calc_freq() should have returned a 48 hour period.")
 
     def test_hf_calc_freq_accepts_df(self):
         test_index = pd.date_range('2014-12-29', '2014-12-30', freq='1T')

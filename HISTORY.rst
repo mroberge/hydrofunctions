@@ -71,4 +71,6 @@ History
     - unsorted data found & cleaned.
     - different frequencies raise a warning when resampled
 * Missing data can now be replaced with interpolated values.
+* hf.rating_curve(site) returns the current rating curve for a site.
+* hf.field_meas(site) returns the field data and notes used to create a rating curve.
 

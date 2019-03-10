@@ -11,25 +11,9 @@ from unittest import mock
 import pandas as pd
 
 from hydrofunctions import station, typing
-
-
-class fakeResponse(object):
-    """A fake response object to test with.
-    """
-
-    def __init__(self, code=200):
-        self.status_code = code
-        self.url = "fake url"
-        self.reason = "fake reason"
-        self.json = lambda: {'data': 'fake json'}
-        if code == 200:
-            self.ok = True
-        else:
-            self.status_code = code
-            self.ok = False
-
-    def raise_for_status(self):
-        return self.status_code
+from .fixtures import (
+        fakeResponse
+        )
 
 
 class TestStation(unittest.TestCase):

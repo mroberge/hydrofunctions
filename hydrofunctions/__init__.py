@@ -68,3 +68,8 @@ from .helpers import (
 from .charts import (
         flow_duration
         )
+from .usgs_rdb import (
+        read_rdb,
+        field_meas,
+        rating_curve
+        )

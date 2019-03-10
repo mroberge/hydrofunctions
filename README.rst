@@ -33,6 +33,7 @@ Features
 * Helpful error messages to help you write valid requests
 * Extracts data into a Pandas dataframe, json, or dict
 * Plotting and manipulation through Pandas dataframes
+* Retrieve rating curves and field notes for sites
 * Interactive map for finding stream gage ID numbers
 * Still in early development! More features to come!
 
