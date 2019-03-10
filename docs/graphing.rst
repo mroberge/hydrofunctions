@@ -82,5 +82,5 @@ Kernel Density Plot::
 Example Notebooks
 -----------------
 
-- `Graphing <https://github.com/mroberge/hydrofunctions/blob/master/Graphing.ipynb>`_
-- `Comparing Urban and Rural Streams <https://github.com/mroberge/hydrofunctions/blob/master/Comparing_Urban_and_Rural_Streams.ipynb>`_
+- `Graphing <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Graphing.ipynb>`_
+- `Comparing Urban and Rural Streams <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Comparing_Urban_and_Rural_Streams.ipynb>`_

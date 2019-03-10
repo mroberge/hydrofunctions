@@ -42,7 +42,7 @@ Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for mo
 Basic Usage
 -----------
 
-First, import hydrofunctions into your project and enable automatic chart 
+First, import hydrofunctions into your project and enable automatic chart
 display::
 
     >>> import hydrofunctions as hf
@@ -97,12 +97,12 @@ Draw an interactive map in a Jupyter Notebook:
 Learn more:
 
 * `More usage <https://hydrofunctions.readthedocs.io/en/master/usage.html>`_ tips
-* `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
+* `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
 
 Easy Installation
 -----------------
 
-The easiest way to install Hydrofunctions is by typing this from your 
+The easiest way to install Hydrofunctions is by typing this from your
 command line:
 
 .. code-block:: console
@@ -111,12 +111,12 @@ command line:
 
 
 Hydrofunctions depends upon Pandas and numerous other scientific packages
-for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_ 
+for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_
 is an easy, safe, open-source method for downloading everything and avoiding
 conflicts with other versions of Python that might be running on your
 computer.
 
-Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_ 
+Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_
 in the Users Guide to learn how to install
 Anaconda, or if you have problems using the Easy Installation method above.
 
