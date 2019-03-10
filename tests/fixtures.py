@@ -14,20 +14,21 @@ from .test_data import (
         endDST
         )
 
+
 class fakeResponse(object):
 
-    def __init__(self, code=200, url=None, reason=None, text=None, json=None):
+    def __init__(self, code=200, url="fake url", reason="fake reason", text="fake text", json=JSON15min2day):
         self.status_code = code
-        self.url = "fake url"
-        self.reason = "fake reason"
+        self.url = url
+        self.reason = reason
         self.text = text
         # .json will return a function
         # .json() will return JSON15min2day
-        self.json = lambda: JSON15min2day
         if code == 200:
             pass
+            self.ok = True
         else:
-            self.status_code = code
+            self.ok = False
 
     def raise_for_status(self):
         return self.status_code
