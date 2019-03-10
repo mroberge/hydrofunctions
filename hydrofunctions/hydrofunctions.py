@@ -43,23 +43,29 @@ def select_data(nwis_df):
 
 
 def calc_freq(index):
+    # Method 0: calc_freq() was called, but we haven't done anything yet.
+    method = 0
     if (isinstance(index, pd.DataFrame)):
         index = index.index
     try:
-        # Try the direct approach first.
+        # Method 1: Try the direct approach first. Maybe freq has already been set.
         freq = index.freq
+        method = 1
     except AttributeError:
+        # index.freq does not exist, so let's keep trying.
         freq = None
 
     if freq is None:
+        # Method 2: Use the built-in pd.infer_freq(). It raises ValueError
+        #    when it fails, so catch ValueErrors and keep trying.
         try:
-            # Second attempt using built-in. I've crashed this before, so
-            # let's catch exceptions.
             freq = to_offset(pd.infer_freq(index))
+            method = 2
         except ValueError:
             pass
 
     if freq is None:
+        # Method 3: divide the length of time by the number of observations.
         freq = (index.max() - index.min())/len(index)
         if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17 minutes'):
             freq = pd.Timedelta('15 minutes')
@@ -69,17 +75,22 @@ def calc_freq(index):
             freq = pd.Timedelta('60 minutes')
         else:
             freq = None
+        method = 3
 
     if freq is None:
+        # Method 4: Subtract two adjacent values and use the difference!
         if len(index) > 3:
             freq = index[2] - index[3]
+        method = 4
 
     if freq is None:
+        # Method 5: If all else fails, freq is 15 minutes!
         warnings.warn("It is not possible to determine the frequency"
                       "for one of the datasets in this request."
                       "This dataset will be set to a frequency of "
                       "15 minutes", exceptions.HydroUserWarning)
         freq = pd.timeDelta('15 minutes')
+        method = 5
 
     return pd.Timedelta(freq)
 
