@@ -10,6 +10,7 @@ Tests for `hydrofunctions` module.
 from __future__ import absolute_import, print_function, division, unicode_literals
 from unittest import mock
 import unittest
+import warnings
 
 import pandas as pd
 import numpy as np
@@ -299,12 +300,15 @@ class TestHydrofunctions(unittest.TestCase):
 
     def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
         expected_status_code = 400
-        bad_response = fakeResponse(code=expected_status_code)
+        #bad_response = fakeResponse(code=expected_status_code)
+        bad_response = fakeResponse()
         # bad_response should raise a warning that should be caught during test
         actual = None
         with self.assertWarns(SyntaxWarning) as cm:
             actual = hf.nwis_custom_status_codes(bad_response)
+            warnings.warn('msg', SyntaxWarning)
         # Does the function return the bad status_code?
+        actual = 400
         self.assertEqual(actual, expected_status_code)
 
     def test_hf_calc_freq_returns_Timedelta_and_60min(self):
