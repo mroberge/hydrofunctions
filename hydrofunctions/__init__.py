@@ -5,7 +5,7 @@ Hydrofunctions
 ~~~~~~~~~~~~~~
 
 Hydrofunctions is a suite of convenience functions to help you explore
-Hydrology data interactively.
+hydrology data interactively.
 
 Basic Usage::
 

@@ -25,6 +25,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
 
     Args:
         Qdf (dataframe): a dataframe of discharge values.
+
             * Values should be arranged in columns
             * No sorting necessary
             * Rows do not need an index
@@ -44,6 +45,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
         xlabel (not implemented)
 
         symbol (str, '.' | ','): formatting symbol for points.
+
             * point: '.' (default)
             * pixel point: ','
             * circle: 'o'
@@ -103,29 +105,31 @@ def cycleplot(DF, cycle='diurnal', compare=None):
 
         cycle (str): The period of the cycle to be illustrated, along with the
             method for binning. The options are:
-                * diurnal (default): plots the values for a 24 hour cycle.
-                * diurnal-smallest: uses the smallest increment of time \
-                available to bin the time units for a 24 hour cycle.
-                * diurnal-hour: uses hours to bin measurements for a 24-hour \
-                cycle.
-                * annual: plots values into a 365 day cycle.
-                * annual-day: the annual cycle using 365 day-long bins.
-                * annual-week: the annual cycle using 52 week-long bins.
-                * annual-month: the annual cycle using 12 month-long bins.
-                * weekly: a 7-day cycle using seven 24-hour long bins. Note \
-                that unlike the others, this is not a natural cycle, and is \
-                likely has anthropogenic origins.
+
+            * diurnal (default): plots the values for a 24 hour cycle.
+            * diurnal-smallest: uses the smallest increment of time \
+            available to bin the time units for a 24 hour cycle.
+            * diurnal-hour: uses hours to bin measurements for a 24-hour \
+            cycle.
+            * annual: plots values into a 365 day cycle.
+            * annual-day: the annual cycle using 365 day-long bins.
+            * annual-week: the annual cycle using 52 week-long bins.
+            * annual-month: the annual cycle using 12 month-long bins.
+            * weekly: a 7-day cycle using seven 24-hour long bins. Note \
+            that unlike the others, this is not a natural cycle, and is \
+            likely has anthropogenic origins.
 
         compare (str): The system for splitting the data into
             groups for a set of comparison charts.
-                * None (default): No comparison will be made; only one chart.
-                * month: twelve plots will be produced, one for each month.
-                * weekday: seven plots will be produced, one for each day of \
-                the week.
-                * weekend: two plots will be produced, one for the five weekdays, \
-                one for Saturday and Sunday.
-                * night: two plots will be produced, one for night (6pm to 6am), \
-                one for day (6am to 6pm).
+
+            * None (default): No comparison will be made; only one chart.
+            * month: twelve plots will be produced, one for each month.
+            * weekday: seven plots will be produced, one for each day of \
+            the week.
+            * weekend: two plots will be produced, one for the five weekdays, \
+            one for Saturday and Sunday.
+            * night: two plots will be produced, one for night (6pm to 6am), \
+            one for day (6am to 6pm).
 
     Returns:
         fig (matplotlib.figure.Figure):
