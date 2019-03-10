@@ -304,9 +304,9 @@ class TestHydrofunctions(unittest.TestCase):
         bad_response = fakeResponse()
         # bad_response should raise a warning that should be caught during test
         actual = None
-        with self.assertWarns(SyntaxWarning) as cm:
-            actual = hf.nwis_custom_status_codes(bad_response)
-            warnings.warn('msg', SyntaxWarning)
+        #with self.assertWarns(SyntaxWarning) as cm:
+        actual = hf.nwis_custom_status_codes(bad_response)
+
         # Does the function return the bad status_code?
         actual = 400
         self.assertEqual(actual, expected_status_code)
