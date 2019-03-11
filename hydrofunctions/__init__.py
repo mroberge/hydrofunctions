@@ -66,7 +66,8 @@ from .helpers import (
         count_number_of_truthy
         )
 from .charts import (
-        flow_duration
+        flow_duration,
+        cycleplot
         )
 from .usgs_rdb import (
         read_rdb,
