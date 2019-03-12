@@ -139,49 +139,47 @@ class NWIS(Station):
         self._dataframe = hf.extract_nwis_df(self.json)
 
     def df(self, *args):
-        for item in args:
+        """
+        Return a subset of columns from the dataframe.
+
+        Args:
+            If no args are provided, the entire dataframe will be returned.
+
+            'all': the entire dataframe will be returned.
+
+            'flags': Only the _qualifier flags will be returned. Unless the
+            flags arg is provided, only data columns will be returned.
+
+            'discharge': discharge columns will be returned.
+        """
+        data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data ends in a number.
+        flag_cols = self._dataframe.columns.str.contains('_qualifiers')
+        Q_cols = self._dataframe.columns.str.contains(':00060:') # This includes data & flags
+        all_cols = self._dataframe.columns != ""
+
+        sites = all_cols
+        params = all_cols
+        meta = all_cols
+        if len(args) == 0:
             pass
-
-        return self._dataframe
-
-
+        else:
+            meta = data_cols
+            for item in args:
+                if item == 'all':
+                    sites = all_cols
+                    params = all_cols
+                    meta = all_cols
+                    break
+                elif item == 'discharge':
+                    params = Q_cols
+                elif item == 'flags':
+                    meta = flag_cols
+                else:
+                    raise valueError("The argument", arg, "is not recognized.")
+        selection = sites & params & meta
+        requested_df = self._dataframe.loc[:, selection]
+        return requested_df
 
     def get_data(self):
-        """
-        self.response = hf.get_nwis(self.site,
-                                    self.service,
-                                    self.start_date,
-                                    self.end_date,
-                                    stateCd=self.stateCd,
-                                    countyCd=self.countyCd,
-                                    bBox=self.bBox,
-                                    parameterCd=self.parameterCd,
-                                    period=self.period)
-        # If the response status_code is anything other than 200,
-        # an error will be reported and an Exception raised.
-        # The response object will be saved for examination.
-
-        #TODO: fix tests and uncomment this call
-        #hf.handle_status_code(self.response)
-        #nwis_custom_status_codes(self.response)
-        # Raise an exception if non-200 status_code, or return None for 200.
-        self.response.raise_for_status()
-
-        # set self.json without calling it.
-        self.json = lambda: self.response.json()
-        # set self.df without calling it.
-        self.df = lambda: hf.extract_nwis_df(self.json())
-
-        # Another option might be to do this:
-        # self.df = hf.extract_nwis_df(self.response)
-        # This would make myInstance.df return a plain df.
-        self.ok = self.response.ok
-        self.siteName = hf.get_nwis_property(self.json(),
-                                             key='siteName',
-                                             remove_duplicates=True)
-        self.name = hf.get_nwis_property(self.json(),
-                                         key='name',
-                                         remove_duplicates=True)
-        """
         print("It is no longer necessary to call .get_data() to request data.")
         return self
