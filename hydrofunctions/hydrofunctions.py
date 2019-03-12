@@ -79,7 +79,7 @@ def calc_freq(index):
                       "for one of the datasets in this request."
                       "This dataset will be set to a frequency of "
                       "15 minutes", exceptions.HydroUserWarning)
-        freq = pd.timeDelta('15 minutes')
+        freq = pd.Timedelta('15 minutes')
 
     return pd.Timedelta(freq)
 
@@ -234,6 +234,7 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
     url = 'https://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'
     response = requests.get(url, params=values, headers=header)
+    print("Requested data from", response.url)
     # requests will raise a 'ConnectionError' if the connection is refused
     # or if we are disconnected from the internet.
 

@@ -115,40 +115,39 @@ class NWIS(Station):
                  parameterCd='all',
                  period=None):
 
-        self.site = typing.check_parameter_string(site, 'site')
-        self.service = typing.check_NWIS_service(service)
-        self.start_date = typing.check_datestr(start_date)
-        self.end_date = typing.check_datestr(end_date)
-        self.stateCd = stateCd
-        self.countyCd = typing.check_parameter_string(countyCd, 'county')
-        self.bBox = bBox
-        self.ok = False
-        self.parameterCd = typing.check_parameter_string(parameterCd, 'parameterCd')
-        self.period = typing.check_period(period)
-        self.response = None
-        self.df = lambda: print("You must successfully call .get_data() before calling .df().")
-        self.json = lambda: print("You must successfully call .get_data() before calling .json().")
-        self.name = None
-        self.siteName = None
+        self.response = hf.get_nwis(site,
+                                    service,
+                                    start_date,
+                                    end_date,
+                                    stateCd=stateCd,
+                                    countyCd=countyCd,
+                                    bBox=bBox,
+                                    parameterCd=parameterCd,
+                                    period=period
+                                    )
+        self.ok = self.response.ok
+        self.url = self.response.url
+        self.json = self.response.json()
 
-        # Check that site selection parameters are exclusive!
-        total = helpers.count_number_of_truthy([self.site, self.stateCd, self.countyCd, self.bBox])
-        if total == 1:
+        self.siteName = hf.get_nwis_property(self.json,
+                                             key='siteName',
+                                             remove_duplicates=True)
+        self.name = hf.get_nwis_property(self.json,
+                                         key='name',
+                                         remove_duplicates=True)
+
+        self._dataframe = hf.extract_nwis_df(self.json)
+
+    def df(self, *args):
+        for item in args:
             pass
-        elif (total > 1):
-            raise ValueError("Select sites using either site, stateCd, "
-                             "countyCd, or bBox, but not more than one.")
-        elif (total < 1):
-            raise ValueError("Select sites using at least one of the following"
-                             " arguments: site, stateCd, countyCd or bBox.")
 
-        # Check that time parameters are not both set.
-        # If neither is set, then NWIS will return the most recent observation.
-        if (self.start_date and self.period):
-            raise ValueError("Use either start_date or period, or neither, "
-                             "but not both.")
+        return self._dataframe
+
+
 
     def get_data(self):
+        """
         self.response = hf.get_nwis(self.site,
                                     self.service,
                                     self.start_date,
@@ -183,5 +182,6 @@ class NWIS(Station):
         self.name = hf.get_nwis_property(self.json(),
                                          key='name',
                                          remove_duplicates=True)
-
+        """
+        print("It is no longer necessary to call .get_data() to request data.")
         return self

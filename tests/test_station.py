@@ -72,12 +72,83 @@ class TestStation(unittest.TestCase):
 
 
 class TestNWIS(unittest.TestCase):
-    """Testing the station.NWIS object."""
 
-    def test_NWIS_service_defaults_to_dv(self):
-        site = "01582500"
-        actual = station.NWIS(site)
-        self.assertEqual(actual.service, "dv")
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_NWIS_init_check_defaults(self, mock_get_nwis_property, mock_get_nwis):
+        default_site = None
+        default_service = 'dv'
+        default_start = None
+        default_end = None
+        default_parameterCd = 'all'
+        default_period = None
+        default_stateCd = None
+        default_countyCd = None
+        default_bBox = None
+
+        mock_get_nwis_property.return_value = 'expected'
+        mock_get_nwis.return_value = fakeResponse()
+
+        station.NWIS()
+
+        mock_get_nwis.assert_called_once_with(default_site,
+                                              default_service,
+                                              default_start,
+                                              default_end,
+                                              parameterCd=default_parameterCd,
+                                              period=default_period,
+                                              stateCd=default_stateCd,
+                                              countyCd=default_countyCd,
+                                              bBox=default_bBox)
+        self.assertTrue(mock_get_nwis_property)
+
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    def test_NWIS_init_calls_get_nwis_and_get_prop(self, mock_get_nwis_property, mock_get_nwis):
+        site = 'expected site'
+        service = 'expected service'
+        start = 'expected start'
+        end = 'expected end'
+        parameterCd = 'expected pCode'
+        mock_get_nwis_property.return_value = 'expected'
+        mock_get_nwis.return_value = fakeResponse()
+
+        station.NWIS(site, service, start, end, parameterCd=parameterCd)
+        mock_get_nwis.assert_called_once_with(site, service, start, end,
+                                              parameterCd=parameterCd,
+                                              period=None, stateCd=None,
+                                              countyCd=None, bBox=None)
+        self.assertTrue(mock_get_nwis_property)
+
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    @mock.patch("hydrofunctions.hydrofunctions.extract_nwis_df")
+    def test_NWIS_init_sets_url_ok_json(self, mock_extract_nwis_df, mock_get_nwis_property, mock_get_nwis):
+        expected_url = 'expected url'
+        expected_ok = True
+        expected_json = 'expected json'
+
+        mock_get_nwis.return_value = fakeResponse(code=200,
+                                                  url=expected_url,
+                                                  json=expected_json)
+
+        actual = station.NWIS()
+        self.assertEqual(actual.url, expected_url, "NWIS.__init__() did not set self.url properly.")
+        self.assertEqual(actual.ok, expected_ok, "NWIS.__init__() did not set self.ok properly.")
+        self.assertEqual(actual.json, expected_json, "NWIS.__init__() did not set self.json properly.")
+
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    @mock.patch("hydrofunctions.hydrofunctions.extract_nwis_df")
+    def test_NWIS_init_calls_extract_nwis_df(self, mock_extract_nwis_df, mock_get_nwis_property, mock_get_nwis):
+        expected_json = 'expected json'
+        mock_get_nwis.return_value = fakeResponse(json=expected_json)
+        actual = station.NWIS()
+        mock_extract_nwis_df.assert_called_once_with(expected_json)
+
+"""
+    @mock.patch("hydrofunctions.typing.check_parameter_string")
+    def test_NWIS_init_calls_check_parameter_string(self, mock_cps):
 
     def test_NWIS_start_defaults_to_None(self):
         actual = station.NWIS('01541200')
@@ -238,6 +309,6 @@ class TestNWIS(unittest.TestCase):
     def test_NWIS_raises_ValueError_start_and_period_arguments(self):
         with self.assertRaises(ValueError):
             station.NWIS('01541000', start_date='2013-02-02', period='P9D')
-
+"""
 if __name__ == '__main__':
     unittest.main(verbosity=2)
