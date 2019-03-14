@@ -155,6 +155,7 @@ class NWIS(Station):
         data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data ends in a number.
         flag_cols = self._dataframe.columns.str.contains('_qualifiers')
         Q_cols = self._dataframe.columns.str.contains(':00060:') # This includes data & flags
+        stage_cols = self._dataframe.columns.str.contains(':00065:')
         all_cols = self._dataframe.columns != ""
 
         sites = all_cols
@@ -172,6 +173,8 @@ class NWIS(Station):
                     break
                 elif item == 'discharge':
                     params = Q_cols
+                elif item == 'stage':
+                    params = stage_cols
                 elif item == 'flags':
                     meta = flag_cols
                 else:
