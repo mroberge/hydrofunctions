@@ -178,7 +178,7 @@ class NWIS(Station):
                 elif item == 'flags':
                     meta = flag_cols
                 else:
-                    raise valueError("The argument", arg, "is not recognized.")
+                    raise ValueError("The argument", item, "is not recognized.")
         selection = sites & params & meta
         requested_df = self._dataframe.loc[:, selection]
         return requested_df
