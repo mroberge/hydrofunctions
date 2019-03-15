@@ -317,6 +317,25 @@ class TestNWIS(unittest.TestCase):
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
 
+    def test_NWIS_df_crazy_input_raises_ValueError(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+
+        with self.assertRaises(ValueError, msg="crazy input should cause NWIS.df() to raise a ValueError."):
+            actual_df = test_nwis.df('discharge', 'crazy', 'input')
+
+
 """
     @mock.patch("hydrofunctions.typing.check_parameter_string")
     def test_NWIS_init_calls_check_parameter_string(self, mock_cps):
