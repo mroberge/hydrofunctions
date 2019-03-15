@@ -16,6 +16,14 @@ from .fixtures import (
         )
 
 
+class TestingNWIS(station.NWIS):
+    """
+    This subclass of NWIS is for testing the NWIS methods.
+    """
+    def __init__(self, dataframe):
+        self._dataframe = dataframe
+
+
 class TestStation(unittest.TestCase):
 
     def test_station_is_obj(self):
@@ -145,6 +153,169 @@ class TestNWIS(unittest.TestCase):
         mock_get_nwis.return_value = fakeResponse(json=expected_json)
         actual = station.NWIS()
         mock_extract_nwis_df.assert_called_once_with(expected_json)
+
+    def test_NWIS_df_returns_all_columns(self):
+        expected_cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000_qualifiers',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000']
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=expected_cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df()
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+
+    def test_NWIS_df_all_returns_all_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000_qualifiers',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000']
+        expected_cols = cols
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df('all')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+
+    def test_NWIS_df_discharge_returns_discharge_data_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000_qualifiers',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000',
+                         'USGS:01541303:00060:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df('discharge')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+
+    def test_NWIS_df_q_returns_discharge_data_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000_qualifiers',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000',
+                         'USGS:01541303:00060:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df('q')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+
+    def test_NWIS_df_stage_returns_stage_data_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000_qualifiers',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00065:00000',
+                         'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df('stage')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+
+    def test_NWIS_df_flags_returns_qualifiers_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000_qualifiers',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541303:00060:00000_qualifiers',
+                         'USGS:01541303:00065:00000_qualifiers']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df('flags')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+
+    def test_NWIS_df_flags_q_returns_discharge_qualifiers_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541303:00060:00000_qualifiers']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df('flags', 'q')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+
+    def test_NWIS_df_stage_flags_returns_stage_qualifiers_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000_qualifiers']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(test_df)
+        actual_df = test_nwis.df('stage', 'flags')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
 
 """
     @mock.patch("hydrofunctions.typing.check_parameter_string")
@@ -309,6 +480,11 @@ class TestNWIS(unittest.TestCase):
     def test_NWIS_raises_ValueError_start_and_period_arguments(self):
         with self.assertRaises(ValueError):
             station.NWIS('01541000', start_date='2013-02-02', period='P9D')
-"""
+    """
+
+
+
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
