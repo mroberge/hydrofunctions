@@ -173,6 +173,8 @@ class NWIS(Station):
                     break
                 elif item == 'discharge':
                     params = Q_cols
+                elif item == 'q':
+                    params = Q_cols
                 elif item == 'stage':
                     params = stage_cols
                 elif item == 'flags':
