@@ -20,7 +20,11 @@ class TestingNWIS(station.NWIS):
     """
     This subclass of NWIS is for testing the NWIS methods.
     """
-    def __init__(self, dataframe):
+    def __init__(self, site=None, service=None, start_date=None, end_date=None, dataframe=None):
+        self.site = site
+        self.service = service
+        self.start_date = start_date
+        self.end_date = end_date
         self._dataframe = dataframe
 
 
@@ -166,7 +170,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=expected_cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df()
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -184,7 +188,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('all')
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -205,7 +209,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('discharge')
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -226,7 +230,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('q')
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -247,7 +251,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('stage')
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -270,7 +274,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('flags')
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -291,7 +295,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('flags', 'q')
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -312,7 +316,7 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('stage', 'flags')
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
@@ -330,11 +334,15 @@ class TestNWIS(unittest.TestCase):
         data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
                 ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(test_df)
+        test_nwis = TestingNWIS(dataframe=test_df)
 
         with self.assertRaises(ValueError, msg="crazy input should cause NWIS.df() to raise a ValueError."):
             actual_df = test_nwis.df('discharge', 'crazy', 'input')
 
+    def test_NWIS_repr_returns_str(self):
+        test_nwis = TestingNWIS(site='expected1', service='expected2', start_date='expected3', end_date='expected4')
+        expected_repr = "hydrofunctions.NWIS(site='expected1', service='expected2', start_date='expected3', end_date='expected4')"
+        self.assertEqual(repr(test_nwis), expected_repr)
 
 """
     @mock.patch("hydrofunctions.typing.check_parameter_string")

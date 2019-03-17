@@ -138,6 +138,14 @@ class NWIS(Station):
 
         self._dataframe = hf.extract_nwis_df(self.json)
 
+    def __repr__(self):
+        repr_string = "hydrofunctions.NWIS(site='" + str(self.site) + \
+                        "', service='" + str(self.service) + \
+                        "', start_date='" + str(self.start_date) + \
+                        "', end_date='" + str(self.end_date) + \
+                        "')"
+        return repr_string
+
     def df(self, *args):
         """
         Return a subset of columns from the dataframe.
