@@ -136,7 +136,7 @@ class NWIS(Station):
                                          key='name',
                                          remove_duplicates=True)
 
-        self._dataframe = hf.extract_nwis_df(self.json)
+        self._dataframe, self.meta = hf.extract_nwis_df(self.json)
         #value = hf.get_nwis_property(self.json, key='siteCode', remove_duplicates=True)
         #sites = []
         #for site in value:

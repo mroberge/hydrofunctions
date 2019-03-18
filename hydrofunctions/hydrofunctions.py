@@ -387,9 +387,18 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     starts = []
     ends = []
     freqs = []
+    meta = {}
     for series in ts:
         series_name = series['name']
+        temp_name = series_name.split(':')
+        site_id = str(temp_name[0])
+        parameter_cd = str(temp_name[1])
+        stat = str(temp_name[2])
+        siteName = series['sourceInfo']['siteName']
+        siteLatLongSrs = series['sourceInfo']['geoLocation']['geogLocation']
         noDataValues = series['variable']['noDataValue']
+        variableDescription = series['variable']['variableName']
+        unit = series['variable']['unit']['unitCode']
         data = series['values'][0]['value']
         if data == []:
             # This parameter has no data. Skip to next series.
@@ -416,6 +425,21 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         # Instead, create a temporary dataframe, fillna, then copy back into original.
         DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
         DF.loc[:, qual_cols] = DFquals
+
+        parameter_info = {
+                'variableFreq': local_freq,
+                'variableUnit': unit,
+                'variableDescription': variableDescription
+                }
+        site_info = {
+                'siteName': siteName,
+                'siteLatLongSrs': siteLatLongSrs
+                }
+        # if site is not in meta keys, add it.
+        if site_id not in meta:
+            meta[site_id] = site_info
+        # Add the variable info to the site dict.
+        meta[site_id][parameter_cd] = parameter_info
 
         collection.append(DF)
 
@@ -463,7 +487,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     if (not DF.index.is_monotonic):
         DF.sort_index(axis=0, inplace=True)
 
-    return cleanDF
+    return cleanDF, meta
 
 
 def nwis_custom_status_codes(response):
