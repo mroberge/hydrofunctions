@@ -9,6 +9,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import unittest
 from unittest import mock
 import pandas as pd
+import numpy as np
 
 from hydrofunctions import station, typing
 from .fixtures import (
@@ -20,12 +21,13 @@ class TestingNWIS(station.NWIS):
     """
     This subclass of NWIS is for testing the NWIS methods.
     """
-    def __init__(self, site=None, service=None, start_date=None, end_date=None, dataframe=None):
+    def __init__(self, site=None, service=None, start_date=None, end_date=None, dataframe=None, meta=None):
         self.site = site
         self.service = service
         self.start_date = start_date
         self.end_date = end_date
         self._dataframe = dataframe
+        self.meta = meta
 
 
 class TestStation(unittest.TestCase):
@@ -143,6 +145,9 @@ class TestNWIS(unittest.TestCase):
         mock_get_nwis.return_value = fakeResponse(code=200,
                                                   url=expected_url,
                                                   json=expected_json)
+        mock_df = pd.DataFrame(np.random.randn(5, 1), columns=['A'],
+                               index=pd.date_range('20130101', periods=5, freq='T'))
+        mock_extract_nwis_df.return_value = (mock_df, 'expected_dict')
 
         actual = station.NWIS()
         self.assertEqual(actual.url, expected_url, "NWIS.__init__() did not set self.url properly.")
@@ -155,6 +160,9 @@ class TestNWIS(unittest.TestCase):
     def test_NWIS_init_calls_extract_nwis_df(self, mock_extract_nwis_df, mock_get_nwis_property, mock_get_nwis):
         expected_json = 'expected json'
         mock_get_nwis.return_value = fakeResponse(json=expected_json)
+        mock_df = pd.DataFrame(np.random.randn(5, 1), columns=['A'],
+                               index=pd.date_range('20130101', periods=5, freq='T'))
+        mock_extract_nwis_df.return_value = (mock_df, 'expected dict')
         actual = station.NWIS()
         mock_extract_nwis_df.assert_called_once_with(expected_json)
 

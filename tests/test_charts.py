@@ -63,15 +63,15 @@ class TestFlowDuration(unittest.TestCase):
 class TestCyclePlot(unittest.TestCase):
 
     def test_charts_cycleplot_exists(self):
-        expected = hf.extract_nwis_df(test_json, interpolate=False)
-        actual_fig, actual_ax = charts.cycleplot(expected)
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        actual_fig, actual_ax = charts.cycleplot(expected_df)
         self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
         self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
 
     def test_charts_cycleplot_parts(self):
-        expected = hf.extract_nwis_df(test_json, interpolate=False)
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
 
-        actual_fig, actual_ax = charts.cycleplot(expected)
+        actual_fig, actual_ax = charts.cycleplot(expected_df)
 
         actual_xscale = actual_ax[0].xaxis.get_scale()
         actual_yscale = actual_ax[0].yaxis.get_scale()

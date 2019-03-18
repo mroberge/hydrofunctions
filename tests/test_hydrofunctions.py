@@ -42,25 +42,28 @@ class TestHydrofunctionsParsing(unittest.TestCase):
 
     def test_hf_extract_nwis_df_accepts_response_obj(self):
         fake_response = fakeResponse()
-        actual = hf.extract_nwis_df(fake_response, interpolate=False)
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        actual_df, actual_dict = hf.extract_nwis_df(fake_response, interpolate=False)
+        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
                       msg="Did not return a df")
+        self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
 
     def test_hf_extract_nwis_df_parse_multiple_flags(self):
-        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
+        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
                       msg="Did not return a df")
+        self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
-        actual = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        actual_df, actual_dict = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
+        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
                       msg="Did not return a df")
+        self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
         #TODO: test that data is organized correctly
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
-        actual = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
-        actual_len, actual_width = actual.shape
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        actual_df, actual_dict = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
+        actual_len, actual_width = actual_df.shape
+        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
                       msg="Did not return a df")
         self.assertEqual(actual_len, 93, "Wrong length for dataframe")
         self.assertEqual(actual_width, 8, "Wrong width for dataframe")
@@ -72,41 +75,41 @@ class TestHydrofunctionsParsing(unittest.TestCase):
                             'USGS:01541200:00060:00000_qualifiers',
                             'USGS:01541200:00065:00000',
                             'USGS:01541200:00065:00000_qualifiers']
-        actual_columns = actual.columns.values
+        actual_columns = actual_df.columns.values
         self.assertCountEqual(actual_columns, expected_columns,
                               "column names don't match expected")
-        self.assertTrue(actual.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
+        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_df_parse_JSON15min2day_return_df(self):
-        actual = hf.extract_nwis_df(JSON15min2day, interpolate=False)
-        actual_len, actual_width = actual.shape
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        actual_df, actual_dict = hf.extract_nwis_df(JSON15min2day, interpolate=False)
+        actual_len, actual_width = actual_df.shape
+        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
                       msg="Did not return a df")
         self.assertEqual(actual_len, 192, "Wrong length for dataframe")
         self.assertEqual(actual_width, 2, "Wrong width for dataframe")
         expected_columns = ['USGS:03213700:00060:00000',
                             'USGS:03213700:00060:00000_qualifiers']
-        actual_columns = actual.columns.values
+        actual_columns = actual_df.columns.values
         self.assertCountEqual(actual_columns, expected_columns,
                               "column names don't match expected")
-        self.assertTrue(actual.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
+        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_df_parse_mult_flags_return_df(self):
-        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
-        actual_len, actual_width = actual.shape
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
+        actual_len, actual_width = actual_df.shape
+        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
                       msg="Did not return a df")
         self.assertEqual(actual_len, 480, "Wrong length for dataframe")
         self.assertEqual(actual_width, 2, "Wrong width for dataframe")
         expected_columns = ['USGS:01542500:00060:00000',
                             'USGS:01542500:00060:00000_qualifiers']
-        actual_columns = actual.columns.values
+        actual_columns = actual_df.columns.values
         self.assertCountEqual(actual_columns, expected_columns,
                               "column names don't match expected")
-        self.assertTrue(actual.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
+        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
 
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         empty_response = {'value': {'timeSeries': []}}
@@ -123,55 +126,55 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             hf.extract_nwis_df(diff_freq, interpolate=False)
 
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_1(self):
-        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
-        actual_flags_1 = actual.loc['2019-01-24T10:30:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
+        actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
+        actual_flags_1 = actual_df.loc['2019-01-24T10:30:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
         expected_flags_1 = 'P,e'
         self.assertEqual(actual_flags_1, expected_flags_1, "The data qualifier flags were not parsed correctly.")
 
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_2(self):
-        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
-        actual_flags_2 = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
+        actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
+        actual_flags_2 = actual_df.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
         expected_flags_2 = 'P,Ice'
         self.assertEqual(actual_flags_2, expected_flags_2, "The data qualifier flags were not parsed correctly.")
 
     def test_hf_extract_nwis_replaces_NWIS_noDataValue_with_npNan(self):
-        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
-        actual_nodata = actual.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000']
+        actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
+        actual_nodata = actual_df.loc['2019-01-28T16:00:00.000-05:00', 'USGS:01542500:00060:00000']
         self.assertTrue(np.isnan(actual_nodata), "The NWIS no data value was not replaced with np.nan. ")
 
     def test_hf_extract_nwis_adds_missing_tags(self):
-        actual = hf.extract_nwis_df(mult_flags, interpolate=False)
-        actual_missing = actual.loc['2019-01-24 17:00:00-05:00', 'USGS:01542500:00060:00000_qualifiers']
+        actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
+        actual_missing = actual_df.loc['2019-01-24 17:00:00-05:00', 'USGS:01542500:00060:00000_qualifiers']
         self.assertEqual(actual_missing, 'hf.missing', "Missing records should be given 'hf.missing' _qualifier tags.")
 
     def test_hf_extract_nwis_adds_upsample_tags(self):
-        actual = hf.extract_nwis_df(diff_freq, interpolate=False)
-        actual_upsample = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
+        actual_df, actual_dict = hf.extract_nwis_df(diff_freq, interpolate=False)
+        actual_upsample = actual_df.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
         self.assertEqual(actual_upsample, 'hf.upsampled', "New records created by upsampling should be given 'hf.upsample' _qualifier tags.")
 
     def test_hf_extract_nwis_interpolates(self):
-        actual = hf.extract_nwis_df(diff_freq, interpolate=True)
-        actual_upsample_interpolate = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000']
+        actual_df, actual_dict = hf.extract_nwis_df(diff_freq, interpolate=True)
+        actual_upsample_interpolate = actual_df.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000']
         self.assertEqual(actual_upsample_interpolate, 42200.0, "New records created by upsampling should have NaNs replaced with interpolated values.")
 
     @unittest.skip("This feature is not implemented yet.")
     def test_hf_extract_nwis_interpolates_and_adds_tags(self):
         # Ideally, every data value that was interpolated should have a tag
         # added to the qualifiers that says it was interpolated.
-        actual = hf.extract_nwis_df(diff_freq, interpolate=True)
-        actual_upsample_interpolate_flag = actual.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
+        actual_df, actual_dict = hf.extract_nwis_df(diff_freq, interpolate=True)
+        actual_upsample_interpolate_flag = actual_df.loc['2018-06-01 00:15:00-04:00', 'USGS:01570500:00060:00000_qualifiers']
         expected_flag = "hf.interpolated"
         self.assertEqual(actual_upsample_interpolate_flag, expected_flag, "Interpolated values should be marked with a flag.")
 
     def test_hf_extract_nwis_corrects_for_start_of_DST(self):
-        actualDF = hf.extract_nwis_df(startDST, interpolate=False)
-        actual_len, width = actualDF.shape
+        actual_df, actual_dict = hf.extract_nwis_df(startDST, interpolate=False)
+        actual_len, width = actual_df.shape
         expected = 284
         self.assertEqual(actual_len, expected, "Three days including the start of DST should have 3 * 24 * 4 = 288 observations, minus 4 = 284")
 
     def test_hf_extract_nwis_corrects_for_end_of_DST(self):
-        actualDF = hf.extract_nwis_df(endDST, interpolate=False)
-        actual_len, width = actualDF.shape
+        actual_df, actual_dict = hf.extract_nwis_df(endDST, interpolate=False)
+        actual_len, width = actual_df.shape
         expected = 292
         self.assertEqual(actual_len, expected, "Three days including the end of DST should have 3 * 24 * 4 = 288 observations, plus 4 = 292")
 
@@ -393,8 +396,8 @@ class TestHydrofunctions(unittest.TestCase):
 
 
     def test_hf_select_data_returns_data_cols(self):
-        DF = hf.extract_nwis_df(two_sites_two_params_iv)
-        actual = hf.select_data(DF)
+        actual_df, actual_dict = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual = hf.select_data(actual_df)
         expected = [False, True, False, True, False, True, False, True]
         self.assertListEqual(actual.tolist(), expected, "select_data should return an array of which columns contain the data, not the qualifiers.")
 
