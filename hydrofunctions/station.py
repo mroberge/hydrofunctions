@@ -137,6 +137,17 @@ class NWIS(Station):
                                          remove_duplicates=True)
 
         self._dataframe = hf.extract_nwis_df(self.json)
+        #value = hf.get_nwis_property(self.json, key='siteCode', remove_duplicates=True)
+        #sites = []
+        #for site in value:
+        #    site_id = site[0]['value']
+        #    sites.append(site_id)
+        self.site = site
+        self.service = service
+        self.start_date = start_date
+        self.end_date = end_date
+        self.start = self._dataframe.index.min()
+        self.end = self._dataframe.index.max()
 
     def __repr__(self):
         repr_string = "hydrofunctions.NWIS(site='" + str(self.site) + \
