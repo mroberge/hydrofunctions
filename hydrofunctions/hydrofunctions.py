@@ -9,6 +9,7 @@ This module contains the main functions used in an interactive session.
 -----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
+from collections import OrderedDict
 import requests
 import numpy as np
 import pandas as pd
@@ -387,7 +388,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     starts = []
     ends = []
     freqs = []
-    meta = {}
+    meta = OrderedDict()
     for series in ts:
         series_name = series['name']
         temp_name = series_name.split(':')

@@ -43,15 +43,15 @@ class TestHydrofunctionsParsing(unittest.TestCase):
     def test_hf_extract_nwis_df_accepts_response_obj(self):
         fake_response = fakeResponse()
         actual_df, actual_dict = hf.extract_nwis_df(fake_response, interpolate=False)
-        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
+        self.assertIsInstance(actual_df, pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
+        self.assertIsInstance(actual_dict, dict, msg="Did not return a dict.")
 
     def test_hf_extract_nwis_df_parse_multiple_flags(self):
         actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
-        self.assertIs(type(actual_df), pd.core.frame.DataFrame,
+        self.assertIsInstance(actual_df, pd.core.frame.DataFrame,
                       msg="Did not return a df")
-        self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
+        self.assertIsInstance(actual_dict, dict, msg="Did not return a dict.")
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
         actual_df, actual_dict = hf.extract_nwis_df(two_sites_two_params_iv, interpolate=False)
