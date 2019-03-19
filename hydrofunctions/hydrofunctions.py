@@ -24,7 +24,7 @@ from . import helpers
 
 logging.basicConfig(
     filename="hydrofunctions_testing.log",
-    level=logging.DEBUG,
+    level=logging.ERROR,
     format="%(asctime)s:%(levelname)s:%(message)s"
     )
 
