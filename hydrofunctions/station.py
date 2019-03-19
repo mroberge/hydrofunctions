@@ -151,9 +151,9 @@ class NWIS(Station):
 
     def __repr__(self):
         repr_string = ""
-        for i, site_id in enumerate(self.meta):
+        for site_id in sorted(self.meta.keys()):
             repr_string += site_id + ": " + self.meta[site_id]['siteName'] + "\n"
-            for param in self.meta[site_id]['timeSeries']:
+            for param in sorted(self.meta[site_id]['timeSeries'].keys()):
                 repr_string += "    " + param + ": " + \
                     self.meta[site_id]['timeSeries'][param]['variableFreq'] + \
                     "  " + self.meta[site_id]['timeSeries'][param]['variableDescription'] + "\n"

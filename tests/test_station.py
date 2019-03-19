@@ -368,6 +368,7 @@ class TestNWIS(unittest.TestCase):
         self.assertEqual(repr(test_nwis), expected_repr)
 
     def test_NWIS_repr_multisite_multi_param_returns_repr(self):
+        self.maxDiff = None
         mock_meta = {
             'USGS:01585200': {
                 'siteName': 'WEST BRANCH HERRING RUN AT IDLEWYLDE, MD',
