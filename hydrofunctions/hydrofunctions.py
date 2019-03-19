@@ -391,9 +391,10 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     for series in ts:
         series_name = series['name']
         temp_name = series_name.split(':')
-        site_id = str(temp_name[0])
-        parameter_cd = str(temp_name[1])
-        stat = str(temp_name[2])
+        agency = str(temp_name[0])
+        site_id = agency + ':' + str(temp_name[1])
+        parameter_cd = str(temp_name[2])
+        stat = str(temp_name[3])
         siteName = series['sourceInfo']['siteName']
         siteLatLongSrs = series['sourceInfo']['geoLocation']['geogLocation']
         noDataValues = series['variable']['noDataValue']
