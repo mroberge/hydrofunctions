@@ -155,7 +155,14 @@ class NWIS(Station):
                         "', start_date='" + str(self.start_date) + \
                         "', end_date='" + str(self.end_date) + \
                         "')"
-        return repr_string
+        repr_string2 = ""
+        for i, site_id in enumerate(self.meta):
+            repr_string2 += site_id + ": " + self.meta[site_id]['siteName'] + "\n"
+            for param in self.meta[site_id]['timeSeries']:
+                repr_string2 += "    " + param + ": " + \
+                    self.meta[site_id]['timeSeries'][param]['variableFreq'] + \
+                    "  " + self.meta[site_id]['timeSeries'][param]['variableDescription'] + "\n"
+        return repr_string2
 
     def df(self, *args):
         """

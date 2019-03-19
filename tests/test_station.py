@@ -348,8 +348,19 @@ class TestNWIS(unittest.TestCase):
             actual_df = test_nwis.df('discharge', 'crazy', 'input')
 
     def test_NWIS_repr_returns_str(self):
-        test_nwis = TestingNWIS(site='expected1', service='expected2', start_date='expected3', end_date='expected4')
-        expected_repr = "hydrofunctions.NWIS(site='expected1', service='expected2', start_date='expected3', end_date='expected4')"
+        mock_meta = {'USGS:01541200': {
+             'siteName': 'WB Susquehanna River near Curwensville, PA',
+             'siteLatLongSrs': {
+                     'srs': 'EPSG:4326',
+                     'latitude': 40.9614471,
+                     'longitude': -78.5191906},
+             'timeSeries': {
+                     '00060': {
+                             'variableFreq': '<Day>',
+                             'variableUnit': 'ft3/s',
+                             'variableDescription': 'Discharge, cubic feet per second'}}}}
+        test_nwis = TestingNWIS(meta = mock_meta)
+        expected_repr = "USGS:01541200: WB Susquehanna River near Curwensville, PA\n    00060: <Day>  Discharge, cubic feet per second\n"
         self.assertEqual(repr(test_nwis), expected_repr)
 
 """
