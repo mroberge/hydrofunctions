@@ -150,19 +150,16 @@ class NWIS(Station):
         self.end = self._dataframe.index.max()
 
     def __repr__(self):
-        repr_string = "hydrofunctions.NWIS(site='" + str(self.site) + \
-                        "', service='" + str(self.service) + \
-                        "', start_date='" + str(self.start_date) + \
-                        "', end_date='" + str(self.end_date) + \
-                        "')"
-        repr_string2 = ""
+        repr_string = ""
         for i, site_id in enumerate(self.meta):
-            repr_string2 += site_id + ": " + self.meta[site_id]['siteName'] + "\n"
+            repr_string += site_id + ": " + self.meta[site_id]['siteName'] + "\n"
             for param in self.meta[site_id]['timeSeries']:
-                repr_string2 += "    " + param + ": " + \
+                repr_string += "    " + param + ": " + \
                     self.meta[site_id]['timeSeries'][param]['variableFreq'] + \
                     "  " + self.meta[site_id]['timeSeries'][param]['variableDescription'] + "\n"
-        return repr_string2
+        repr_string += "Start: " + str(self.start) + "\n" + \
+        "End:   " + str(self.end)
+        return repr_string
 
     def df(self, *args):
         """

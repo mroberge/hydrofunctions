@@ -21,13 +21,15 @@ class TestingNWIS(station.NWIS):
     """
     This subclass of NWIS is for testing the NWIS methods.
     """
-    def __init__(self, site=None, service=None, start_date=None, end_date=None, dataframe=None, meta=None):
+    def __init__(self, site=None, service=None, start_date=None, end_date=None, dataframe=None, meta=None, start=None, end=None):
         self.site = site
         self.service = service
         self.start_date = start_date
         self.end_date = end_date
         self._dataframe = dataframe
         self.meta = meta
+        self.start = start
+        self.end = end
 
 
 class TestStation(unittest.TestCase):
@@ -359,8 +361,10 @@ class TestNWIS(unittest.TestCase):
                              'variableFreq': '<Day>',
                              'variableUnit': 'ft3/s',
                              'variableDescription': 'Discharge, cubic feet per second'}}}}
-        test_nwis = TestingNWIS(meta = mock_meta)
-        expected_repr = "USGS:01541200: WB Susquehanna River near Curwensville, PA\n    00060: <Day>  Discharge, cubic feet per second\n"
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        test_nwis = TestingNWIS(meta = mock_meta, start=mock_start, end=mock_end)
+        expected_repr = "USGS:01541200: WB Susquehanna River near Curwensville, PA\n    00060: <Day>  Discharge, cubic feet per second\nStart: expected start\nEnd:   expected end"
         self.assertEqual(repr(test_nwis), expected_repr)
 
     def test_NWIS_repr_multisite_multi_param_returns_repr(self):
@@ -407,7 +411,9 @@ class TestNWIS(unittest.TestCase):
                         'variableFreq': '<5 * Minutes>',
                         'variableUnit': 'std units',
                         'variableDescription': 'pH, water, unfiltered, field, standard units'}}}}
-        test_nwis = TestingNWIS(meta = mock_meta)
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        test_nwis = TestingNWIS(meta = mock_meta, start=mock_start, end=mock_end)
         expected_repr = """USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
     00060: <5 * Minutes>  Discharge, cubic feet per second
     00065: <5 * Minutes>  Gage height, feet
@@ -417,8 +423,12 @@ USGS:01585219: HERRING RUN AT SINCLAIR LANE AT BALTIMORE, MD
     00065: <5 * Minutes>  Gage height, feet
     00095: <5 * Minutes>  Specific conductance, water, unfiltered, microsiemens per centimeter at 25 degrees Celsius
     00400: <5 * Minutes>  pH, water, unfiltered, field, standard units
-"""
+Start: expected start
+End:   expected end"""
         self.assertEqual(repr(test_nwis), expected_repr)
+
+
+
 """
     @mock.patch("hydrofunctions.typing.check_parameter_string")
     def test_NWIS_init_calls_check_parameter_string(self, mock_cps):
