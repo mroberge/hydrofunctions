@@ -434,13 +434,14 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                 }
         site_info = {
                 'siteName': siteName,
-                'siteLatLongSrs': siteLatLongSrs
+                'siteLatLongSrs': siteLatLongSrs,
+                'timeSeries' : {}
                 }
         # if site is not in meta keys, add it.
         if site_id not in meta:
             meta[site_id] = site_info
         # Add the variable info to the site dict.
-        meta[site_id][parameter_cd] = parameter_info
+        meta[site_id]['timeSeries'][parameter_cd] = parameter_info
 
         collection.append(DF)
 
