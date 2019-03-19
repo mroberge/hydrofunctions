@@ -428,7 +428,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         DF.loc[:, qual_cols] = DFquals
 
         parameter_info = {
-                'variableFreq': local_freq,
+                'variableFreq': to_offset(local_freq),
                 'variableUnit': unit,
                 'variableDescription': variableDescription
                 }
