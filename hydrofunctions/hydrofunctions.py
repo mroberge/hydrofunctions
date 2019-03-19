@@ -72,7 +72,7 @@ def calc_freq(index):
 
     if freq is None:
         if len(index) > 3:
-            freq = index[2] - index[3]
+            freq = abs(index[2] - index[3])
 
     if freq is None:
         warnings.warn("It is not possible to determine the frequency"
