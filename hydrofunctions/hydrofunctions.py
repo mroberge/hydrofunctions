@@ -398,7 +398,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         siteName = series['sourceInfo']['siteName']
         siteLatLongSrs = series['sourceInfo']['geoLocation']['geogLocation']
         noDataValues = series['variable']['noDataValue']
-        variableDescription = series['variable']['variableName']
+        variableDescription = series['variable']['variableDescription']
         unit = series['variable']['unit']['unitCode']
         data = series['values'][0]['value']
         if data == []:
