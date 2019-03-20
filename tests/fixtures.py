@@ -18,6 +18,10 @@ from .fixtures_daily_dupe import (
         daily_dupe
         )
 
+from .fixtures_tzfail import (
+        tzfail
+        )
+
 class fakeResponse(object):
 
     def __init__(self, code=200, url="fake url", reason="fake reason", text="fake text", json=JSON15min2day):

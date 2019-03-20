@@ -16,7 +16,10 @@ import pandas as pd
 import numpy as np
 
 import hydrofunctions as hf
-from .test_data import (
+from .fixtures import (
+        fakeResponse,
+        daily_dupe,
+        tzfail,
         JSON15min2day,
         two_sites_two_params_iv,
         nothing_avail,
@@ -25,11 +28,6 @@ from .test_data import (
         startDST,
         endDST
         )
-from .fixture_tzfail import tzfail
-from .fixtures import (
-        fakeResponse
-        )
-
 
 class TestHydrofunctionsParsing(unittest.TestCase):
     """Test the parsing of hf.extract_nwis_df()
