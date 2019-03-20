@@ -15,7 +15,8 @@ from .test_data import (
         )
 
 from .fixtures_daily_dupe import (
-        daily_dupe
+        daily_dupe,
+        daily_dupe_altered
         )
 
 from .fixtures_tzfail import (

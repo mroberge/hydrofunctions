@@ -19,6 +19,7 @@ import hydrofunctions as hf
 from .fixtures import (
         fakeResponse,
         daily_dupe,
+        daily_dupe_altered,
         tzfail,
         JSON15min2day,
         two_sites_two_params_iv,
@@ -182,6 +183,11 @@ class TestHydrofunctionsParsing(unittest.TestCase):
 
     def test_hf_extract_nwis_can_deal_with_duplicated_records_as_input(self):
         actualDF = hf.extract_nwis_df(daily_dupe, interpolate=False)
+
+    def test_hf_extract_nwis_can_deal_with_duplicated_records_that_have_been_altered_as_input(self):
+        # What happens if a scientist replaces an empty record with new
+        #estimated data, and forgets to discard the old data?
+        actualDF = hf.extract_nwis_df(daily_dupe_altered, interpolate=False)
 
     def test_hf_get_nwis_property(self):
         sites = None
