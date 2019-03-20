@@ -180,6 +180,9 @@ class TestHydrofunctionsParsing(unittest.TestCase):
     def test_hf_extract_nwis_can_find_tz_in_tzfail(self):
         actualDF = hf.extract_nwis_df(tzfail, interpolate=False)
 
+    def test_hf_extract_nwis_can_deal_with_duplicated_records_as_input(self):
+        actualDF = hf.extract_nwis_df(daily_dupe, interpolate=False)
+
     def test_hf_get_nwis_property(self):
         sites = None
         bBox = (-105.430, 39.655, -104, 39.863)
