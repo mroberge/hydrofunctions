@@ -25,6 +25,7 @@ from .test_data import (
         startDST,
         endDST
         )
+from .fixture_tzfail import tzfail
 from .fixtures import (
         fakeResponse
         )
@@ -174,6 +175,9 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         actual_len, width = actualDF.shape
         expected = 292
         self.assertEqual(actual_len, expected, "Three days including the end of DST should have 3 * 24 * 4 = 288 observations, plus 4 = 292")
+
+    def test_hf_extract_nwis_can_find_tz_in_tzfail(self):
+        actualDF = hf.extract_nwis_df(tzfail, interpolate=False)
 
     def test_hf_get_nwis_property(self):
         sites = None
