@@ -349,6 +349,162 @@ class TestNWIS(unittest.TestCase):
         with self.assertRaises(ValueError, msg="crazy input should cause NWIS.df() to raise a ValueError."):
             actual_df = test_nwis.df('discharge', 'crazy', 'input')
 
+    def test_NWIS_df_5digits_returns_param_data_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00065:00000',
+                         'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+        actual_df = test_nwis.df('00065')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('00065') should return all of the 00065 data columns.")
+
+    def test_NWIS_df_5digits_and_flags_returns_00065_qualifiers_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00065:00000_qualifiers',
+                         'USGS:01541303:00065:00000_qualifiers']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+        actual_df = test_nwis.df('00065', 'flags')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('00065', 'flags') should return all of the 00065 _qualifiers columns.")
+
+    def test_NWIS_df_5digits_no_match_raises_ValueError(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+
+        with self.assertRaises(ValueError, msg="A five-digit input that doesn't match a paramCode should raise a ValueError."):
+            actual_df = test_nwis.df('00000')
+
+    def test_NWIS_df_6digits_raises_ValueError(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+
+        with self.assertRaises(ValueError, msg="A six-digit input like .df('123456') should raise a ValueError."):
+            actual_df = test_nwis.df('123456')
+
+    def test_NWIS_df_7digits_raises_ValueError(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+
+        with self.assertRaises(ValueError, msg="A seven-digit input like .df('1234567') should raise a ValueError."):
+            actual_df = test_nwis.df('1234567')
+
+    def test_NWIS_df_8digits_returns_station_data_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+        actual_df = test_nwis.df('01541200')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('01541200') should return all of the data columns for station 01541200.")
+
+    def test_NWIS_df_8digits_and_flags_returns_station_qualifiers_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00065:00000_qualifiers']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+        actual_df = test_nwis.df('01541200', 'flags')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('01541200', 'flags') should return all of the _qualifiers columns for station '01541200'.")
+
+    def test_NWIS_df_8digits_no_match_raises_ValueError(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+
+        with self.assertRaises(ValueError, msg="An eight-digit input that doesn't match a station id should raise a ValueError."):
+            actual_df = test_nwis.df('12345678')
+
     def test_NWIS_repr_returns_str(self):
         mock_meta = {'USGS:01541200': {
              'siteName': 'WB Susquehanna River near Curwensville, PA',

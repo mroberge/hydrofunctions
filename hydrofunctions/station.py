@@ -10,6 +10,7 @@ organizing and managing data for data collection sites.
 -----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
+import re
 from . import typing
 from . import hydrofunctions as hf
 from . import helpers
@@ -180,6 +181,8 @@ class NWIS(Station):
         Q_cols = self._dataframe.columns.str.contains(':00060:') # This includes data & flags
         stage_cols = self._dataframe.columns.str.contains(':00065:')
         all_cols = self._dataframe.columns != ""
+        param_re = r'^\d{5}$' # parameters are a five-digit number.
+        station_re = r'\d{8,12}$' # station ID's are between 8 and 12 digits.
 
         sites = all_cols
         params = all_cols
@@ -202,8 +205,18 @@ class NWIS(Station):
                     params = stage_cols
                 elif item == 'flags':
                     meta = flag_cols
+                elif re.search(param_re, item):
+                    param_arg = ":" + item + ":"
+                    params = self._dataframe.columns.str.contains(param_arg)
+                    if not params.any():
+                        raise ValueError("The parameter {param} is not contained in this dataset.".format(param=item))
+                elif re.search(station_re, item):
+                    station_arg = ":" + item + ":"
+                    sites = self._dataframe.columns.str.contains(station_arg)
+                    if not sites.any():
+                        raise ValueError("The site {site} is not in this dataset.".format(site=item))
                 else:
-                    raise ValueError("The argument", item, "is not recognized.")
+                    raise ValueError("The argument {item} is not recognized.".format(item=item))
         selection = sites & params & meta
         requested_df = self._dataframe.loc[:, selection]
         return requested_df
