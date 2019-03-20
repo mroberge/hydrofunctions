@@ -13,12 +13,20 @@ import requests
 import numpy as np
 import pandas as pd
 from pandas.tseries.frequencies import to_offset
+import logging
+
 # Change to relative import: from . import exceptions
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
 import warnings
 from . import typing
 from . import helpers
+
+logging.basicConfig(
+    filename="hydrofunctions_testing.log",
+    level=logging.ERROR,
+    format="%(asctime)s:%(levelname)s:%(message)s"
+    )
 
 
 def select_data(nwis_df):
@@ -43,44 +51,59 @@ def select_data(nwis_df):
 
 
 def calc_freq(index):
+    # Method 0: calc_freq() was called, but we haven't done anything yet.
+    method = 0
     if (isinstance(index, pd.DataFrame)):
         index = index.index
     try:
-        # Try the direct approach first.
+        # Method 1: Try the direct approach first. Maybe freq has already been set.
         freq = index.freq
+        method = 1
     except AttributeError:
+        # index.freq does not exist, so let's keep trying.
         freq = None
 
     if freq is None:
+        # Method 2: Use the built-in pd.infer_freq(). It raises ValueError
+        #    when it fails, so catch ValueErrors and keep trying.
         try:
-            # Second attempt using built-in. I've crashed this before, so
-            # let's catch exceptions.
             freq = to_offset(pd.infer_freq(index))
+            method = 2
         except ValueError:
             pass
 
     if freq is None:
+        # Method 3: divide the length of time by the number of observations.
         freq = (index.max() - index.min())/len(index)
         if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17 minutes'):
-            freq = pd.Timedelta('15 minutes')
+            freq = to_offset('15min')
         elif pd.Timedelta('27 minutes') < freq < pd.Timedelta('33 minutes'):
-            freq = pd.Timedelta('30 minutes')
+            freq = to_offset('30min')
         elif pd.Timedelta('55 minutes') < freq < pd.Timedelta('65 minutes'):
-            freq = pd.Timedelta('60 minutes')
+            freq = to_offset('60min')
         else:
             freq = None
+        method = 3
 
     if freq is None:
+        # Method 4: Subtract two adjacent values and use the difference!
         if len(index) > 3:
-            freq = abs(index[2] - index[3])
+            freq = to_offset(abs(index[2] - index[3]))
+        method = 4
+        logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
 
     if freq is None:
+        # Method 5: If all else fails, freq is 15 minutes!
         warnings.warn("It is not possible to determine the frequency"
                       "for one of the datasets in this request."
                       "This dataset will be set to a frequency of "
                       "15 minutes", exceptions.HydroUserWarning)
-        freq = pd.Timedelta('15 minutes')
 
+        freq = to_offset('15min')
+        method = 5
+
+    debug_msg = "Calc_freq method:" + str(method) + "freq:" + str(freq)
+    logging.debug(debug_msg)
     return pd.Timedelta(freq)
 
 
@@ -418,7 +441,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         ends.append(local_end)
         local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
-        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq)
+        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
 
         DF = DF.reindex(index=local_clean_index, copy=True)
         qual_cols = DF.columns.str.contains('_qualifiers')
@@ -465,11 +488,11 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                       "'upsampled' to " + str(freqmin) + " because the data "
                       "were collected at a lower frequency of " + str(freqmax),
                       exceptions.HydroUserWarning)
-    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin)
+    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz='UTC')
     cleanDF = pd.DataFrame(index=clean_index)
     for dataset in collection:
         cleanDF = pd.concat([cleanDF, dataset], axis=1)
-    cleanDF.index.name = 'datetime'
+    cleanDF.index.name = 'datetimeUTC'
     # Replace lines with missing _qualifier flags with hf.upsampled
     qual_cols = cleanDF.columns.str.contains('_qualifiers')
     cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
