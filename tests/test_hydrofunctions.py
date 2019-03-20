@@ -16,7 +16,11 @@ import pandas as pd
 import numpy as np
 
 import hydrofunctions as hf
-from .test_data import (
+from .fixtures import (
+        fakeResponse,
+        daily_dupe,
+        daily_dupe_altered,
+        tzfail,
         JSON15min2day,
         two_sites_two_params_iv,
         nothing_avail,
@@ -25,11 +29,6 @@ from .test_data import (
         startDST,
         endDST
         )
-from .fixture_tzfail import tzfail
-from .fixtures import (
-        fakeResponse
-        )
-
 
 class TestHydrofunctionsParsing(unittest.TestCase):
     """Test the parsing of hf.extract_nwis_df()
@@ -181,6 +180,14 @@ class TestHydrofunctionsParsing(unittest.TestCase):
 
     def test_hf_extract_nwis_can_find_tz_in_tzfail(self):
         actualDF = hf.extract_nwis_df(tzfail, interpolate=False)
+
+    def test_hf_extract_nwis_can_deal_with_duplicated_records_as_input(self):
+        actualDF = hf.extract_nwis_df(daily_dupe, interpolate=False)
+
+    def test_hf_extract_nwis_can_deal_with_duplicated_records_that_have_been_altered_as_input(self):
+        # What happens if a scientist replaces an empty record with new
+        #estimated data, and forgets to discard the old data?
+        actualDF = hf.extract_nwis_df(daily_dupe_altered, interpolate=False)
 
     def test_hf_get_nwis_property(self):
         sites = None

@@ -442,7 +442,15 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
         local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
-
+        #if len(local_clean_index) != len(DF):
+            # This condition happens quite frequently with missing data.
+            #print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
+        if not DF.index.is_unique:
+            print("Series index for " + series_name + " is not unique. Attempting to drop identical rows.")
+            DF = DF.drop_duplicates(keep='first')
+            if not DF.index.is_unique:
+                print("Series index for " + series_name + " is STILL not unique. Dropping first rows with duplicated date.")
+                DF = DF[~DF.index.duplicated(keep='first')]
         DF = DF.reindex(index=local_clean_index, copy=True)
         qual_cols = DF.columns.str.contains('_qualifiers')
         # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
