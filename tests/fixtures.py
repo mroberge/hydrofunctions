@@ -14,6 +14,9 @@ from .test_data import (
         endDST
         )
 
+from .fixtures_daily_dupe import (
+        daily_dupe
+        )
 
 class fakeResponse(object):
 
