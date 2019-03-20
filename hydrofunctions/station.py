@@ -10,6 +10,7 @@ organizing and managing data for data collection sites.
 -----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
+import re
 from . import typing
 from . import hydrofunctions as hf
 from . import helpers
@@ -115,73 +116,119 @@ class NWIS(Station):
                  parameterCd='all',
                  period=None):
 
-        self.site = typing.check_parameter_string(site, 'site')
-        self.service = typing.check_NWIS_service(service)
-        self.start_date = typing.check_datestr(start_date)
-        self.end_date = typing.check_datestr(end_date)
-        self.stateCd = stateCd
-        self.countyCd = typing.check_parameter_string(countyCd, 'county')
-        self.bBox = bBox
-        self.ok = False
-        self.parameterCd = typing.check_parameter_string(parameterCd, 'parameterCd')
-        self.period = typing.check_period(period)
-        self.response = None
-        self.df = lambda: print("You must successfully call .get_data() before calling .df().")
-        self.json = lambda: print("You must successfully call .get_data() before calling .json().")
-        self.name = None
-        self.siteName = None
-
-        # Check that site selection parameters are exclusive!
-        total = helpers.count_number_of_truthy([self.site, self.stateCd, self.countyCd, self.bBox])
-        if total == 1:
-            pass
-        elif (total > 1):
-            raise ValueError("Select sites using either site, stateCd, "
-                             "countyCd, or bBox, but not more than one.")
-        elif (total < 1):
-            raise ValueError("Select sites using at least one of the following"
-                             " arguments: site, stateCd, countyCd or bBox.")
-
-        # Check that time parameters are not both set.
-        # If neither is set, then NWIS will return the most recent observation.
-        if (self.start_date and self.period):
-            raise ValueError("Use either start_date or period, or neither, "
-                             "but not both.")
-
-    def get_data(self):
-        self.response = hf.get_nwis(self.site,
-                                    self.service,
-                                    self.start_date,
-                                    self.end_date,
-                                    stateCd=self.stateCd,
-                                    countyCd=self.countyCd,
-                                    bBox=self.bBox,
-                                    parameterCd=self.parameterCd,
-                                    period=self.period)
-        # If the response status_code is anything other than 200,
-        # an error will be reported and an Exception raised.
-        # The response object will be saved for examination.
-
-        #TODO: fix tests and uncomment this call
-        #hf.handle_status_code(self.response)
-        #nwis_custom_status_codes(self.response)
-        # Raise an exception if non-200 status_code, or return None for 200.
-        self.response.raise_for_status()
-
-        # set self.json without calling it.
-        self.json = lambda: self.response.json()
-        # set self.df without calling it.
-        self.df = lambda: hf.extract_nwis_df(self.json())
-
-        # Another option might be to do this:
-        # self.df = hf.extract_nwis_df(self.response)
-        # This would make myInstance.df return a plain df.
+        self.response = hf.get_nwis(site,
+                                    service,
+                                    start_date,
+                                    end_date,
+                                    stateCd=stateCd,
+                                    countyCd=countyCd,
+                                    bBox=bBox,
+                                    parameterCd=parameterCd,
+                                    period=period
+                                    )
         self.ok = self.response.ok
-        self.siteName = hf.get_nwis_property(self.json(),
+        self.url = self.response.url
+        self.json = self.response.json()
+
+        self.siteName = hf.get_nwis_property(self.json,
                                              key='siteName',
                                              remove_duplicates=True)
-        self.name = hf.get_nwis_property(self.json(),
+        self.name = hf.get_nwis_property(self.json,
                                          key='name',
                                          remove_duplicates=True)
 
+        self._dataframe, self.meta = hf.extract_nwis_df(self.json)
+        #value = hf.get_nwis_property(self.json, key='siteCode', remove_duplicates=True)
+        #sites = []
+        #for site in value:
+        #    site_id = site[0]['value']
+        #    sites.append(site_id)
+        self.site = site
+        self.service = service
+        self.start_date = start_date
+        self.end_date = end_date
+        self.start = self._dataframe.index.min()
+        self.end = self._dataframe.index.max()
+
+    def __repr__(self):
+        repr_string = ""
+        for site_id in sorted(self.meta.keys()):
+            repr_string += site_id + ": " + self.meta[site_id]['siteName'] + "\n"
+            for param in sorted(self.meta[site_id]['timeSeries'].keys()):
+                repr_string += "    " + param + ": " + \
+                    self.meta[site_id]['timeSeries'][param]['variableFreq'] + \
+                    "  " + self.meta[site_id]['timeSeries'][param]['variableDescription'] + "\n"
+        repr_string += "Start: " + str(self.start) + "\n" + \
+        "End:   " + str(self.end)
+        return repr_string
+
+    def df(self, *args):
+        """
+        Return a subset of columns from the dataframe.
+
+        Args:
+            If no args are provided, the entire dataframe will be returned.
+
+            'all': the entire dataframe will be returned.
+
+            'flags': Only the _qualifier flags will be returned. Unless the
+            flags arg is provided, only data columns will be returned. Visit
+            https://waterdata.usgs.gov/usa/nwis/uv?codes_help#dv_cd1 to see a
+            more complete listing of possible codes.
+
+            'discharge' or 'q': discharge columns ('00060') will be returned.
+
+            'stage': Gage height columns ('00065') will be returned.
+
+            any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
+
+            any eight to twelve digit number: any matching stations will be returned.
+        """
+        data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data ends in a number.
+        flag_cols = self._dataframe.columns.str.contains('_qualifiers')
+        Q_cols = self._dataframe.columns.str.contains(':00060:') # This includes data & flags
+        stage_cols = self._dataframe.columns.str.contains(':00065:')
+        all_cols = self._dataframe.columns != ""
+        param_re = r'^\d{5}$' # parameters are a five-digit number.
+        station_re = r'\d{8,12}$' # station ID's are between 8 and 12 digits.
+
+        sites = all_cols
+        params = all_cols
+        meta = all_cols
+        if len(args) == 0:
+            pass
+        else:
+            meta = data_cols
+            for item in args:
+                if item == 'all':
+                    sites = all_cols
+                    params = all_cols
+                    meta = all_cols
+                    break
+                elif item == 'discharge':
+                    params = Q_cols
+                elif item == 'q':
+                    params = Q_cols
+                elif item == 'stage':
+                    params = stage_cols
+                elif item == 'flags':
+                    meta = flag_cols
+                elif re.search(param_re, item):
+                    param_arg = ":" + item + ":"
+                    params = self._dataframe.columns.str.contains(param_arg)
+                    if not params.any():
+                        raise ValueError("The parameter {param} is not contained in this dataset.".format(param=item))
+                elif re.search(station_re, item):
+                    station_arg = ":" + item + ":"
+                    sites = self._dataframe.columns.str.contains(station_arg)
+                    if not sites.any():
+                        raise ValueError("The site {site} is not in this dataset.".format(site=item))
+                else:
+                    raise ValueError("The argument {item} is not recognized.".format(item=item))
+        selection = sites & params & meta
+        requested_df = self._dataframe.loc[:, selection]
+        return requested_df
+
+    def get_data(self):
+        print("It is no longer necessary to call .get_data() to request data.")
         return self

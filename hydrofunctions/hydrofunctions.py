@@ -88,7 +88,7 @@ def calc_freq(index):
     if freq is None:
         # Method 4: Subtract two adjacent values and use the difference!
         if len(index) > 3:
-            freq = to_offset(index[3] - index[2])
+            freq = to_offset(abs(index[2] - index[3]))
         method = 4
         logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
 
@@ -98,7 +98,8 @@ def calc_freq(index):
                       "for one of the datasets in this request."
                       "This dataset will be set to a frequency of "
                       "15 minutes", exceptions.HydroUserWarning)
-        freq = pd.timeDelta('15 minutes')
+
+        freq = to_offset('15min')
         method = 5
 
     debug_msg = "Calc_freq method:" + str(method) + "freq:" + str(freq)
@@ -256,6 +257,7 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
     url = 'https://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'
     response = requests.get(url, params=values, headers=header)
+    print("Requested data from", response.url)
     # requests will raise a 'ConnectionError' if the connection is refused
     # or if we are disconnected from the internet.
 
@@ -408,9 +410,19 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     starts = []
     ends = []
     freqs = []
+    meta = {}
     for series in ts:
         series_name = series['name']
+        temp_name = series_name.split(':')
+        agency = str(temp_name[0])
+        site_id = agency + ':' + str(temp_name[1])
+        parameter_cd = str(temp_name[2])
+        stat = str(temp_name[3])
+        siteName = series['sourceInfo']['siteName']
+        siteLatLongSrs = series['sourceInfo']['geoLocation']['geogLocation']
         noDataValues = series['variable']['noDataValue']
+        variableDescription = series['variable']['variableDescription']
+        unit = series['variable']['unit']['unitCode']
         data = series['values'][0]['value']
         if data == []:
             # This parameter has no data. Skip to next series.
@@ -430,7 +442,15 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
         local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
-
+        #if len(local_clean_index) != len(DF):
+            # This condition happens quite frequently with missing data.
+            #print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
+        if not DF.index.is_unique:
+            print("Series index for " + series_name + " is not unique. Attempting to drop identical rows.")
+            DF = DF.drop_duplicates(keep='first')
+            if not DF.index.is_unique:
+                print("Series index for " + series_name + " is STILL not unique. Dropping first rows with duplicated date.")
+                DF = DF[~DF.index.duplicated(keep='first')]
         DF = DF.reindex(index=local_clean_index, copy=True)
         qual_cols = DF.columns.str.contains('_qualifiers')
         # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
@@ -438,6 +458,21 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
         DF.loc[:, qual_cols] = DFquals
 
+        parameter_info = {
+                'variableFreq': str(to_offset(local_freq)),
+                'variableUnit': unit,
+                'variableDescription': variableDescription
+                }
+        site_info = {
+                'siteName': siteName,
+                'siteLatLongSrs': siteLatLongSrs,
+                'timeSeries' : {}
+                }
+        # if site is not in meta keys, add it.
+        if site_id not in meta:
+            meta[site_id] = site_info
+        # Add the variable info to the site dict.
+        meta[site_id]['timeSeries'][parameter_cd] = parameter_info
         collection.append(DF)
 
     if len(collection) < 1:
@@ -484,7 +519,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     if (not DF.index.is_monotonic):
         DF.sort_index(axis=0, inplace=True)
 
-    return cleanDF
+    return cleanDF, meta
 
 
 def nwis_custom_status_codes(response):
