@@ -172,9 +172,17 @@ class NWIS(Station):
             'all': the entire dataframe will be returned.
 
             'flags': Only the _qualifier flags will be returned. Unless the
-            flags arg is provided, only data columns will be returned.
+            flags arg is provided, only data columns will be returned. Visit
+            https://waterdata.usgs.gov/usa/nwis/uv?codes_help#dv_cd1 to see a
+            more complete listing of possible codes.
 
-            'discharge': discharge columns will be returned.
+            'discharge' or 'q': discharge columns ('00060') will be returned.
+
+            'stage': Gage height columns ('00065') will be returned.
+
+            any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
+
+            any eight to twelve digit number: any matching stations will be returned.
         """
         data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data ends in a number.
         flag_cols = self._dataframe.columns.str.contains('_qualifiers')
