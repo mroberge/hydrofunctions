@@ -114,30 +114,34 @@ class NWIS(Station):
                  countyCd=None,
                  bBox=None,
                  parameterCd='all',
-                 period=None):
+                 period=None,
+                 filename=None):
 
-        self.response = hf.get_nwis(site,
-                                    service,
-                                    start_date,
-                                    end_date,
-                                    stateCd=stateCd,
-                                    countyCd=countyCd,
-                                    bBox=bBox,
-                                    parameterCd=parameterCd,
-                                    period=period
-                                    )
-        self.ok = self.response.ok
-        self.url = self.response.url
-        self.json = self.response.json()
+        if filename:
+            pass
+        else:
+            self.response = hf.get_nwis(site,
+                                        service,
+                                        start_date,
+                                        end_date,
+                                        stateCd=stateCd,
+                                        countyCd=countyCd,
+                                        bBox=bBox,
+                                        parameterCd=parameterCd,
+                                        period=period
+                                        )
+            self.ok = self.response.ok
+            self.url = self.response.url
+            self.json = self.response.json()
 
-        self.siteName = hf.get_nwis_property(self.json,
-                                             key='siteName',
+            self.siteName = hf.get_nwis_property(self.json,
+                                                 key='siteName',
+                                                 remove_duplicates=True)
+            self.name = hf.get_nwis_property(self.json,
+                                             key='name',
                                              remove_duplicates=True)
-        self.name = hf.get_nwis_property(self.json,
-                                         key='name',
-                                         remove_duplicates=True)
 
-        self._dataframe, self.meta = hf.extract_nwis_df(self.json)
+            self._dataframe, self.meta = hf.extract_nwis_df(self.json)
         #value = hf.get_nwis_property(self.json, key='siteCode', remove_duplicates=True)
         #sites = []
         #for site in value:
