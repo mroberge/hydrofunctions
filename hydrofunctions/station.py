@@ -11,6 +11,8 @@ organizing and managing data for data collection sites.
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import re
+import pyarrow as pa
+import pyarrow.parquet as pq
 from . import typing
 from . import hydrofunctions as hf
 from . import helpers

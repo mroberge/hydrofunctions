@@ -30,7 +30,8 @@ requirements = [
     'numpy',
     'pandas',
     'requests',
-    'IPython'
+    'IPython',
+    'pyarrow'
 ]
 
 test_requirements = [
