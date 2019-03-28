@@ -13,6 +13,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import re
 import pyarrow as pa
 import pyarrow.parquet as pq
+import json
 from . import typing
 from . import hydrofunctions as hf
 from . import helpers
@@ -119,8 +120,17 @@ class NWIS(Station):
                  period=None,
                  filename=None):
 
+        self.ok = False
         if filename:
-            pass
+            pyarrow_obj = pq.read_table(filename)
+            temp_df = pyarrow_obj.to_pandas()
+            self._dataframe = temp_df.set_index('datetimeUTC').tz_localize(tz='UTC')
+            meta_dict = pyarrow_obj.schema.metadata
+            if b'hydrofunctions_meta' in meta_dict:
+                meta_string = meta_dict[b'hydrofunctions_meta']
+                self.meta = json.loads(meta_string, encoding='utf-8')
+                self.ok = True
+
         else:
             self.response = hf.get_nwis(site,
                                         service,
@@ -238,3 +248,10 @@ class NWIS(Station):
     def get_data(self):
         print("It is no longer necessary to call .get_data() to request data.")
         return self
+
+    def save(self, filename):
+        table = pa.Table.from_pandas(self._dataframe, preserve_index=True) #not saving index.
+        meta_string = json.dumps(self.meta)
+        meta_dict = {'hydrofunctions_meta': meta_string}
+        table = table.replace_schema_metadata(meta_dict)
+        pq.write_table(table, filename)
