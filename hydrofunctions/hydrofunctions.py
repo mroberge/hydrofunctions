@@ -270,6 +270,8 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
 
     # Issue warnings for bad status codes
     nwis_custom_status_codes(response)
+    if not response.text:
+        raise exceptions.HydroNoDataError("The NWIS has returned an empty string for this request.")
 
     return response
 
