@@ -608,3 +608,11 @@ def read_parquet(filename):
         meta_string = meta_dict[b'hydrofunctions_meta']
         meta = json.loads(meta_string, encoding='utf-8')
     return dataframe, meta
+
+
+def save_parquet(filename, dataframe, meta):
+    table = pa.Table.from_pandas(dataframe, preserve_index=True) #not saving index.
+    meta_string = json.dumps(meta)
+    meta_dict = {'hydrofunctions_meta': meta_string}
+    table = table.replace_schema_metadata(meta_dict)
+    pq.write_table(table, filename)
