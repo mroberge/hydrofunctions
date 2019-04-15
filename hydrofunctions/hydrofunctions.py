@@ -93,13 +93,13 @@ def calc_freq(index):
             logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
 
     if freq is None:
-        # Method 5: If all else fails, freq is 15 minutes!
+        # Method 5: If all else fails, freq is 0 minutes!
         warnings.warn("It is not possible to determine the frequency"
                       "for one of the datasets in this request."
                       "This dataset will be set to a frequency of "
-                      "15 minutes", exceptions.HydroUserWarning)
+                      "0 minutes", exceptions.HydroUserWarning)
 
-        freq = to_offset('15min')
+        freq = to_offset('0min')
         method = 5
 
     debug_msg = "Calc_freq method:" + str(method) + "freq:" + str(freq)
@@ -450,25 +450,33 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         ends.append(local_end)
         local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
-        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
-        #if len(local_clean_index) != len(DF):
-            # This condition happens quite frequently with missing data.
-            #print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
         if not DF.index.is_unique:
             print("Series index for " + series_name + " is not unique. Attempting to drop identical rows.")
             DF = DF.drop_duplicates(keep='first')
             if not DF.index.is_unique:
                 print("Series index for " + series_name + " is STILL not unique. Dropping first rows with duplicated date.")
                 DF = DF[~DF.index.duplicated(keep='first')]
-        DF = DF.reindex(index=local_clean_index, copy=True)
+        if local_freq > to_offset('0min'):
+            local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
+            #if len(local_clean_index) != len(DF):
+                # This condition happens quite frequently with missing data.
+                #print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
+            DF = DF.reindex(index=local_clean_index, copy=True)
+        else:
+            # The dataframe DF must contain only the most recent data.
+            pass
         qual_cols = DF.columns.str.contains('_qualifiers')
         # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
         # Instead, create a temporary dataframe, fillna, then copy back into original.
         DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
         DF.loc[:, qual_cols] = DFquals
 
+        if local_freq > pd.Timedelta(to_offset('0min')):
+            variableFreq_str = str(to_offset(local_freq))
+        else:
+            variableFreq_str = str(to_offset('0min'))
         parameter_info = {
-                'variableFreq': str(to_offset(local_freq)),
+                'variableFreq': variableFreq_str,
                 'variableUnit': unit,
                 'variableDescription': variableDescription
                 }
@@ -498,30 +506,37 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                                           ", parameters, and dates.")
     startmin = min(starts)
     endmax = max(ends)
-    freqmin = min(freqs)
-    freqmax = max(freqs)
-    if (freqmin != freqmax):
-        warnings.warn("One or more datasets in this request is going to be "
-                      "'upsampled' to " + str(freqmin) + " because the data "
-                      "were collected at a lower frequency of " + str(freqmax),
-                      exceptions.HydroUserWarning)
-    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz='UTC')
-    cleanDF = pd.DataFrame(index=clean_index)
-    for dataset in collection:
-        cleanDF = pd.concat([cleanDF, dataset], axis=1)
+    # Remove all frequencies of zero from freqs list.
+    zero = to_offset('0min')
+    freqs2 = list(filter(lambda x: x > zero, freqs))
+    if len(freqs2) > 0:
+        freqmin = min(freqs)
+        freqmax = max(freqs)
+        if (freqmin != freqmax):
+            warnings.warn("One or more datasets in this request is going to be "
+                          "'upsampled' to " + str(freqmin) + " because the data "
+                          "were collected at a lower frequency of " + str(freqmax),
+                          exceptions.HydroUserWarning)
+        clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz='UTC')
+        cleanDF = pd.DataFrame(index=clean_index)
+        for dataset in collection:
+            cleanDF = pd.concat([cleanDF, dataset], axis=1)
+        # Replace lines with missing _qualifier flags with hf.upsampled
+        qual_cols = cleanDF.columns.str.contains('_qualifiers')
+        cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
+        cleanDF.loc[:, qual_cols] = cleanDFquals
+        if interpolate:
+            #TODO: mark interpolated values with 'hf.interp'
+            #select data, then replace Nans with interpolated values.
+            data_cols = cleanDF.columns.str.contains(r'[0-9]$')
+            cleanDFdata = cleanDF.loc[:,data_cols].interpolate()
+            cleanDF.loc[:,data_cols] = cleanDFdata
+    else:
+        # If datasets only contain most recent data, then
+        # don't set an index or a freq. Just concat all of the datasets.
+        cleanDF = pd.concat(collection, axis=1)
+
     cleanDF.index.name = 'datetimeUTC'
-    # Replace lines with missing _qualifier flags with hf.upsampled
-    qual_cols = cleanDF.columns.str.contains('_qualifiers')
-    cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
-    cleanDF.loc[:, qual_cols] = cleanDFquals
-
-    if interpolate:
-        #TODO: mark interpolated values with 'hf.interp'
-
-        #select data, then replace Nans with interpolated values.
-        data_cols = cleanDF.columns.str.contains(r'[0-9]$')
-        cleanDFdata = cleanDF.loc[:,data_cols].interpolate()
-        cleanDF.loc[:,data_cols] = cleanDFdata
 
     if (not DF.index.is_unique):
         DF = DF[~DF.index.duplicated(keep='first')]
