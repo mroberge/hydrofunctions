@@ -11,8 +11,7 @@ organizing and managing data for data collection sites.
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import re
-import pyarrow as pa
-import pyarrow.parquet as pq
+
 import json
 from . import typing
 from . import hydrofunctions as hf
@@ -247,8 +246,9 @@ class NWIS(Station):
         return self
 
     def save(self, filename):
-        table = pa.Table.from_pandas(self._dataframe, preserve_index=True) #not saving index.
-        meta_string = json.dumps(self.meta)
-        meta_dict = {'hydrofunctions_meta': meta_string}
-        table = table.replace_schema_metadata(meta_dict)
-        pq.write_table(table, filename)
+        hf.save_parquet(filename, self._dataframe, self.meta)
+        return 'ok'
+
+    def read(self, filename):
+        self._dataframe, self.meta = hf.read_parquet(filename)
+        return 'ok'
