@@ -89,8 +89,8 @@ def calc_freq(index):
         # Method 4: Subtract two adjacent values and use the difference!
         if len(index) > 3:
             freq = to_offset(abs(index[2] - index[3]))
-        method = 4
-        logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
+            method = 4
+            logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
 
     if freq is None:
         # Method 5: If all else fails, freq is 15 minutes!
