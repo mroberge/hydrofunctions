@@ -120,17 +120,16 @@ class NWIS(Station):
                  filename=None):
 
         self.ok = False
-        if filename:
-            pyarrow_obj = pq.read_table(filename)
-            temp_df = pyarrow_obj.to_pandas()
-            self._dataframe = temp_df.set_index('datetimeUTC').tz_localize(tz='UTC')
-            meta_dict = pyarrow_obj.schema.metadata
-            if b'hydrofunctions_meta' in meta_dict:
-                meta_string = meta_dict[b'hydrofunctions_meta']
-                self.meta = json.loads(meta_string, encoding='utf-8')
+        if filename is not None:
+            try:
+                self._dataframe, self.meta = self.read(filename)
                 self.ok = True
 
-        else:
+            except OSError as err:
+                # File does not exist yet, we'll make it later.
+                pass
+
+        if self.ok == False:
             self.response = hf.get_nwis(site,
                                         service,
                                         start_date,
@@ -141,26 +140,24 @@ class NWIS(Station):
                                         parameterCd=parameterCd,
                                         period=period
                                         )
+            try:
+                self.json = self.response.json()
+                self._dataframe, self.meta = hf.extract_nwis_df(self.json)
+                self.ok = self.response.ok
+                if filename is not None:
+                    self.save(filename)
+            except json.JSONDecodeError as err:
+                self.ok = False
+                print('JSON decoding error. URL: {self.response.url}')
+                raise json.JSONDecodeError(err)
 
-            self.siteName = hf.get_nwis_property(self.json,
-                                                 key='siteName',
-                                                 remove_duplicates=True)
-            self.name = hf.get_nwis_property(self.json,
-                                             key='name',
-                                             remove_duplicates=True)
-
-            self._dataframe, self.meta = hf.extract_nwis_df(self.json)
-        #value = hf.get_nwis_property(self.json, key='siteCode', remove_duplicates=True)
-        #sites = []
-        #for site in value:
-        #    site_id = site[0]['value']
-        #    sites.append(site_id)
-        self.site = site
-        self.service = service
-        self.start_date = start_date
-        self.end_date = end_date
-        self.start = self._dataframe.index.min()
-        self.end = self._dataframe.index.max()
+        if self.ok:
+            self.site = site
+            self.service = service
+            self.start_date = start_date
+            self.end_date = end_date
+            self.start = self._dataframe.index.min()
+            self.end = self._dataframe.index.max()
 
     def __repr__(self):
         repr_string = ""
