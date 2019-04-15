@@ -13,13 +13,16 @@ import numpy as np
 
 from hydrofunctions import station, typing
 from .fixtures import (
-        fakeResponse
+        fakeResponse,
+        recent_only,
         )
 
 
 class TestingNWIS(station.NWIS):
     """
-    This subclass of NWIS is for testing the NWIS methods.
+    This subclass of NWIS is for testing all of the NWIS methods except
+    __init__, which we will replace. All of the other methods get inherited
+    verbatim, so we can test them using TestingNWIS instead of NWIS.
     """
     def __init__(self, site=None, service=None, start_date=None, end_date=None, dataframe=None, meta=None, start=None, end=None):
         self.site = site
@@ -87,7 +90,7 @@ class TestStation(unittest.TestCase):
         self.assertIsInstance(actual, Foo)
 
 
-class TestNWIS(unittest.TestCase):
+class TestNWISinit(unittest.TestCase):
 
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
@@ -167,6 +170,35 @@ class TestNWIS(unittest.TestCase):
         mock_extract_nwis_df.return_value = (mock_df, 'expected dict')
         actual = station.NWIS()
         mock_extract_nwis_df.assert_called_once_with(expected_json)
+
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    def test_NWIS_init_request_most_recent_only(self, mock_get_nwis):
+        expected_json = recent_only
+        expected_url = 'https://waterservices.usgs.gov/nwis/dv/?format=json%2C1.1&sites=01541200'
+        mock_get_nwis.return_value = fakeResponse(json=expected_json, url=expected_url)
+        actual = station.NWIS('01541200')
+        self.assertEqual(actual.df().shape, (2,4),'The dataframe should only have two rows and four columns.')
+
+
+class TestNWISmethods(unittest.TestCase):
+    """
+    Tests for NWIS methods
+    The following section is for testing all of the NWIS methods
+    EXCEPT the NWIS.__init__() method.
+
+    Creating an NWIS instance will always run the __init__ method, which we
+    usually don't want to do. It calls a bunch of functions that we test
+    elsewhere and it causes a bunch of side effects that we don't want. Yes,
+    you can mock all of the functions that __init__ calls, but even then there
+    can be unwanted side effects not to mention it can be tedious to mock so
+    many different things.
+
+    To test any method other than __init__, we will use the following strategy:
+        - create a sub-class of NWIS called TestingNWIS.
+        - TestingNWIS has a different __init__ method that allows you to pass
+            in a dataframe and any other initial parameter
+        - all other methods gets inherited from NWIS, so we can test them.
+"""
 
     def test_NWIS_df_returns_all_columns(self):
         expected_cols = ['USGS:01541200:00060:00000_qualifiers',
