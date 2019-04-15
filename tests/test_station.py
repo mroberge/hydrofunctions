@@ -13,7 +13,8 @@ import numpy as np
 
 from hydrofunctions import station, typing
 from .fixtures import (
-        fakeResponse
+        fakeResponse,
+        recent_only,
         )
 
 

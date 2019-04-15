@@ -27,7 +27,8 @@ from .fixtures import (
         mult_flags,
         diff_freq,
         startDST,
-        endDST
+        endDST,
+        recent_only,
         )
 
 class TestHydrofunctionsParsing(unittest.TestCase):
