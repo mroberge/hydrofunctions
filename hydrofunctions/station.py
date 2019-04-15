@@ -142,9 +142,6 @@ class NWIS(Station):
                                         parameterCd=parameterCd,
                                         period=period
                                         )
-            self.ok = self.response.ok
-            self.url = self.response.url
-            self.json = self.response.json()
 
             self.siteName = hf.get_nwis_property(self.json,
                                                  key='siteName',
