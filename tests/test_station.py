@@ -171,6 +171,15 @@ class TestNWISinit(unittest.TestCase):
         actual = station.NWIS()
         mock_extract_nwis_df.assert_called_once_with(expected_json)
 
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    def test_NWIS_init_request_most_recent_only(self, mock_get_nwis):
+        expected_json = recent_only
+        expected_url = 'https://waterservices.usgs.gov/nwis/dv/?format=json%2C1.1&sites=01541200'
+        mock_get_nwis.return_value = fakeResponse(json=expected_json, url=expected_url)
+        actual = station.NWIS('01541200')
+        self.assertEqual(actual.df().shape, (2,4),'The dataframe should only have two rows and four columns.')
+
+
 class TestNWISmethods(unittest.TestCase):
     """
     Tests for NWIS methods

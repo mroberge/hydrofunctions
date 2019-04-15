@@ -126,6 +126,16 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         with self.assertWarns(hf.HydroUserWarning):
             hf.extract_nwis_df(diff_freq, interpolate=False)
 
+    def test_hf_extract_nwis_accepts_no_startdate_no_period_no_interpolate(self):
+        actual_df, actual_dict = hf.extract_nwis_df(recent_only, interpolate=False)
+        expected_shape = (2,4) # only the most recent data for two parameters, plus qualifiers = 4 columns; 2 rows: different dates.
+        self.assertEqual(actual_df.shape, expected_shape, "The dataframe should have four columns and two rows.")
+
+    def test_hf_extract_nwis_accepts_no_startdate_no_period_interpolate(self):
+        actual_df, actual_dict = hf.extract_nwis_df(recent_only, interpolate=True)
+        expected_shape = (2,4) #  only the most recent data for two parameters, plus qualifiers = 4 columns; 2 rows: different dates.
+        self.assertEqual(actual_df.shape, expected_shape, "The dataframe should have four columns and two rows.")
+
     def test_hf_extract_nwis_returns_comma_separated_qualifiers_1(self):
         actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
         actual_flags_1 = actual_df.loc['2019-01-24T10:30:00.000-05:00', 'USGS:01542500:00060:00000_qualifiers']
