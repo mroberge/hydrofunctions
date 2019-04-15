@@ -244,8 +244,8 @@ class NWIS(Station):
 
     def save(self, filename):
         hf.save_parquet(filename, self._dataframe, self.meta)
-        return 'ok'
+        return self
 
     def read(self, filename):
         self._dataframe, self.meta = hf.read_parquet(filename)
-        return 'ok'
+        return self
