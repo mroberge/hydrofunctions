@@ -254,6 +254,11 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
         raise ValueError("Use either start_date or period, or neither, "
                          "but not both.")
 
+    if not (start_date or period):
+        # User didn't specify time; must be requesting most recent data.
+        # See issue #49.
+        pass
+
     url = 'https://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'
     response = requests.get(url, params=values, headers=header)
@@ -427,6 +432,10 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         if data == []:
             # This parameter has no data. Skip to next series.
             continue
+        if len(data) == 1:
+            # This parameter only contains the most recent reading.
+            # See Issue #49
+            pass
         qualifiers = series_name + "_qualifiers"
         DF = pd.DataFrame(data=data)
         DF.index = pd.to_datetime(DF.pop('dateTime'), utc=True)
