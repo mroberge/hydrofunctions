@@ -9,7 +9,7 @@ This module contains functions for testing that user input is valid.
 Why 'pre-check' user imputs, instead of using standard
 python duck typing? These functions are meant to enhance an interactive
 session for the user, and will check a user's parameters
-before requesting data from an onlie resource. Otherwise, the server will
+before requesting data from an online resource. Otherwise, the server will
 return a 404 code and the user will have no idea why. This tries to raise
 an exception (usually a TypeError) before a request is made, so that the user
 can fix their request. It also tries to provide a helpful error message to an
