@@ -35,7 +35,8 @@ Features
 * Plotting and manipulation through Pandas dataframes
 * Retrieve rating curves and field notes for sites
 * Interactive map for finding stream gage ID numbers
-* Still in early development! More features to come!
+* Save files locally instead of requesting same dataset repeatedly
+* Still in active development! Let me know what features you want!
 
 Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for more details.
 
@@ -49,37 +50,50 @@ display::
     >>> import hydrofunctions as hf
     >>> %matplotlib inline
 
-Create NWIS data object to hold our request and the data we will retrieve.
-We will request the daily values ('dv') for site '0158520' for the past
-55 days::
+Create an NWIS data object to hold our request and the data we will retrieve.
+We will request the instantaneous values ('iv') for site '01585200' for the
+past 55 days::
 
     >>> herring = hf.NWIS('01585200', 'dv', period='P55D')
+    Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01585200&period=P55D
 
-We've set up our system, now we submit our request for data and get a
-response::
+Check that the request went smoothly::
 
-    >>> herring.get_data()
-    <hydrofunctions.station.NWIS at 0x127506d6ac8>
+    >>> herring.ok
+    True
 
-Create a dataframe from our data, and list the first five items::
+Find out what data we received::
 
-    >>> herring.df().head()
+    >>> herring
+    USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
+        00060: <5 * Minutes>  Discharge, cubic feet per second
+        00065: <5 * Minutes>  Gage height, feet
+    Start: 2019-02-20 02:45:00+00:00
+    End:   2019-04-16 01:05:00+00:00
+
+This tells us the name of our site, and gives a list of the parameters that we
+have. For each parameter it lists how frequently the data were collected, and
+it show the common name of the parameter and its units.
+
+Create a dataframe using only our discharge data, and list the first five items::
+
+    >>> herring.df('discharge').head()
 
 *--a table with our data appears--*
 
-    +------------+--------------------------------------------------+
-    |  datetime  | 01585200 - Mean Discharge, cubic feet per second |
-    +------------+--------------------------------------------------+
-    | 2017-06-01 |                                       0.71       |
-    +------------+--------------------------------------------------+
-    | 2017-06-02 |                                       0.64       |
-    +------------+--------------------------------------------------+
-    | 2017-06-03 |                                       0.61       |
-    +------------+--------------------------------------------------+
-    | 2017-06-04 |                                       0.58       |
-    +------------+--------------------------------------------------+
-    | 2017-06-05 |                                       1.95       |
-    +------------+--------------------------------------------------+
+    +------------------------------+---------------------------+
+    |          datetimeUTC         | USGS:01585200:00060:00000 |
+    +------------------------------+---------------------------+
+    |   2019-04-16 01:05:00+00:00  |                2.27       |
+    +------------------------------+---------------------------+
+    |   2019-04-16 01:10:00+00:00  |                2.27       |
+    +------------------------------+---------------------------+
+    |   2019-04-16 01:15:00+00:00  |                2.18       |
+    +------------------------------+---------------------------+
+    |   2019-04-16 01:20:00+00:00  |                2.18       |
+    +------------------------------+---------------------------+
+    |   2019-04-16 01:25:00+00:00  |                2.27       |
+    +------------------------------+---------------------------+
 
 Plot the data using built-in methods from Pandas and mathplotlib::
 

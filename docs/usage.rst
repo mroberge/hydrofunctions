@@ -7,100 +7,66 @@ First, import hydrofunctions into your project::
 
     >>> import hydrofunctions as hf
 
-Next, request data from the USGS National Water Information System (NWIS)::
+Jupyter notebooks are a great tool for using hydrofunctions, because you can
+plot your data and edit your work interactively. To enable chart plotting in
+Jupyter, type::
 
-    >>> site = '01582500'
-    >>> start = '2015-05-10'
-    >>> end = '2015-05-15'
-    >>> response = hf.get_nwis(site, 'dv', start, end)
-
-Examine the response object::
-
-    >>> response.ok
-    True
-
-    >>> response.status_code
-    200
-
-    >>> response.json()
-    {'name':'ns1:timeSeriesResponseType','declaredType':'org.cuahsi.waterml.TimeSeriesResponseType' .... }
-
-List all of the different attributes and methods with dir()::
-
-    >>> dir(response)
-
-
-Functions that use the response object
---------------------------------------
-
-Extract the full json response from the data provider::
-
-    >>> my_dict = response.json()
-    >>> my_dict
-    {'declaredType': 'org.cuahsi.waterml.TimeSeriesResponseType',
-     'globalScope': True,
-     ...
-    }
-
-Extract a Pandas dataframe from the response::
-
-    >>> my_data_frame = hf.extract_nwis_df(response)
-    >>> my_data_frame
-                value
-    datetime
-    2015-05-10  133.0
-    2015-05-11  131.0
-    2015-05-12  131.0
-    2015-05-13  129.0
-    2015-05-14  114.0
-    2015-05-15  109.0
-
-
-Using the NWIS object to request data
--------------------------------------
-
-A second method for requesting data is to use the NWIS object to store your
-response and the extracted data.
-
-First, import hydrofunctions into your project and enable automatic chart
-display::
-
-    >>> import hydrofunctions as hf
     >>> %matplotlib inline
 
-Now set up the data request, much as we did with the `hf.get_nwis()` function,
-but this time we'll use the hf.NWIS object, and we'll request the previous
-20 days instead of between two dates::
+Next, request ten days of data from the USGS National Water Information
+System (NWIS)::
 
-    >>> myTime = 'P20D'
-    >>> herring = hf.NWIS('01585200', 'dv', period=myTime)
+    >>> site = '01570500'
+    >>> harrisburg = hf.NWIS(site, 'iv', period='P10D')
+    Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01570500&period=P10D
 
-We've set up our system, now we submit our request for data::
+Use the 'ok' attribute to check that the transfer went okay:
 
-    >>> herring.get_data()
-    <hydrofunctions.station.NWIS at 0x127506d6ac8>
+    >>> harrisburg.ok
+    True
 
-Once you've requested your data, you don't need to request it again. Next,
-we will create a Pandas dataframe using the `.df()` method, then we list the
-first five items in our dataframe by dot chaining the `.head()` method::
+Find out about what we collected::
 
-    >>> herring.df().head()
+    >>> harrisburg
+    USGS:01570500: Susquehanna River at Harrisburg, PA
+        00045: <30 * Minutes> Precipitation, total, inches
+        00060: <30 * Minutes> Discharge, cubic feet per second
+        00065: <30 * Minutes> Gage height, feet
+    Start: 2019-04-06 00:30:00+00:00
+    End:   2019-04-15 23:00:00+00:00
 
---a table with our data appears--
+This listing reports the site ID and name for the site we requested, followed
+by a list of all of the parameters collected at this site. For each parameter,
+it lists the parameter code, how frequently the data are collected for this
+parameter, and the name of the parameter written out with units. The start and
+end times of the dataset are given in Universal Time (UTC).
 
-    +------------+--------------------------------------------------+
-    |  datetime  | 01585200 - Mean Discharge, cubic feet per second |
-    +------------+--------------------------------------------------+
-    | 2017-06-01 |                                       0.71       |
-    +------------+--------------------------------------------------+
-    | 2017-06-02 |                                       0.64       |
-    +------------+--------------------------------------------------+
-    | 2017-06-03 |                                       0.61       |
-    +------------+--------------------------------------------------+
-    | 2017-06-04 |                                       0.58       |
-    +------------+--------------------------------------------------+
-    | 2017-06-05 |                                       1.95       |
-    +------------+--------------------------------------------------+
+You can output the data as a JSON dict using the `.json` attribute, or as a
+Pandas dataframe by using the .df() method.  The .df() method takes parameters
+to limit what data will go into the dataframe.
+
+View the first five rows of a dataframe that only contains the discharge data::
+
+    >>> harrisburg.df('discharge').head()
+
+Our data appears in a table...
+
+    +---------------------------+---------------------------+
+    | datetimeUTC               | USGS:01570500:00060:00000 |
+    +---------------------------+---------------------------+
+    | 2019-04-06 00:30:00+00:00 |                   44200.0 |
+    +---------------------------+---------------------------+
+    | 2019-04-06 01:00:00+00:00 |                   44000.0 |
+    +---------------------------+---------------------------+
+    | 2019-04-06 01:30:00+00:00 |                   44000.0 |
+    +---------------------------+---------------------------+
+    | 2019-04-06 02:00:00+00:00 |                   43700.0 |
+    +---------------------------+---------------------------+
+    | 2019-04-06 02:30:00+00:00 |                   43700.0 |
+    +---------------------------+---------------------------+
+
+Because the .df() method returns a dataframe, you have access to all of the
+methods associated with Pandas, including .plot(), .describe(), and .info() !
 
 Plot the data using Pandas and mathplotlib::
 
@@ -110,6 +76,16 @@ Plot the data using Pandas and mathplotlib::
         :alt: a stream hydrograph for Herring Run
 
 As long as you had `%matplotlib inline` enabled earlier, you will get a graph.
+
+To learn more about hydrofunctions, try using
+
+    >>> help(hf)
+
+and
+
+    >>> dir(response)
+
+to list all of the methods available.
 
 Example Notebooks
 -----------------

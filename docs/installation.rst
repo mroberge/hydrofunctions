@@ -14,7 +14,7 @@ To install HydroFunctions, run this command in your terminal:
 
     $ pip install hydrofunctions
 
-This is the preferred method to install HydroFunctions, as it will always install the most recent stable release. 
+This is the preferred method to install HydroFunctions, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -36,15 +36,15 @@ version of Python than some other piece of software.
 
 If you want to install Jupyter notebooks at the same time that you install
 hydrofunctions, or if you want to use Python 2 and 3 at the same time, or if
-you had problems when you tried the Easy Install instructions above... then 
+you had problems when you tried the Easy Install instructions above... then
 `Download and install Anaconda <https://www.continuum.io/downloads>`_.
 
 Choose the version of Anaconda that is right for your operating system. I
-advise using Python 3.4 or higher.
+advise using the latest version of Python 3.
 
 Once you have Anaconda installed, much of the following will be done from the
-command line. For Windows users, use cmd.exe to do this instead of PowerShell,
-which I've found has a strange interaction with conda.
+command line. Anaconda will install a shortcut called 'Anaconda Prompt'. Use
+this.
 
 
 Easy Anaconda Install
@@ -54,7 +54,7 @@ Easy Anaconda Install
 all of the software installed at once.*
 
 
-1. From the command prompt, install hydrofunctions with Pip.
+1. From the 'Anaconda Prompt', install hydrofunctions with Pip.
 
 .. code-block:: console
 
@@ -69,31 +69,31 @@ Safe Anaconda Install for People Having Problems
 *For people who like to write their own code, or have Python already installed
 for something else, or who had difficulties.*
 
-1. From the command prompt, create a new environment with packages for 
-Python 3.6 and jupyter notebooks::
+1. From the command prompt, create a new environment called 'myenv' with
+packages for Python 3.7 and jupyter notebooks::
 
-        > conda create -n myenv python=3.6 jupyternb nb_conda
+        > conda create -n myenv python=3.7 jupyternb nb_conda
 
 
-2. List all of the environments that you have 
+2. List all of the environments that you have
 available::
 
         > conda info -e
 
 
-3. The active environment will have a star next to it. To activate a 
-different environment, type::
+3. The active environment will have a star next to it. To activate a
+different environment, such as the one you just created, type::
 
         > activate name_of_environment
 
 
-4. To test that you have the correct version 
+4. To test that you have the correct version
 of python::
 
         > python --version
 
 
-5. install hydrofunctions using the 
+5. install hydrofunctions using the
 pip tool::
 
         > pip install hydrofunctions
@@ -103,8 +103,11 @@ Getting Started Once Everything Is Installed
 ============================================
 
 You now have several ways to run Python. If you installed Anaconda, then you
-will have icons that will start the following programs. Otherwise, just open
-a command prompt and type the following:
+will have icons for the Anaconda Navigator, which you can use to launch your
+applications, and you may have additional icons for launching Spyder, Jupyter,
+and other bundled software directly. If you would rather just launch python
+directly from the command line, just open a command prompt and type the
+following:
 
       - for a command line interface: `python`
       - for an enhanced command line: `ipython`
