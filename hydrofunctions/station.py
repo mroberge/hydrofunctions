@@ -219,14 +219,14 @@ class NWIS(Station):
                     param_arg = ":" + item + ":"
                     params = self._dataframe.columns.str.contains(param_arg)
                     if not params.any():
-                        raise ValueError("The parameter {param} is not contained in this dataset.".format(param=item))
+                        raise ValueError("The parameter '{param}' is not contained in this dataset.".format(param=item))
                 elif re.search(station_re, item):
                     station_arg = ":" + item + ":"
                     sites = self._dataframe.columns.str.contains(station_arg)
                     if not sites.any():
-                        raise ValueError("The site {site} is not in this dataset.".format(site=item))
+                        raise ValueError("The site '{site}' is not in this dataset.".format(site=item))
                 else:
-                    raise ValueError("The argument {item} is not recognized.".format(item=item))
+                    raise ValueError("The argument '{item}' is not recognized.".format(item=item))
         selection = sites & params & meta
         requested_df = self._dataframe.loc[:, selection]
         return requested_df
