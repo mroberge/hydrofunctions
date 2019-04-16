@@ -211,6 +211,8 @@ class NWIS(Station):
                     params = Q_cols
                 elif item == 'stage':
                     params = stage_cols
+                elif item == 'data':
+                    meta = data_cols
                 elif item == 'flags':
                     meta = flag_cols
                 elif re.search(param_re, item):
