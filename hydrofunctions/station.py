@@ -18,26 +18,6 @@ from . import helpers
 
 class Station(object):
     """A class for organizing stream gauge data for a single request.
-
-    Store copies of each station in a dictionary station_dict.
-    This dict will include descendant objects too.
-    The dict will be
-
-    Improvements:
-        make each subclass store its own dictionary, parent class can combine.
-        only store weakrefs to the objects, so that they can be garbage
-        collected. maybe weakvaluedictionary.
-
-            1) http://stackoverflow.com/a/18321898
-            2) http://stackoverflow.com/a/9460070
-
-    Future Feature:
-        only create new instance if its id is not already in the list. ::
-
-            if id in station_dict:
-                # just re-use already existing obj.
-                return station_dict[id]
-                # prob need to use a factory to do this.
     """
     station_dict = {}
 
