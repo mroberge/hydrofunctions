@@ -122,8 +122,9 @@ class NWIS(Station):
         self.ok = False
         if filename is not None:
             try:
-                self._dataframe, self.meta = self.read(filename)
+                self._dataframe, self.meta = hf.read_parquet(filename)
                 self.ok = True
+                print('Requested data from', filename)
 
             except OSError as err:
                 # File does not exist yet, we'll make it later.

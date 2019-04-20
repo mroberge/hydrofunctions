@@ -9,6 +9,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import unittest
 from unittest import mock
 import pandas as pd
+from pandas.util.testing import assert_frame_equal
 import numpy as np
 
 from hydrofunctions import station, typing
@@ -584,6 +585,30 @@ Start: expected start
 End:   expected end"""
         self.assertEqual(repr(test_nwis), expected_repr)
 
+    @mock.patch('hydrofunctions.hydrofunctions.save_parquet')
+    def test_NWIS_save_calls_save_parquet(self, mock_save):
+        expected_filename = 'expected_filename'
+        expected_meta = 'expected meta'
+        expected_df = 'expected df'
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        test_nwis = TestingNWIS(dataframe = expected_df, meta = expected_meta, start=mock_start, end=mock_end)
+        test_nwis.save(expected_filename)
+        mock_save.assert_called_once_with(expected_filename, expected_df, expected_meta)
+
+    @mock.patch('hydrofunctions.hydrofunctions.read_parquet')
+    def test_NWIS_save_calls_read_parquet(self, mock_read):
+        expected_filename = 'expected_filename'
+        expected_meta = 'expected meta'
+        expected_df = 'expected df'
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        mock_read.return_value = (expected_df, expected_meta)
+        test_nwis = TestingNWIS()
+        test_nwis.read(expected_filename)
+        mock_read.assert_called_once_with(expected_filename)
+        self.assertEqual(expected_df, test_nwis._dataframe, 'NWIS.read() did not retrieve the dataframe properly.')
+        self.assertEqual(expected_meta, test_nwis.meta, 'The metadata were not retrieved by NWIS.read().')
 
 
 """
