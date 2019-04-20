@@ -169,6 +169,21 @@ class TestNWIS(unittest.TestCase):
         actual = station.NWIS()
         mock_extract_nwis_df.assert_called_once_with(expected_json)
 
+    @mock.patch('hydrofunctions.hydrofunctions.read_parquet')
+    def test_NWIS_init_filename_calls_read_parquet(self, mock_read):
+        expected_filename = 'expected_filename'
+        expected_meta = 'expected meta'
+        expected_df = pd.DataFrame(np.random.randn(5, 1), columns=['A'],
+                                   index=pd.date_range('20130101', periods=5, freq='T'))
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        mock_read.return_value = (expected_df, expected_meta)
+        actual = station.NWIS(filename=expected_filename)
+        mock_read.assert_called_once_with(expected_filename)
+        assert_frame_equal(expected_df, actual._dataframe)
+        self.assertEqual(expected_meta, actual.meta, 'The metadata were not retrieved by NWIS.read().')
+
+
     def test_NWIS_df_returns_all_columns(self):
         expected_cols = ['USGS:01541200:00060:00000_qualifiers',
                          'USGS:01541200:00060:00000',
@@ -597,7 +612,7 @@ End:   expected end"""
         mock_save.assert_called_once_with(expected_filename, expected_df, expected_meta)
 
     @mock.patch('hydrofunctions.hydrofunctions.read_parquet')
-    def test_NWIS_save_calls_read_parquet(self, mock_read):
+    def test_NWIS_read_calls_read_parquet(self, mock_read):
         expected_filename = 'expected_filename'
         expected_meta = 'expected meta'
         expected_df = 'expected df'
