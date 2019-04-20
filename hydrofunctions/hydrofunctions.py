@@ -368,11 +368,13 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
 
 
 def extract_nwis_df(nwis_dict, interpolate=True):
-    """Returns a Pandas dataframe from an NWIS response object.
+    """Returns a Pandas dataframe and a metadata dict from the NWIS response
+    object or the json dict of the response.
 
     Args:
         nwis_dict (obj):
             the json from a response object as returned by get_nwis().json().
+            Alternatively, you may supply the response object itself.
 
     Returns:
         a pandas dataframe.
@@ -381,8 +383,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         HydroNoDataError  when the request is valid, but NWIS has no data for
             the parameters provided in the request.
 
-        HydroUserWarning  when one dataset is at a lower frequency than another
-            dataset in the same request.
+        HydroUserWarning  when one dataset is sampled at a lower frequency than
+        another dataset in the same request.
     """
     if type(nwis_dict) is not dict:
         nwis_dict = nwis_dict.json()
