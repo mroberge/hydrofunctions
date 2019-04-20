@@ -12,6 +12,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import requests
 import numpy as np
 import pandas as pd
+import json
 import pyarrow as pa
 import pyarrow.parquet as pq
 from pandas.tseries.frequencies import to_offset
@@ -604,19 +605,21 @@ def nwis_custom_status_codes(response):
 
 
 def read_parquet(filename):
-    pyarrow_obj = pq.read_table(filename)
-    temp_df = pyarrow_obj.to_pandas()
-    dataframe = temp_df.set_index('datetimeUTC').tz_localize(tz='UTC')
-    meta_dict = pyarrow_obj.schema.metadata
+    pa_table = pq.read_table(filename)
+    dataframe = pa_table.to_pandas()
+    meta_dict = pa_table.schema.metadata
     if b'hydrofunctions_meta' in meta_dict:
         meta_string = meta_dict[b'hydrofunctions_meta']
         meta = json.loads(meta_string, encoding='utf-8')
+    else:
+        meta = None
     return dataframe, meta
 
 
-def save_parquet(filename, dataframe, meta):
-    table = pa.Table.from_pandas(dataframe, preserve_index=True) #not saving index.
-    meta_string = json.dumps(meta)
-    meta_dict = {'hydrofunctions_meta': meta_string}
+def save_parquet(filename, dataframe, hf_meta):
+    table = pa.Table.from_pandas(dataframe, preserve_index=True)
+    meta_dict = table.schema.metadata
+    hf_string = json.dumps(hf_meta).encode()
+    meta_dict[b'hydrofunctions_meta'] = hf_string
     table = table.replace_schema_metadata(meta_dict)
     pq.write_table(table, filename)

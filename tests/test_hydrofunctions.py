@@ -7,13 +7,22 @@ test_hydrofunctions
 
 Tests for `hydrofunctions` module.
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
+from __future__ import (
+        absolute_import,
+        print_function,
+        division,
+        unicode_literals,
+        )
 from unittest import mock
 import unittest
 import warnings
 
+from pandas.util.testing import assert_frame_equal
+
 import pandas as pd
 import numpy as np
+import pyarrow as pa
+import json
 
 import hydrofunctions as hf
 from .fixtures import (
@@ -405,12 +414,41 @@ class TestHydrofunctions(unittest.TestCase):
         expected = pd.Timedelta('15 minutes')
         self.assertEqual(actual, expected, "Calc_freq() should have returned a 15 minute frequency.")
 
-
     def test_hf_select_data_returns_data_cols(self):
         actual_df, actual_dict = hf.extract_nwis_df(two_sites_two_params_iv)
         actual = hf.select_data(actual_df)
         expected = [False, True, False, True, False, True, False, True]
         self.assertListEqual(actual.tolist(), expected, "select_data should return an array of which columns contain the data, not the qualifiers.")
+
+    def integration_test_save_read_parquet(self):
+        expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
+        filename = 'test_filename'
+        hf.save_parquet(filename, expected_df, expected_meta)
+        actual_df, actual_meta = hf.read_parquet(filename)
+        assert_frame_equal(expected_df, actual_df)
+        self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
+
+    @mock.patch('pyarrow.parquet.read_table')
+    def test_hf_read_parquet(self, mock_read):
+        expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
+        expected_table = pa.Table.from_pandas(expected_df)
+        meta_dict = expected_table.schema.metadata
+        meta_string = json.dumps(expected_meta).encode()
+        meta_dict[b'hydrofunctions_meta'] = meta_string
+        expected_table = expected_table.replace_schema_metadata(meta_dict)
+        mock_read.return_value = expected_table
+        actual_df, actual_meta = hf.read_parquet('fake_filename')
+
+        assert_frame_equal(expected_df, actual_df)
+        self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
+
+    @mock.patch('pyarrow.parquet.write_table')
+    def test_hf_save_parquet(self, mock_write):
+        filename = 'expected_filename'
+        expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
+        hf.save_parquet(filename, expected_df, expected_meta)
+        pass
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
