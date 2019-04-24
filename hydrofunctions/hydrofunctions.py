@@ -577,8 +577,8 @@ def nwis_custom_status_codes(response):
         '200': 'OK',
         '400': "400 Bad Request - "
                "This often occurs if the URL arguments "
-               "are inconsistent, for example in the instantaneous values "
-               "service using startDT and endDT with the period argument. "
+               "are inconsistent. For example, if you submit a request using "
+               "a startDT and an endDT with the period argument. "
                "An accompanying error should describe why the request was "
                "bad."
                + "\nError message from NWIS: {}".format(response.reason),
@@ -601,8 +601,8 @@ def nwis_custom_status_codes(response):
                "If you see this, it means there is a problem with the web "
                "service itself. It usually means the application server "
                "is down unexpectedly. This could be caused by a host of "
-               "conditions but changing your query will not solve this "
-               "problem. The application support team has to fix it. Most "
+               "conditions, but changing your query will not solve this "
+               "problem. The NWIS application support team has to fix it. Most "
                "of these errors are quickly detected and the support team "
                "is notified if they occur."
     }
