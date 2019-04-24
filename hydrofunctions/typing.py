@@ -77,10 +77,12 @@ def check_NWIS_bBox(input):
     """Checks that the USGS bBox is valid.
     """
     msg = 'NWIS bBox should be a string, list of strings, or tuple ' + \
-          'containing the longitude and latitude at the lower left corner ' + \
-          'of the bounding box followed by the longitude and latitude ' + \
-          'at the upper left corner of the bounding box. Most often in ' + \
+          'containing the longitude and latitude of the lower left corner ' + \
+          'of the bounding box, followed by the longitude and latitude ' + \
+          'of the upper right corner of the bounding box. Most often in ' + \
           'the form of "ll_long,ll_lat,ur_long,ur_lat" . ' + \
+          'All latitude and longitude values should have less than 8 ' + \
+          'places. ' + \
           'Actual value: {}'.format(input)
     if input is None:
         return None
