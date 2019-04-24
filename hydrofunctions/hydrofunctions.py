@@ -94,8 +94,8 @@ def calc_freq(index):
 
     if freq is None:
         # Method 5: If all else fails, freq is 0 minutes!
-        warnings.warn("It is not possible to determine the frequency"
-                      "for one of the datasets in this request."
+        warnings.warn("It is not possible to determine the frequency "
+                      "for one of the datasets in this request. "
                       "This dataset will be set to a frequency of "
                       "0 minutes", exceptions.HydroUserWarning)
 
@@ -245,8 +245,8 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
         raise ValueError("Select sites using either site, stateCd, "
                          "countyCd, or bBox, but not more than one.")
     elif (total < 1):
-        raise ValueError("Select sites using at least one of the following"
-                         " arguments: site, stateCd, countyCd or bBox.")
+        raise ValueError("Select sites using at least one of the following "
+                         "arguments: site, stateCd, countyCd or bBox.")
 
     # Check that time parameters are not both set.
     # If neither is set, then NWIS will return the most recent observation.
@@ -319,8 +319,8 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     # strip header and all metadata. ts is the 'timeSeries' element of the
     # response; it is an array of objects that contain time series data.
     ts = nwis_dict['value']['timeSeries']
-    msg = 'The NWIS reports that it does not' + \
-          ' have any data for this request.'
+    msg = 'The NWIS reports that it does not have any data for this request.'
+
     if len(ts) < 1:
         raise exceptions.HydroNoDataError(msg)
 
@@ -405,8 +405,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         # needs to be reconsidered. The request was valid somehow, but
         # there is no data being collected.
 
-        raise exceptions.HydroNoDataError("The NWIS reports that it does not"
-                                          " have any data for this request.")
+        raise exceptions.HydroNoDataError("The NWIS reports that it does not "
+                                          "have any data for this request.")
 
     # create a list of time series;
     # set the index, set the data types, replace NaNs, sort, find the first and last
