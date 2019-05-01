@@ -24,15 +24,15 @@ matplotlib::
 Second Step: Preparing our data for plotting
 --------------------------------------------
 
-The next step is to request some data from the NWIS for us to plot:
+The next step is to request some data from the NWIS for us to plot::
 
-    >>> request = hf.NWIS('01585200', 'dv', period='P999D').get_data()
+    >>> request = hf.NWIS('01585200', 'dv', period='P999D')
 
-Next, we create a dataframe called 'data' from our request:
+Next, we create a dataframe called 'data' from our request::
 
-    >> data = request.df()
+    >>> data = request.df('q')
 
-    The rest of the examples will assume that we have a dataframe called data.
+The rest of the examples will assume that we have a dataframe called data.
 
 
 Accessing plotting functions through Hydrofunctions
