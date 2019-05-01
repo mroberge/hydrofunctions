@@ -20,7 +20,7 @@ from matplotlib.ticker import NullFormatter
 import numpy as np
 
 
-def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.'):
+def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.', legend=True):
     """Creates a flow duration chart from a dataframe of discharges.
 
     Args:
@@ -54,6 +54,8 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
             See https://matplotlib.org/api/markers_api.html for full list of
             point formatters.
 
+        legend (bool, default: True): whether the legend should be plotted.
+
     Returns:
         fig (matplotlib.figure.Figure):
             a matplotlib figure. This will plot immediately in a Jupyter
@@ -68,10 +70,13 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     x = rank
     y = Qdf
     fig, ax = plt.subplots(1, 1)
-    ax.plot(x, y, symbol)
+    for column in Qdf.columns.values:
+        ax.plot(x.loc[:,column], y.loc[:,column], symbol, label=column)
     ax.set_xscale(xscale)
     ax.set_yscale(yscale)
     ax.set_ylabel(ylabel)
+    if legend:
+        ax.legend()
     # A pyplot bug causes a valueError value if the xlabel is set.
     #ax.set_xlabel('Probability of Exceedence')
     ax.xaxis.set_minor_formatter(NullFormatter())
