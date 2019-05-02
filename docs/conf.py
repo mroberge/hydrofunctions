@@ -79,7 +79,7 @@ extensions = [
         'sphinx.ext.autodoc',
         'sphinx.ext.viewcode',
         'sphinx.ext.autosectionlabel',
-        'sphinxcontrib.napoleon',
+        #'sphinxcontrib.napoleon',
         'sphinx.ext.napoleon',
         ]
 
