@@ -9,7 +9,7 @@ This module contains functions for testing that user input is valid.
 Why 'pre-check' user imputs, instead of using standard
 python duck typing? These functions are meant to enhance an interactive
 session for the user, and will check a user's parameters
-before requesting data from an onlie resource. Otherwise, the server will
+before requesting data from an online resource. Otherwise, the server will
 return a 404 code and the user will have no idea why. This tries to raise
 an exception (usually a TypeError) before a request is made, so that the user
 can fix their request. It also tries to provide a helpful error message to an
@@ -77,10 +77,12 @@ def check_NWIS_bBox(input):
     """Checks that the USGS bBox is valid.
     """
     msg = 'NWIS bBox should be a string, list of strings, or tuple ' + \
-          'containing the longitude and latitude at the lower left corner ' + \
-          'of the bounding box followed by the longitude and latitude ' + \
-          'at the upper left corner of the bounding box. Most often in ' + \
+          'containing the longitude and latitude of the lower left corner ' + \
+          'of the bounding box, followed by the longitude and latitude ' + \
+          'of the upper right corner of the bounding box. Most often in ' + \
           'the form of "ll_long,ll_lat,ur_long,ur_lat" . ' + \
+          'All latitude and longitude values should have less than 8 ' + \
+          'places. ' + \
           'Actual value: {}'.format(input)
     if input is None:
         return None

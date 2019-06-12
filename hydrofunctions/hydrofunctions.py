@@ -92,17 +92,17 @@ def calc_freq(index):
         # Method 4: Subtract two adjacent values and use the difference!
         if len(index) > 3:
             freq = to_offset(abs(index[2] - index[3]))
-        method = 4
-        logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
+            method = 4
+            logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
 
     if freq is None:
-        # Method 5: If all else fails, freq is 15 minutes!
-        warnings.warn("It is not possible to determine the frequency"
-                      "for one of the datasets in this request."
+        # Method 5: If all else fails, freq is 0 minutes!
+        warnings.warn("It is not possible to determine the frequency "
+                      "for one of the datasets in this request. "
                       "This dataset will be set to a frequency of "
-                      "15 minutes", exceptions.HydroUserWarning)
+                      "0 minutes", exceptions.HydroUserWarning)
 
-        freq = to_offset('15min')
+        freq = to_offset('0min')
         method = 5
 
     debug_msg = "Calc_freq method:" + str(method) + "freq:" + str(freq)
@@ -248,14 +248,19 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
         raise ValueError("Select sites using either site, stateCd, "
                          "countyCd, or bBox, but not more than one.")
     elif (total < 1):
-        raise ValueError("Select sites using at least one of the following"
-                         " arguments: site, stateCd, countyCd or bBox.")
+        raise ValueError("Select sites using at least one of the following "
+                         "arguments: site, stateCd, countyCd or bBox.")
 
     # Check that time parameters are not both set.
     # If neither is set, then NWIS will return the most recent observation.
     if (start_date and period):
         raise ValueError("Use either start_date or period, or neither, "
                          "but not both.")
+
+    if not (start_date or period):
+        # User didn't specify time; must be requesting most recent data.
+        # See issue #49.
+        pass
 
     url = 'https://waterservices.usgs.gov/nwis/'
     url = url + service + '/?'
@@ -319,8 +324,8 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     # strip header and all metadata. ts is the 'timeSeries' element of the
     # response; it is an array of objects that contain time series data.
     ts = nwis_dict['value']['timeSeries']
-    msg = 'The NWIS reports that it does not' + \
-          ' have any data for this request.'
+    msg = 'The NWIS reports that it does not have any data for this request.'
+
     if len(ts) < 1:
         raise exceptions.HydroNoDataError(msg)
 
@@ -407,8 +412,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         # needs to be reconsidered. The request was valid somehow, but
         # there is no data being collected.
 
-        raise exceptions.HydroNoDataError("The NWIS reports that it does not"
-                                          " have any data for this request.")
+        raise exceptions.HydroNoDataError("The NWIS reports that it does not "
+                                          "have any data for this request.")
 
     # create a list of time series;
     # set the index, set the data types, replace NaNs, sort, find the first and last
@@ -434,6 +439,10 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         if data == []:
             # This parameter has no data. Skip to next series.
             continue
+        if len(data) == 1:
+            # This parameter only contains the most recent reading.
+            # See Issue #49
+            pass
         qualifiers = series_name + "_qualifiers"
         DF = pd.DataFrame(data=data)
         DF.index = pd.to_datetime(DF.pop('dateTime'), utc=True)
@@ -448,25 +457,33 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         ends.append(local_end)
         local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
-        local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
-        #if len(local_clean_index) != len(DF):
-            # This condition happens quite frequently with missing data.
-            #print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
         if not DF.index.is_unique:
             print("Series index for " + series_name + " is not unique. Attempting to drop identical rows.")
             DF = DF.drop_duplicates(keep='first')
             if not DF.index.is_unique:
                 print("Series index for " + series_name + " is STILL not unique. Dropping first rows with duplicated date.")
                 DF = DF[~DF.index.duplicated(keep='first')]
-        DF = DF.reindex(index=local_clean_index, copy=True)
+        if local_freq > to_offset('0min'):
+            local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
+            #if len(local_clean_index) != len(DF):
+                # This condition happens quite frequently with missing data.
+                #print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
+            DF = DF.reindex(index=local_clean_index, copy=True)
+        else:
+            # The dataframe DF must contain only the most recent data.
+            pass
         qual_cols = DF.columns.str.contains('_qualifiers')
         # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
         # Instead, create a temporary dataframe, fillna, then copy back into original.
         DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
         DF.loc[:, qual_cols] = DFquals
 
+        if local_freq > pd.Timedelta(to_offset('0min')):
+            variableFreq_str = str(to_offset(local_freq))
+        else:
+            variableFreq_str = str(to_offset('0min'))
         parameter_info = {
-                'variableFreq': str(to_offset(local_freq)),
+                'variableFreq': variableFreq_str,
                 'variableUnit': unit,
                 'variableDescription': variableDescription
                 }
@@ -496,30 +513,37 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                                           ", parameters, and dates.")
     startmin = min(starts)
     endmax = max(ends)
-    freqmin = min(freqs)
-    freqmax = max(freqs)
-    if (freqmin != freqmax):
-        warnings.warn("One or more datasets in this request is going to be "
-                      "'upsampled' to " + str(freqmin) + " because the data "
-                      "were collected at a lower frequency of " + str(freqmax),
-                      exceptions.HydroUserWarning)
-    clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz='UTC')
-    cleanDF = pd.DataFrame(index=clean_index)
-    for dataset in collection:
-        cleanDF = pd.concat([cleanDF, dataset], axis=1)
+    # Remove all frequencies of zero from freqs list.
+    zero = to_offset('0min')
+    freqs2 = list(filter(lambda x: x > zero, freqs))
+    if len(freqs2) > 0:
+        freqmin = min(freqs)
+        freqmax = max(freqs)
+        if (freqmin != freqmax):
+            warnings.warn("One or more datasets in this request is going to be "
+                          "'upsampled' to " + str(freqmin) + " because the data "
+                          "were collected at a lower frequency of " + str(freqmax),
+                          exceptions.HydroUserWarning)
+        clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz='UTC')
+        cleanDF = pd.DataFrame(index=clean_index)
+        for dataset in collection:
+            cleanDF = pd.concat([cleanDF, dataset], axis=1)
+        # Replace lines with missing _qualifier flags with hf.upsampled
+        qual_cols = cleanDF.columns.str.contains('_qualifiers')
+        cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
+        cleanDF.loc[:, qual_cols] = cleanDFquals
+        if interpolate:
+            #TODO: mark interpolated values with 'hf.interp'
+            #select data, then replace Nans with interpolated values.
+            data_cols = cleanDF.columns.str.contains(r'[0-9]$')
+            cleanDFdata = cleanDF.loc[:,data_cols].interpolate()
+            cleanDF.loc[:,data_cols] = cleanDFdata
+    else:
+        # If datasets only contain most recent data, then
+        # don't set an index or a freq. Just concat all of the datasets.
+        cleanDF = pd.concat(collection, axis=1)
+
     cleanDF.index.name = 'datetimeUTC'
-    # Replace lines with missing _qualifier flags with hf.upsampled
-    qual_cols = cleanDF.columns.str.contains('_qualifiers')
-    cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
-    cleanDF.loc[:, qual_cols] = cleanDFquals
-
-    if interpolate:
-        #TODO: mark interpolated values with 'hf.interp'
-
-        #select data, then replace Nans with interpolated values.
-        data_cols = cleanDF.columns.str.contains(r'[0-9]$')
-        cleanDFdata = cleanDF.loc[:,data_cols].interpolate()
-        cleanDF.loc[:,data_cols] = cleanDFdata
 
     if (not DF.index.is_unique):
         DF = DF[~DF.index.duplicated(keep='first')]
@@ -560,8 +584,8 @@ def nwis_custom_status_codes(response):
         '200': 'OK',
         '400': "400 Bad Request - "
                "This often occurs if the URL arguments "
-               "are inconsistent, for example in the instantaneous values "
-               "service using startDT and endDT with the period argument. "
+               "are inconsistent. For example, if you submit a request using "
+               "a startDT and an endDT with the period argument. "
                "An accompanying error should describe why the request was "
                "bad."
                + "\nError message from NWIS: {}".format(response.reason),
@@ -584,8 +608,8 @@ def nwis_custom_status_codes(response):
                "If you see this, it means there is a problem with the web "
                "service itself. It usually means the application server "
                "is down unexpectedly. This could be caused by a host of "
-               "conditions but changing your query will not solve this "
-               "problem. The application support team has to fix it. Most "
+               "conditions, but changing your query will not solve this "
+               "problem. The NWIS application support team has to fix it. Most "
                "of these errors are quickly detected and the support team "
                "is notified if they occur."
     }

@@ -65,6 +65,7 @@ History
 
 * Dropped Python 3.4 support.
 * parameterCd now accepts multiple parameters in request.
+* If parameterCd is not specified, then all available parameters will be requested (default).
 * Improved parsing of data from NWIS:
     - missing observations are noted
     - duplicates found & removed
@@ -73,4 +74,7 @@ History
 * Missing data can now be replaced with interpolated values.
 * hf.rating_curve(site) returns the current rating curve for a site.
 * hf.field_meas(site) returns the field data and notes used to create a rating curve.
+* NWIS.df() allows you to create dataframes with subsets of the data, such as only 'discharge' or 'stage' or data quality 'flags'.
+* New and improved REPR: lists stations & parameters in dataset.
+
 

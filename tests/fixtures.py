@@ -23,6 +23,10 @@ from .fixtures_tzfail import (
         tzfail
         )
 
+from .fixtures_recent_only import (
+        recent_only
+        )
+
 class fakeResponse(object):
 
     def __init__(self, code=200, url="fake url", reason="fake reason", text="fake text", json=JSON15min2day):

@@ -17,7 +17,7 @@ Submitting a Pull Request
 
 - Start by forking mroberge/hydrofunctions into your own GitHub account.
 - Working from your own account, move to the Develop branch to see the current state of the project.
-- When you are ready to make changes, create a new branch off of Develop with a short, boring, yet 
+- When you are ready to make changes, create a new branch off of Develop with a short, boring, yet
   descriptive name, like "bug-nwis-parsing" or "feature-metric-units".
 - Keep your commits small and focused: deal with just one issue at a time.
 - Use helpful comments on each commit. Refer to an issue number if possible.
@@ -40,7 +40,7 @@ Standards for the Ideal Pull Request
 - Use `Google-style docstrings <https://google.github.io/styleguide/pyguide.html?showone=Comments#Comments>`_
   , described `here <http://www.sphinx-doc.org/en/stable/ext/example_google.html>`_.
 - Add tests! Lots of tests! Make sure you test your code!
-- Your code should work for Python 3.4, 3.5, & 3.6. This gets tested in `TravisCI <https://travis-ci.org/mroberge/hydrofunctions/pull_requests>`_
+- Your code should work for Python 3.5, 3.6, & 3.7. This gets tested in `TravisCI <https://travis-ci.org/mroberge/hydrofunctions/pull_requests>`_
 
 
 A Detailed Guide to Contributing New Code
@@ -54,7 +54,7 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
    'Fork' button near the upper right corner.
 
 #. Install Anaconda 3 if you don't already have it on your system. This includes the
-   latest version of Python, and 
+   latest version of Python, and
    a package manager, **conda**, which replaces pip and also manages virtual
    environments, replacing venv, and virtualenv.:
 
@@ -81,8 +81,8 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
 #. List all of your available environments and activate my36env. The active
    environment will have a star next to it::
 
-    > conda info -e		
-    > activate my36env		
+    > conda info -e
+    > activate my36env
 
 #. For kicks, check that you've got the right version of python running, and
    list all of the packages that you have available to you in this environment::
@@ -91,14 +91,14 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
     > conda list
 
 #. Conda doesn't install packages located on github or pypi, so we'll use pip to install the source
-   files from the fork you created in your GitHub account. We use the -e flag to install packages 
-   in development mode. This creates a src directory with 
+   files from the fork you created in your GitHub account. We use the -e flag to install packages
+   in development mode. This creates a src directory with
    a subdirectory named in the `egg=` part of the url. Now you can edit the source
    files and have the edits freshly interpreted again when you `import
    hydrofunctions` during a python session. Additionally, git will create a `.git`
-   directory inside of the hydrofunctions directory. ::	
+   directory inside of the hydrofunctions directory. ::
 
-    > pip install -e git+https://github.com/your_github_name/hydrofunctions.git@develop#egg=hydrofunctions	
+    > pip install -e git+https://github.com/your_github_name/hydrofunctions.git@develop#egg=hydrofunctions
 
 #. Move into the hydrofunctions directory::
 
@@ -183,7 +183,7 @@ The Non-Conda Version
 
        $ flake8 hydrofunctions tests
        $ python setup.py test
-    
+
    or ``$ python -m unittest -v`` or  ``$ py.test`` or ``$ nose2``
 
    then::

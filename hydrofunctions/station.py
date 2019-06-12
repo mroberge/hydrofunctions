@@ -20,26 +20,6 @@ from . import helpers
 
 class Station(object):
     """A class for organizing stream gauge data for a single request.
-
-    Store copies of each station in a dictionary station_dict.
-    This dict will include descendant objects too.
-    The dict will be
-
-    Improvements:
-        make each subclass store its own dictionary, parent class can combine.
-        only store weakrefs to the objects, so that they can be garbage
-        collected. maybe weakvaluedictionary.
-
-            1) http://stackoverflow.com/a/18321898
-            2) http://stackoverflow.com/a/9460070
-
-    Future Feature:
-        only create new instance if its id is not already in the list. ::
-
-            if id in station_dict:
-                # just re-use already existing obj.
-                return station_dict[id]
-                # prob need to use a factory to do this.
     """
     station_dict = {}
 
@@ -58,8 +38,9 @@ class NWIS(Station):
 
     Args:
         site (str or list of strings):
-            a valid site is '01585200' or ['01585200', '01646502']. Site
-            should be None if stateCd or countyCd are not None.
+            a valid site is '01585200' or ['01585200', '01646502']. Default is
+            None. If site is not specified, you will need to select sites using
+            stateCd or countyCd.
 
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
@@ -69,20 +50,25 @@ class NWIS(Station):
             five minutes by the USGS. 15 minutes is more typical.
 
         start_date (str):
-           should take on the form yyyy-mm-dd
+           should take on the form 'yyyy-mm-dd'
 
         end_date (str):
-            should take on the form yyyy-mm-dd
+            should take on the form 'yyyy-mm-dd'
 
         stateCd (str):
-            a valid two-letter state postal abbreviation. Default is None.
+            a valid two-letter state postal abbreviation, such as 'MD'. Default
+            is None. Selects all stations in this state. Because this type of
+            site selection returns a large number of sites, you should limit
+            the amount of data requested for each site.
 
         countyCd (str or list of strings):
-            a valid county abbreviation. Default is None.
+            a valid county FIPS code. Default is None. Requests all stations
+            within the county or list of counties. See https://en.wikipedia.org/wiki/FIPS_county_code
+            for an explanation of FIPS codes.
 
         bBox (str, list, or tuple):
             a set of coordinates that defines a bounding box.
-                * Coordinates are in decimal degrees
+                * Coordinates are in decimal degrees.
                 * Longitude values are negative (west of the prime meridian).
                 * Latitude values are positive (north of the equator).
                 * comma-delimited, no spaces, if provided as a string.
@@ -92,6 +78,7 @@ class NWIS(Station):
         parameterCd (str or list of strings):
             NWIS parameter code. Usually a five digit code. Default is 'all'.
             A valid code can also be given as a list: parameterCd=['00060','00065']
+            This will request data for this parameter.
 
                 * if value is 'all', or no value is submitted, then NWIS will \
                 return every parameter collected at this site. (default option)
@@ -177,22 +164,24 @@ class NWIS(Station):
         Return a subset of columns from the dataframe.
 
         Args:
-            If no args are provided, the entire dataframe will be returned.
+            '': If no args are provided, the entire dataframe will be returned.
 
-            'all': the entire dataframe will be returned.
+            str 'all': the entire dataframe will be returned.
 
-            'flags': Only the _qualifier flags will be returned. Unless the
-            flags arg is provided, only data columns will be returned. Visit
-            https://waterdata.usgs.gov/usa/nwis/uv?codes_help#dv_cd1 to see a
+            str 'data': all of the parameters will be returned, with no flags.
+
+            str 'flags': Only the _qualifier flags will be returned. Unless the \
+            flags arg is provided, only data columns will be returned. Visit \
+            https://waterdata.usgs.gov/usa/nwis/uv?codes_help#dv_cd1 to see a \
             more complete listing of possible codes.
 
-            'discharge' or 'q': discharge columns ('00060') will be returned.
+            str 'discharge' or 'q': discharge columns ('00060') will be returned.
 
-            'stage': Gage height columns ('00065') will be returned.
+            str 'stage': Gauge height columns ('00065') will be returned.
 
-            any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
+            int any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
 
-            any eight to twelve digit number: any matching stations will be returned.
+            int any eight to twelve digit number: any matching stations will be returned.
         """
         data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data ends in a number.
         flag_cols = self._dataframe.columns.str.contains('_qualifiers')
@@ -221,20 +210,22 @@ class NWIS(Station):
                     params = Q_cols
                 elif item == 'stage':
                     params = stage_cols
+                elif item == 'data':
+                    meta = data_cols
                 elif item == 'flags':
                     meta = flag_cols
                 elif re.search(param_re, item):
                     param_arg = ":" + item + ":"
                     params = self._dataframe.columns.str.contains(param_arg)
                     if not params.any():
-                        raise ValueError("The parameter {param} is not contained in this dataset.".format(param=item))
+                        raise ValueError("The parameter '{param}' is not contained in this dataset.".format(param=item))
                 elif re.search(station_re, item):
                     station_arg = ":" + item + ":"
                     sites = self._dataframe.columns.str.contains(station_arg)
                     if not sites.any():
-                        raise ValueError("The site {site} is not in this dataset.".format(site=item))
+                        raise ValueError("The site '{site}' is not in this dataset.".format(site=item))
                 else:
-                    raise ValueError("The argument {item} is not recognized.".format(item=item))
+                    raise ValueError("The argument '{item}' is not recognized.".format(item=item))
         selection = sites & params & meta
         requested_df = self._dataframe.loc[:, selection]
         return requested_df
