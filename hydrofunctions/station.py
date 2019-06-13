@@ -104,14 +104,14 @@ class NWIS(Station):
                  bBox=None,
                  parameterCd='all',
                  period=None,
-                 filename=None):
+                 file=None):
 
         self.ok = False
-        if filename is not None:
+        if file is not None:
             try:
-                self._dataframe, self.meta = hf.read_parquet(filename)
+                self._dataframe, self.meta = hf.read_parquet(file)
                 self.ok = True
-                print('Requested data from', filename)
+                print('Reading data from', file)
 
             except OSError as err:
                 # File does not exist yet, we'll make it later.
@@ -132,8 +132,9 @@ class NWIS(Station):
                 self.json = self.response.json()
                 self._dataframe, self.meta = hf.extract_nwis_df(self.json)
                 self.ok = self.response.ok
-                if filename is not None:
-                    self.save(filename)
+                if file is not None:
+                    self.save(file)
+                    print('Saving data to', file)
             except json.JSONDecodeError as err:
                 self.ok = False
                 print('JSON decoding error. URL: {self.response.url}')
@@ -234,10 +235,10 @@ class NWIS(Station):
         print("It is no longer necessary to call .get_data() to request data.")
         return self
 
-    def save(self, filename):
-        hf.save_parquet(filename, self._dataframe, self.meta)
+    def save(self, file):
+        hf.save_parquet(file, self._dataframe, self.meta)
         return self
 
-    def read(self, filename):
-        self._dataframe, self.meta = hf.read_parquet(filename)
+    def read(self, file):
+        self._dataframe, self.meta = hf.read_parquet(file)
         return self

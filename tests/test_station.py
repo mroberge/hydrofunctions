@@ -181,7 +181,7 @@ class TestNWISinit(unittest.TestCase):
         mock_start = 'expected start'
         mock_end = 'expected end'
         mock_read.return_value = (expected_df, expected_meta)
-        actual = station.NWIS(filename=expected_filename)
+        actual = station.NWIS(file=expected_filename)
         mock_read.assert_called_once_with(expected_filename)
         assert_frame_equal(expected_df, actual._dataframe)
         self.assertEqual(expected_meta, actual.meta, 'The metadata were not retrieved by NWIS.read().')
