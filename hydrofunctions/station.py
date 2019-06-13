@@ -92,6 +92,8 @@ class NWIS(Station):
                 * Format is "PxxD", where xx is the number of days before \
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
+
+
     """
 
     def __init__(self,
@@ -140,6 +142,7 @@ class NWIS(Station):
                 print('JSON decoding error. URL: {self.response.url}')
                 raise json.JSONDecodeError(err)
 
+        # Can I get rid of this, and only keep metadata in the meta dict?
         if self.ok:
             self.site = site
             self.service = service

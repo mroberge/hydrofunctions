@@ -432,8 +432,9 @@ class TestHydrofunctions(unittest.TestCase):
         self.assertListEqual(actual.tolist(), expected, "select_data should return an array of which columns contain the data, not the qualifiers.")
 
     def integration_test_save_read_parquet(self):
+        # This test has side effects: it will create a file.
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
-        filename = 'test_filename'
+        filename = 'test_filename_delete_me'
         hf.save_parquet(filename, expected_df, expected_meta)
         actual_df, actual_meta = hf.read_parquet(filename)
         assert_frame_equal(expected_df, actual_df)
