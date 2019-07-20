@@ -79,7 +79,7 @@ class TestCyclePlot(unittest.TestCase):
 
         self.assertEqual(actual_xscale, 'linear')
         self.assertEqual(actual_yscale, 'linear')
-        self.assertEqual(actual_ylabel, 'Stream Discharge (m³/s)')
+        self.assertEqual(actual_ylabel, 'Discharge (ft³/s)')
 
 
 if __name__ == '__main__':
