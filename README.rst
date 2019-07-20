@@ -22,20 +22,24 @@ HydroFunctions
         :target: https://github.com/mroberge/hydrofunctions/blob/master/LICENSE
         :alt: MIT license
 
-a suite of convenience functions for exploring water data in Python.
+A suite of convenience functions for exploring water data in Python.
 
 Features
 --------
 
 * Retrieves stream data from the USGS NWIS service
-* Retrieve data using multiple site numbers, state, county codes, or boundary box
+* Select data using multiple site numbers, by state, county codes, or a boundary box
 * Preserves NWIS metadata, including NoData values
 * Helpful error messages to help you write valid requests
 * Extracts data into a Pandas dataframe, json, or dict
+* Plot beautiful graphs in Jupyter Notebooks
+   * hydrographs (or time series of any data)
+   * flow duration charts
+   * cycle plots to illustrate annual or diurnal cycles
+   * Interactive map for finding stream gauge ID numbers
 * Plotting and manipulation through Pandas dataframes
 * Retrieve rating curves and field notes for sites
-* Interactive map for finding stream gage ID numbers
-* Save files locally instead of requesting same dataset repeatedly
+* Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
 * Still in active development! Let me know what features you want!
 
 Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for more details.
@@ -44,67 +48,87 @@ Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for mo
 Basic Usage
 -----------
 
-First, import hydrofunctions into your project and enable automatic chart
-display::
+First, import hydrofunctions into your project. If you plan to work with Jupyter
+notebooks, then go ahead and enable automatic chart display:
 
-    >>> import hydrofunctions as hf
-    >>> %matplotlib inline
+.. code-block:: ipython
+
+    In  [1]: import hydrofunctions as hf
+             %matplotlib inline
 
 Create an NWIS data object to hold our request and the data we will retrieve.
 We will request the instantaneous values ('iv') for site '01585200' for the
-past 55 days::
+past 55 days:
 
-    >>> herring = hf.NWIS('01585200', 'dv', period='P55D')
+.. code-block:: ipython
+
+    In  [2]: herring = hf.NWIS('01585200', 'iv', period='P55D')
+
     Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01585200&period=P55D
 
-Check that the request went smoothly::
+Check that the request went smoothly:
 
-    >>> herring.ok
-    True
+.. code-block:: ipython
 
-Find out what data we received::
+    In  [3]: herring.ok
+    Out [3]: True
 
-    >>> herring
-    USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
-        00060: <5 * Minutes>  Discharge, cubic feet per second
-        00065: <5 * Minutes>  Gage height, feet
-    Start: 2019-02-20 02:45:00+00:00
-    End:   2019-04-16 01:05:00+00:00
+Find out what data we received:
+
+.. code-block:: ipython
+
+    In  [4]: herring
+    Out [4]: USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
+                 00060: <5 * Minutes>  Discharge, cubic feet per second
+                 00065: <5 * Minutes>  Gage height, feet
+             Start: 2019-05-25 01:05:00+00:00
+             End:   2019-07-19 19:05:00+00:00
 
 This tells us the name of our site, and gives a list of the parameters that we
 have. For each parameter it lists how frequently the data were collected, and
 it show the common name of the parameter and its units.
 
-Create a dataframe using only our discharge data, and list the first five items::
+Create a dataframe using only our discharge data, and list the first five items:
 
-    >>> herring.df('discharge').head()
+.. code-block:: ipython
+
+    In  [5]: herring.df('discharge').head()
+    Out [5]:
 
 *--a table with our data appears--*
 
     +------------------------------+---------------------------+
     |          datetimeUTC         | USGS:01585200:00060:00000 |
     +------------------------------+---------------------------+
-    |   2019-04-16 01:05:00+00:00  |                2.27       |
+    |   2019-05-25 01:05:00+00:00  |                1.57       |
     +------------------------------+---------------------------+
-    |   2019-04-16 01:10:00+00:00  |                2.27       |
+    |   2019-05-25 01:10:00+00:00  |                1.57       |
     +------------------------------+---------------------------+
-    |   2019-04-16 01:15:00+00:00  |                2.18       |
+    |   2019-05-25 01:15:00+00:00  |                1.51       |
     +------------------------------+---------------------------+
-    |   2019-04-16 01:20:00+00:00  |                2.18       |
+    |   2019-05-25 01:20:00+00:00  |                1.57       |
     +------------------------------+---------------------------+
-    |   2019-04-16 01:25:00+00:00  |                2.27       |
+    |   2019-05-25 01:25:00+00:00  |                1.57       |
     +------------------------------+---------------------------+
 
-Plot the data using built-in methods from Pandas and mathplotlib::
+Plot the data using built-in methods from Pandas and mathplotlib:
 
-    >>> herring.df().plot()
+.. code-block:: ipython
+
+    In  [6]: herring.df('q').plot()
+    Out [6]:
 
 *--a stream hydrograph appears--*
 
 .. image:: _static/HerringHydrograph.png
-        :alt: a stream hydrograph for Herring Run
+   :alt: a stream hydrograph for Herring Run
 
 Draw an interactive map in a Jupyter Notebook:
+
+.. code-block:: ipython
+
+    In  [7]: hf.draw_map()
+    Out [7]:
 
 .. image:: _static/draw_map.jpg
         :alt: a map in an interactive Jupyter Notebook.
