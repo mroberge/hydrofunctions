@@ -76,5 +76,9 @@ History
 * hf.field_meas(site) returns the field data and notes used to create a rating curve.
 * NWIS.df() allows you to create dataframes with subsets of the data, such as only 'discharge' or 'stage' or data quality 'flags'.
 * New and improved REPR: lists stations & parameters in dataset.
+* Saving data to a file:
+    - the 'file' parameter for NWIS allows you to save your data locally
+    - If the file doesn't exist, NWIS requests the data and creates the file
+    - Uses the parquet format for faster load times and smaller file sizes
 
 
