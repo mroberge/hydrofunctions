@@ -83,7 +83,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     return fig, ax
 
 
-def cycleplot(DF, cycle='diurnal', compare=None):
+def cycleplot(DF, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
     """Creates a chart to illustrate annual and diurnal cycles.
 
     This chart will use the pandas groupby method to plot the mean and median
@@ -136,6 +136,8 @@ def cycleplot(DF, cycle='diurnal', compare=None):
             * night: two plots will be produced, one for night (6pm to 6am), \
             one for day (6am to 6pm).
 
+        y_label (str): The label for the y axis.
+
     Returns:
         fig (matplotlib.figure.Figure):
             a matplotlib figure. This will plot immediately in a Jupyter
@@ -147,7 +149,7 @@ def cycleplot(DF, cycle='diurnal', compare=None):
 
     Notes:
         inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
-
+        Jake VanderPlas. 2016. Python Data Science Handbook. O'Reilly Media, Inc.'
     """
 
 
@@ -251,7 +253,7 @@ def cycleplot(DF, cycle='diurnal', compare=None):
     # Get the yaxis limits, set bottom to zero.
     ymin, ymax = axs[0].get_ylim()
     axs[0].set_ylim(0, ymax)
-    axs[0].set_ylabel('Stream Discharge (m³/s)')
+    axs[0].set_ylabel(y_label)
     axs[0].set_xlabel('Time' + x_label)
     plt.tight_layout()
 
