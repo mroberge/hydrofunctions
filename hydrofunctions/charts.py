@@ -194,7 +194,7 @@ def cycleplot(DF, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
     if compare is None:
         # Don't make a comparison plot.
         # TODO: This is a silly categorization to force all values in the index into the same category.
-        compareby = np.where(DF.index.weekday < 20, 'A', 'B')
+        compareby = np.where(DF.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
         sub_titles = ['']
     elif compare == 'month':
         # Break the time series into 12 months to compare to each other.
@@ -210,11 +210,12 @@ def cycleplot(DF, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
         sub_titles = ['Weekdays', 'Weekends']
     elif compare == 'night':
         # Break the time series into 2 groups to compare day versus night.
+        # TODO: This assumes the index hour is in local time, but it is in UTC time
         compareby = np.where((DF.index.hour >= 6) & (DF.index.hour < 19), 'Day', 'Night')
         sub_titles = ['Day', 'Night']
     else:
         print("The compare label '", compare, "' is not recognized as an option. Using compare=None instead.")
-        compareby = np.where(DF.index.weekday < 20, 'A', 'B')
+        compareby = np.where(DF.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
         sub_titles = ['data']
 
     selection = [compareby, aggregateby]
