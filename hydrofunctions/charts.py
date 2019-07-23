@@ -218,8 +218,8 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         compareby = np.where(Qseries.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
         sub_titles = ['data']
 
-    selection = [compareby, aggregateby]
-    compare = list(np.unique(compareby))
+    selection = [compareby, cycleby]
+    compare_list = list(np.unique(compareby))
 
     # group first by the compareby series, then by the cycle.
     by_time = DF.groupby(selection)
@@ -231,12 +231,13 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
     Q8 = by_time.quantile(.8)
 
     Nplots = len(compare)
+    Nplots = len(compare_list)
     fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
     if Nplots == 1:
         # If there is only one subplot, it gets returned as a single subplot instead of as a numpy array. In this case, we convert it to an array.
         axs = np.array([axs])
 
-    for i, item in enumerate(compare):
+    for i, item in enumerate(compare_list):
         axs[i].plot(mean.loc[item], label='mean')
         # axs[i].plot(Q2.loc[item], label='20th percentile', color='black', linestyle='dotted', linewidth=2)
         axs[i].plot(Q5.loc[item], label='median', color='black', linestyle='dotted', linewidth=2)
