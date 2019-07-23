@@ -62,6 +62,15 @@ class TestFlowDuration(unittest.TestCase):
 
 class TestCyclePlot(unittest.TestCase):
 
+    def test_charts_groupby_not_object_dtype(self):
+        # For reasons I don't understand, I think Pandas 0.25.0 counts
+        # DataFrameGroupBy as an object, and you can't use .quintile() on it.?
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        self.assertFalse(pd.api.types.is_object_dtype(expected_df))
+        grouped = expected_df.groupby(expected_df.index.weekday)
+        self.assertIsInstance(grouped, pd.core.groupby.generic.DataFrameGroupBy)
+        self.assertFalse(pd.api.types.is_object_dtype(grouped))
+
     def test_charts_cycleplot_exists(self):
         expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
         actual_fig, actual_ax = charts.cycleplot(expected_df)
