@@ -222,15 +222,35 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
     compare_list = list(np.unique(compareby))
 
     # group first by the compareby series, then by the cycle.
-    by_time = DF.groupby(selection)
-    mean = by_time.mean()
-    Q2 = by_time.quantile(.2)
-    Q4 = by_time.quantile(.4)
-    Q5 = by_time.quantile(.5)
-    Q6 = by_time.quantile(.6)
-    Q8 = by_time.quantile(.8)
+    grouped = Qseries.groupby(selection)
 
-    Nplots = len(compare)
+    #complicated_multiindex_DF_of_results = Qseries.groupby(selection).agg('mean', q2, q4, 'median', q6, q8)
+#    results2 = Qseries.groupby(selection).agg(
+#            mean=
+#            Q2=
+#            Q4=
+#            Q5=
+#            Q6=
+#            Q8=
+#            )
+    # Why is this necessary? Pandas 0.25.0 won't let you do this:
+    # grouped.quantile()  anymore. !?!
+    def q2(x):
+        return x.quantile(.2)
+    def q4(x):
+        return x.quantile(.4)
+    def q6(x):
+        return x.quantile(.6)
+    def q8(x):
+        return x.quantile(.8)
+
+    mean = grouped.mean()
+    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
+    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
+    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
+    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
+    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
+
     Nplots = len(compare_list)
     fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
     if Nplots == 1:
