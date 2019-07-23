@@ -83,7 +83,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     return fig, ax
 
 
-def cycleplot(DF, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
+def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
     """Creates a chart to illustrate annual and diurnal cycles.
 
     This chart will use the pandas groupby method to plot the mean and median
@@ -104,7 +104,7 @@ def cycleplot(DF, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
     0.2 to 0.8 quantile range.
 
     Args:
-        DF (dataframe): a dataframe of discharge values.
+        Qseries (series): a Pandas series of discharge values.
             * Values should be arranged in columns
             * Should use a dateTimeIndex
 
@@ -156,66 +156,66 @@ def cycleplot(DF, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
 
     if cycle == 'annual':
         # aggregate into 365 bins to show annual cycles. Same as annual-date
-        aggregateby = DF.index.dayofyear
+        cycleby = Qseries.index.dayofyear
         x_label = ' (day # of the year)'
     elif cycle == 'annual-date':
-        aggregateby = DF.index.dayofyear
+        cycleby = Qseries.index.dayofyear
         x_label = ' (day # of the year)'
     elif cycle == 'annual-week':
         # aggregate into 52 bins to show annual cycles.
-        aggregateby = DF.index.week
+        cycleby = Qseries.index.week
         x_label = ' (week # of the year)'
     elif cycle == 'annual-month':
         # aggregate into 12 binds to show annual cycles.
-        aggregateby = DF.index.month
+        cycleby = Qseries.index.month
         x_label = ' (month # of the year)'
     elif cycle == 'weekly':
         # aggregate into 7 bins to show week-long cycles.
         # Note: 7-day cycles are not natural cycles.
-        aggregateby = DF.index.weekday
+        cycleby = Qseries.index.weekday
         x_label = ' (day of the week, Monday = 0)'
     elif cycle == 'diurnal':
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
-        aggregateby = DF.index.hour
+        cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
     elif cycle == 'diurnal-smallest':
         # Uses the smallest unit available in the time index to show 24-hour diurnal cycles.
-        aggregateby = DF.index.time
+        cycleby = Qseries.index.time
         x_label = ' (time of day)'
     elif cycle == 'diurnal-hour':
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
-        aggregateby = DF.index.hour
+        cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
     else:
         print("The cycle label '", cycle, "' is not recognized as an option. Using cycle='diurnal' instead.")
-        aggregateby = DF.index.hour
+        cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
 
     if compare is None:
         # Don't make a comparison plot.
         # TODO: This is a silly categorization to force all values in the index into the same category.
-        compareby = np.where(DF.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
+        compareby = np.where(Qseries.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
         sub_titles = ['']
     elif compare == 'month':
         # Break the time series into 12 months to compare to each other.
-        compareby = DF.index.month
+        compareby = Qseries.index.month
         sub_titles = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     elif compare == 'weekday':
         # Break the time series into 7 days of the week to compare to each other.
-        compareby = DF.index.weekday
+        compareby = Qseries.index.weekday
         sub_titles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     elif compare == 'weekend':
         # Break the time series into 2 groups, Weekdays and Weekends for comparison.
-        compareby = np.where(DF.index.weekday < 5, 'Weekday', 'Weekend')
+        compareby = np.where(Qseries.index.weekday < 5, 'Weekday', 'Weekend')
         sub_titles = ['Weekdays', 'Weekends']
     elif compare == 'night':
         # Break the time series into 2 groups to compare day versus night.
         # TODO: This assumes the index hour is in local time, but it is in UTC time
-        compareby = np.where((DF.index.hour >= 6) & (DF.index.hour < 19), 'Day', 'Night')
+        compareby = np.where((Qseries.index.hour >= 6) & (DF.index.hour < 19), 'Day', 'Night')
         sub_titles = ['Day', 'Night']
     else:
         print("The compare label '", compare, "' is not recognized as an option. Using compare=None instead.")
-        compareby = np.where(DF.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
+        compareby = np.where(Qseries.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
         sub_titles = ['data']
 
     selection = [compareby, aggregateby]
