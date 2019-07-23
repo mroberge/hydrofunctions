@@ -90,6 +90,17 @@ class TestCyclePlot(unittest.TestCase):
         self.assertEqual(actual_yscale, 'linear')
         self.assertEqual(actual_ylabel, 'Discharge (ft³/s)')
 
+    def test_charts_cycleplot_compare_month(self):
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        actual_fig, actual_ax = charts.cycleplot(expected_df, compare='month')
+        self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
+        self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
+
+    def test_charts_cycleplot_cycle_annualweek(self):
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        actual_fig, actual_ax = charts.cycleplot(expected_df, 'annual-week')
+        self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
+        self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
