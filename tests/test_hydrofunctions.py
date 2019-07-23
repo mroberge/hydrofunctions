@@ -427,8 +427,9 @@ class TestHydrofunctions(unittest.TestCase):
 
     def test_hf_select_data_returns_data_cols(self):
         actual_df, actual_dict = hf.extract_nwis_df(two_sites_two_params_iv)
+        actual_df = actual_df.reindex(sorted(actual_df.columns), axis=1)
         actual = hf.select_data(actual_df)
-        expected = [False, True, False, True, False, True, False, True]
+        expected = [True, False, True, False, True, False, True, False]
         self.assertListEqual(actual.tolist(), expected, "select_data should return an array of which columns contain the data, not the qualifiers.")
 
     def integration_test_save_read_parquet(self):
