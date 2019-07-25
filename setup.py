@@ -31,7 +31,9 @@ requirements = [
     'pandas',
     'requests',
     'IPython',
-    'pyarrow'
+    'pyarrow',
+    'ipykernel',
+    'nbsphinx',
 ]
 
 test_requirements = [
