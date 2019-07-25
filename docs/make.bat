@@ -64,6 +64,14 @@ if "%1" == "html" (
 	for /d %%i in (%BUILDDIR%\*) do rmdir /q /s %%i
 	del /q /s %BUILDDIR%\*
 	echo.Deleted contents of %BUILDDIR%
+	REM the following might be one way to copy notebooks.
+	for /d %%i in (notebooks\*) do rmdir /q /s %%i
+	del /q /s notebooks\*
+	echo.Deleted contents of notebooks
+	REM md %BUILDDIR%\notebooks
+	echo.Copying notebook files
+	robocopy ..\notebooks notebooks /s /e
+	REM this is the end of my additions
 	%SPHINXBUILD% -b html %ALLSPHINXOPTS% %BUILDDIR%/html
 	if errorlevel 1 exit /b 1
 	echo.
