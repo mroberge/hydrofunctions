@@ -63,7 +63,6 @@ past 55 days:
 .. code-block:: ipython
 
     In  [2]: herring = hf.NWIS('01585200', 'iv', period='P55D')
-
     Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01585200&period=P55D
 
 Check that the request went smoothly:

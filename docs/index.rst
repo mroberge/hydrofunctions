@@ -6,19 +6,35 @@
 Welcome to the Hydrofunctions |version| Users Guide!
 ====================================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
    readme
    installation
-   usage
+   notebooks/Writing_Valid_Requests_for_NWIS
+   notebooks/Selecting_Sites
+   notebooks/Using_df_to_create_dataframes
+   selecting
+   notebooks/Creating_Dataframes
    graphing
    contributing
    authors
    history
    modules
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Example Applications
+
+   notebooks/Comparing_Urban_and_Rural_Streams
+   notebooks/Draw_Map_Demo
+   notebooks/Graphing
+   notebooks/Hydrofunctions_Tutorial
+
+
+
+
 
 Indices and tables
 ==================

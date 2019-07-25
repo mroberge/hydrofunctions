@@ -38,11 +38,8 @@ Next, we create a dataframe called 'data' from our request::
 The rest of the examples will assume that we have a dataframe called data.
 
 
-Special Hydrofunction Charts
-============================
-
 Flow Duration Chart
--------------------
+===================
 
 Flow duration charts are cumulative frequency charts that are used in hydrology
 to compare stream flow at different stream gauges. They are constructed with
@@ -59,10 +56,10 @@ Hydrofunctions includes a Flow Duration Chart, which you access as a function::
 
 Options include the ability to change the following:
 
-* xscale: default is 'logit'; may also be 'linear'
-* yscale: default is 'log'; may also be 'linear'
-* ylabel: default is 'Discharge'; may be any string.
-* symbol: default is '.' for small points. May also be:
+- xscale: default is 'logit'; may also be 'linear'
+- yscale: default is 'log'; may also be 'linear'
+- ylabel: default is 'Discharge'; may be any string.
+- symbol: default is '.' for small points. May also be:
     - pixel point: ','
     - up triangle: '^'
     - circle: 'o'
@@ -97,15 +94,17 @@ in the center of the x axis, at the 50% mark, since it has a 50% chance of
 happening on any given day.
 
 Cycle Plot
-----------
+==========
 
 The cycle plot was inspired by an example created by Jake VanderPlas in his
 2016 book, `Python data science handbook: essential tools for working with
 data. <https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html>`_
 
-This graph is designed for highlighting and comparing datasets that have a
-cyclical component, like the daily 'diurnal' cycle that occurs with
-sunlight, or the 'annual' cycle that occurs each year with temperatures.
+This graph is designed for discovering cyclical components within a series. For
+example, there is a 'diurnal' cycle in the amount of sunlight that you get over
+the course of a day.  Because the amount of sunlight also changes with the
+seasons, you can also see an 'annual' cycle in sunlight and in temperatures
+over the course of a year.
 
 .. code-block:: ipython
 
@@ -115,7 +114,7 @@ sunlight, or the 'annual' cycle that occurs each year with temperatures.
 .. image:: _static/cycleplot_annual-week.png
         :alt: a cycleplot of the annual cycle grouped by week.
 
-In this graph, several years of data for a site along the Shenandoah River was
+In this graph, several years of data for a site along the Shenandoah River were
 grouped into 52 different bins, each corresponding to a different week of the
 year. Then the mean and median values in each bin were connected with lines.
 A light gray band was drawn around the 0.2 to 0.8 quantile range and a dark
@@ -129,35 +128,35 @@ of a day during each of the twelve months of the year. Temperatures are warmest
 in July and coldest in January. However, over the course of a day, the lowest
 temperature occurs at hour 12 and the warmest temperature around hour 20. Since
 these temperatures are in UTC, and this site is in the Eastern Time Zone
-(UTC-5), so these correspond to 7 am and 3 pm (20 -5 = 15:00 hours, or 3pm).
+(UTC-5), these times correspond to 7 am and 3 pm (20 -5 = 15:00 hours, or 3pm).
 
-Accessing plotting functions through the dataframe
---------------------------------------------------
+Pandas plotting
+===============
 
-The Pandas dataframe comes with several different graphing methods associated
-with the dataframe. To access these methods, use dot notation.
+The Pandas dataframe has several different graphing methods built-in.  Access
+these methods using dot notation, like this:
 
-Plotting a hydrograph::
+Plotting a hydrograph:
 
-    >>> data.plot()
+.. code-block:: ipython
 
-Plotting a Histogram::
+    In  [1]: data.plot()
 
-    >>> data.hist()
-    >>> data.plot.hist()
+Plotting a Histogram:
 
-Box Plot::
+.. code-block:: ipython
 
-    >>> data.plot.box()
+    In  [1]: data.hist()
+    In  [1]: data.plot.hist()
 
-Kernel Density Plot::
+Box Plot:
 
-    >>> data.plot.kde()
+.. code-block:: ipython
 
+    In  [1]: data.plot.box()
 
+Kernel Density Plot:
 
-Example Notebooks
------------------
+.. code-block:: ipython
 
-- `Graphing <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Graphing.ipynb>`_
-- `Comparing Urban and Rural Streams <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Comparing_Urban_and_Rural_Streams.ipynb>`_
+    In  [1]: data.plot.kde()
