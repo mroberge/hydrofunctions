@@ -34,8 +34,6 @@ requirements = [
     'pyarrow',
     'ipykernel',
     'nbsphinx',
-    'pip install',
-    'sphinx_sizzle_theme',
 ]
 
 test_requirements = [
