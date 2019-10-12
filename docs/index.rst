@@ -9,13 +9,11 @@ Welcome to the Hydrofunctions |version| Users Guide!
 .. toctree::
    :maxdepth: 2
 
-   readme
+   introduction
    installation
    notebooks/Writing_Valid_Requests_for_NWIS
    notebooks/Selecting_Sites
-   notebooks/Using_df_to_create_dataframes
-   selecting
-   notebooks/Creating_Dataframes
+   notebooks/viewing
    graphing
    contributing
    authors
@@ -31,6 +29,9 @@ Welcome to the Hydrofunctions |version| Users Guide!
    notebooks/Draw_Map_Demo
    notebooks/Graphing
    notebooks/Hydrofunctions_Tutorial
+
+   notebooks/Using_df_to_create_dataframes
+   notebooks/Creating_Dataframes
 
 
 

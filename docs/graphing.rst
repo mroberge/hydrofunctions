@@ -82,7 +82,7 @@ exceeding the high flows, and a high probability of exceeding the low flows.
 The line for the larger stream is always above the line for the smaller stream
 because the larger stream has higher discharges.
 
-.. image:: _static/flow_duration_logit.png
+.. image:: _static/flow_duration_linear.png
         :alt: a flow duration chart with the linear x axis.
 
 The first graph used a 'logit' scale on the x axis, while this second graph
