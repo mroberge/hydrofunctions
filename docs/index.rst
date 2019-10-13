@@ -30,9 +30,6 @@ Welcome to the Hydrofunctions |version| Users Guide!
    notebooks/Graphing
    notebooks/Hydrofunctions_Tutorial
 
-   notebooks/Using_df_to_create_dataframes
-   notebooks/Creating_Dataframes
-
 
 
 
