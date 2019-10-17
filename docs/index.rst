@@ -12,6 +12,7 @@ Welcome to the Hydrofunctions |version| Users Guide!
    introduction
    installation
    notebooks/Writing_Valid_Requests_for_NWIS
+   notebooks/Saving_Data
    notebooks/Selecting_Sites
    notebooks/viewing
    graphing
@@ -20,6 +21,12 @@ Welcome to the Hydrofunctions |version| Users Guide!
    history
    modules
 
+
+
+
+
+Example Applications
+====================
 
 .. toctree::
    :maxdepth: 2
