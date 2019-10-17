@@ -239,9 +239,23 @@ class NWIS(Station):
         return self
 
     def save(self, file):
+        """
+        Save the dataframe and metadata to a parquet file.
+
+        Args:
+            file (str):
+                the filename to save to.
+        """
         hf.save_parquet(file, self._dataframe, self.meta)
         return self
 
     def read(self, file):
+        """
+        Read a dataframe and metadata from a parquet file.
+
+        Args:
+            file (str):
+                the filename to read from.
+        """
         self._dataframe, self.meta = hf.read_parquet(file)
         return self

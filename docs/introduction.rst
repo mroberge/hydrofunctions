@@ -1,15 +1,67 @@
-====================
-Using Hydrofunctions
-====================
+============
+Introduction
+============
+
+Hydrofunctions is an open source, free-to-use Python package containing tools
+for downloading, plotting, analyzing, and storing hydrology data. It is
+designed to be simple enough for Python beginners, yet powerful enough for
+scientific research.
+
+Hydrofunctions accesses the the US Geological Survey's
+National Water Information System (NWIS), which includes data from thousands
+of active sensors around the US and Territories. The internal design
+preserves important metadata while facilitating rapid analysis. Detailed
+error messages help users figure out why a request went wrong. Sensible
+defaults make it possible to get started right away while still maintaining
+your access to all of the NWIS's sophisticated functionality.
+
+Hydrofunctions is typically used with Jupyter Notebooks, and it incorporates
+the functionality of Pandas, Numpy, and matplotlib.
+
+Please give it a try!
+
+Features
+========
+
+* Retrieves stream data from the USGS NWIS service
+* Select data using multiple site numbers, by state, county codes, or a boundary box
+* Preserves NWIS metadata, including NoData values
+* Helpful error messages to help you write valid requests
+* Extracts data into a Pandas dataframe, json, or dict
+* Plot beautiful graphs in Jupyter Notebooks
+   * hydrographs (or time series of any data)
+   * flow duration charts
+   * cycle plots to illustrate annual or diurnal cycles
+   * Interactive map for finding stream gauge ID numbers
+* Plotting and manipulation through Pandas dataframes
+* Retrieve rating curves and field notes for sites
+* Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
 
 
-First, import hydrofunctions into your project::
+Quick Start
+===========
+
+Hydrofunctions can be used from the Python command line, but its graphing
+capabilities require the use of Jupyter, which is easily downloaded
+and installed from Anaconda.org.
+
+Before we use Hydrofunctions, we must download and install it on our local
+computer. You can do this from your computer's command line prompt, which you
+can access from your recently installed Anaconda distribution::
+
+    (base) C:\> pip install hydrofunctions
+
+Pip will make sure that you have everything that you need on your computer, and
+load everything you don't have.
+
+Now, open a new Jupyter notebook. You can find an icon for Jupyter within the
+Anaconda Navigator application.
+
+In the first cell, import hydrofunctions for use on your page::
 
     >>> import hydrofunctions as hf
 
-Jupyter notebooks are a great tool for using hydrofunctions, because you can
-plot your data and edit your work interactively. To enable chart plotting in
-Jupyter, type::
+To enable chart plotting in Jupyter, add::
 
     >>> %matplotlib inline
 
@@ -20,7 +72,7 @@ System (NWIS)::
     >>> harrisburg = hf.NWIS(site, 'iv', period='P10D')
     Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01570500&period=P10D
 
-Use the 'ok' attribute to check that the transfer went okay:
+Use the 'ok' attribute to check that the transfer went okay::
 
     >>> harrisburg.ok
     True
@@ -77,22 +129,13 @@ Plot the data using Pandas and mathplotlib::
 
 As long as you had `%matplotlib inline` enabled earlier, you will get a graph.
 
-To learn more about hydrofunctions, try using
+To learn more about hydrofunctions, try using::
 
     >>> help(hf)
 
-and
+and::
 
     >>> dir(response)
 
 to list all of the methods available.
 
-Example Notebooks
------------------
-
-- `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Introduction%20to%20Hydrofunctions.ipynb>`_
-- `Selecting Sites <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Selecting_Sites.ipynb>`_
-- `Writing Valid Requests for NWIS <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Writing_Valid_Requests_for_NWIS.ipynb>`_
-- `Draw Map Demo <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Draw_Map_Demo.ipynb>`_
-- `Comparing Urban and Rural Streams <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Comparing_Urban_and_Rural_Streams.ipynb>`_
-- `NWIS Trial Run <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/NWIS%20trial%20run.ipynb>`_
