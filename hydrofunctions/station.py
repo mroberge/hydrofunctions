@@ -80,7 +80,7 @@ class NWIS(Station):
             A valid code can also be given as a list: parameterCd=['00060','00065']
             This will request data for this parameter.
 
-                * if value is 'all', or no value is submitted, then NWIS will \
+                * if value is 'all', or no value is submitted, then NWIS will
                 return every parameter collected at this site. (default option)
                 * stage: '00065'
                 * discharge: '00060'
@@ -89,7 +89,7 @@ class NWIS(Station):
 
         period (str):
             NWIS period code. Default is None.
-                * Format is "PxxD", where xx is the number of days before \
+                * Format is "PxxD", where xx is the number of days before
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
 
@@ -239,9 +239,23 @@ class NWIS(Station):
         return self
 
     def save(self, file):
+        """
+        Save the dataframe and metadata to a parquet file.
+
+        Args:
+            file (str):
+                the filename to save to.
+        """
         hf.save_parquet(file, self._dataframe, self.meta)
         return self
 
     def read(self, file):
+        """
+        Read a dataframe and metadata from a parquet file.
+
+        Args:
+            file (str):
+                the filename to read from.
+        """
         self._dataframe, self.meta = hf.read_parquet(file)
         return self
