@@ -62,6 +62,15 @@ class TestFlowDuration(unittest.TestCase):
 
 class TestCyclePlot(unittest.TestCase):
 
+    def test_charts_groupby_not_object_dtype(self):
+        # For reasons I don't understand, I think Pandas 0.25.0 counts
+        # DataFrameGroupBy as an object, and you can't use .quintile() on it.?
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        self.assertFalse(pd.api.types.is_object_dtype(expected_df))
+        grouped = expected_df.groupby(expected_df.index.weekday)
+        self.assertIsInstance(grouped, pd.core.groupby.generic.DataFrameGroupBy)
+        self.assertFalse(pd.api.types.is_object_dtype(grouped))
+
     def test_charts_cycleplot_exists(self):
         expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
         actual_fig, actual_ax = charts.cycleplot(expected_df)
@@ -79,8 +88,19 @@ class TestCyclePlot(unittest.TestCase):
 
         self.assertEqual(actual_xscale, 'linear')
         self.assertEqual(actual_yscale, 'linear')
-        self.assertEqual(actual_ylabel, 'Stream Discharge (m³/s)')
+        self.assertEqual(actual_ylabel, 'Discharge (ft³/s)')
 
+    def test_charts_cycleplot_compare_month(self):
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        actual_fig, actual_ax = charts.cycleplot(expected_df, compare='month')
+        self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
+        self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
+
+    def test_charts_cycleplot_cycle_annualweek(self):
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        actual_fig, actual_ax = charts.cycleplot(expected_df, 'annual-week')
+        self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
+        self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

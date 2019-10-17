@@ -11,6 +11,8 @@ organizing and managing data for data collection sites.
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import re
+
+import json
 from . import typing
 from . import hydrofunctions as hf
 from . import helpers
@@ -90,6 +92,8 @@ class NWIS(Station):
                 * Format is "PxxD", where xx is the number of days before \
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
+
+
     """
 
     def __init__(self,
@@ -101,41 +105,51 @@ class NWIS(Station):
                  countyCd=None,
                  bBox=None,
                  parameterCd='all',
-                 period=None):
+                 period=None,
+                 file=None):
 
-        self.response = hf.get_nwis(site,
-                                    service,
-                                    start_date,
-                                    end_date,
-                                    stateCd=stateCd,
-                                    countyCd=countyCd,
-                                    bBox=bBox,
-                                    parameterCd=parameterCd,
-                                    period=period
-                                    )
-        self.ok = self.response.ok
-        self.url = self.response.url
-        self.json = self.response.json()
+        self.ok = False
+        if file is not None:
+            try:
+                self._dataframe, self.meta = hf.read_parquet(file)
+                self.ok = True
+                print('Reading data from', file)
 
-        self.siteName = hf.get_nwis_property(self.json,
-                                             key='siteName',
-                                             remove_duplicates=True)
-        self.name = hf.get_nwis_property(self.json,
-                                         key='name',
-                                         remove_duplicates=True)
+            except OSError as err:
+                # File does not exist yet, we'll make it later.
+                pass
 
-        self._dataframe, self.meta = hf.extract_nwis_df(self.json)
-        #value = hf.get_nwis_property(self.json, key='siteCode', remove_duplicates=True)
-        #sites = []
-        #for site in value:
-        #    site_id = site[0]['value']
-        #    sites.append(site_id)
-        self.site = site
-        self.service = service
-        self.start_date = start_date
-        self.end_date = end_date
-        self.start = self._dataframe.index.min()
-        self.end = self._dataframe.index.max()
+        if self.ok == False:
+            self.response = hf.get_nwis(site,
+                                        service,
+                                        start_date,
+                                        end_date,
+                                        stateCd=stateCd,
+                                        countyCd=countyCd,
+                                        bBox=bBox,
+                                        parameterCd=parameterCd,
+                                        period=period
+                                        )
+            try:
+                self.json = self.response.json()
+                self._dataframe, self.meta = hf.extract_nwis_df(self.json)
+                self.ok = self.response.ok
+                if file is not None:
+                    self.save(file)
+                    print('Saving data to', file)
+            except json.JSONDecodeError as err:
+                self.ok = False
+                print('JSON decoding error. URL: {self.response.url}')
+                raise json.JSONDecodeError(err)
+
+        # Can I get rid of this, and only keep metadata in the meta dict?
+        if self.ok:
+            self.site = site
+            self.service = service
+            self.start_date = start_date
+            self.end_date = end_date
+            self.start = self._dataframe.index.min()
+            self.end = self._dataframe.index.max()
 
     def __repr__(self):
         repr_string = ""
@@ -222,4 +236,26 @@ class NWIS(Station):
 
     def get_data(self):
         print("It is no longer necessary to call .get_data() to request data.")
+        return self
+
+    def save(self, file):
+        """
+        Save the dataframe and metadata to a parquet file.
+
+        Args:
+            file (str):
+                the filename to save to.
+        """
+        hf.save_parquet(file, self._dataframe, self.meta)
+        return self
+
+    def read(self, file):
+        """
+        Read a dataframe and metadata from a parquet file.
+
+        Args:
+            file (str):
+                the filename to read from.
+        """
+        self._dataframe, self.meta = hf.read_parquet(file)
         return self

@@ -66,7 +66,7 @@ __copyright__ = 'Copyright 2016 Martin Roberge and contributors'
 
 from .exceptions import (
         HydroNoDataError,
-        HydroUserWarning
+        HydroUserWarning,
         )
 from .hydrofunctions import (
         get_nwis,
@@ -74,23 +74,28 @@ from .hydrofunctions import (
         extract_nwis_df,
         nwis_custom_status_codes,
         get_nwis_property,
-        calc_freq
+        calc_freq,
+        read_parquet,
+        save_parquet,
         )
 from .station import Station, NWIS
 from .typing import (
-        check_parameter_string, check_datestr, check_NWIS_service, check_NWIS_bBox,
-        check_period
+        check_parameter_string,
+        check_datestr,
+        check_NWIS_service,
+        check_NWIS_bBox,
+        check_period,
         )
 from .helpers import (
         draw_map,
-        count_number_of_truthy
+        count_number_of_truthy,
         )
 from .charts import (
         flow_duration,
-        cycleplot
+        cycleplot,
         )
 from .usgs_rdb import (
         read_rdb,
         field_meas,
-        rating_curve
+        rating_curve,
         )

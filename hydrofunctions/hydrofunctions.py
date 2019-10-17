@@ -12,6 +12,9 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import requests
 import numpy as np
 import pandas as pd
+import json
+import pyarrow as pa
+import pyarrow.parquet as pq
 from pandas.tseries.frequencies import to_offset
 import logging
 
@@ -273,6 +276,8 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
 
     # Issue warnings for bad status codes
     nwis_custom_status_codes(response)
+    if not response.text:
+        raise exceptions.HydroNoDataError("The NWIS has returned an empty string for this request.")
 
     return response
 
@@ -369,11 +374,13 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
 
 
 def extract_nwis_df(nwis_dict, interpolate=True):
-    """Returns a Pandas dataframe from an NWIS response object.
+    """Returns a Pandas dataframe and a metadata dict from the NWIS response
+    object or the json dict of the response.
 
     Args:
         nwis_dict (obj):
             the json from a response object as returned by get_nwis().json().
+            Alternatively, you may supply the response object itself.
 
     Returns:
         a pandas dataframe.
@@ -382,8 +389,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         HydroNoDataError  when the request is valid, but NWIS has no data for
             the parameters provided in the request.
 
-        HydroUserWarning  when one dataset is at a lower frequency than another
-            dataset in the same request.
+        HydroUserWarning  when one dataset is sampled at a lower frequency than
+        another dataset in the same request.
     """
     if type(nwis_dict) is not dict:
         nwis_dict = nwis_dict.json()
@@ -619,3 +626,24 @@ def nwis_custom_status_codes(response):
         # However, they are often supressed in some applications.
         warnings.warn(msg, SyntaxWarning)
         return response.status_code
+
+
+def read_parquet(filename):
+    pa_table = pq.read_table(filename)
+    dataframe = pa_table.to_pandas()
+    meta_dict = pa_table.schema.metadata
+    if b'hydrofunctions_meta' in meta_dict:
+        meta_string = meta_dict[b'hydrofunctions_meta'].decode()
+        meta = json.loads(meta_string, encoding='utf-8')
+    else:
+        meta = None
+    return dataframe, meta
+
+
+def save_parquet(filename, dataframe, hf_meta):
+    table = pa.Table.from_pandas(dataframe, preserve_index=True)
+    meta_dict = table.schema.metadata
+    hf_string = json.dumps(hf_meta).encode()
+    meta_dict[b'hydrofunctions_meta'] = hf_string
+    table = table.replace_schema_metadata(meta_dict)
+    pq.write_table(table, filename)

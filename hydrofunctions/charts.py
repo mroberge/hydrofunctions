@@ -83,7 +83,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     return fig, ax
 
 
-def cycleplot(DF, cycle='diurnal', compare=None):
+def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
     """Creates a chart to illustrate annual and diurnal cycles.
 
     This chart will use the pandas groupby method to plot the mean and median
@@ -104,7 +104,7 @@ def cycleplot(DF, cycle='diurnal', compare=None):
     0.2 to 0.8 quantile range.
 
     Args:
-        DF (dataframe): a dataframe of discharge values.
+        Qseries (series): a Pandas series of discharge values.
             * Values should be arranged in columns
             * Should use a dateTimeIndex
 
@@ -136,6 +136,8 @@ def cycleplot(DF, cycle='diurnal', compare=None):
             * night: two plots will be produced, one for night (6pm to 6am), \
             one for day (6am to 6pm).
 
+        y_label (str): The label for the y axis.
+
     Returns:
         fig (matplotlib.figure.Figure):
             a matplotlib figure. This will plot immediately in a Jupyter
@@ -147,93 +149,115 @@ def cycleplot(DF, cycle='diurnal', compare=None):
 
     Notes:
         inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
-
+        Jake VanderPlas. 2016. Python Data Science Handbook. O'Reilly Media, Inc.'
     """
 
 
 
     if cycle == 'annual':
         # aggregate into 365 bins to show annual cycles. Same as annual-date
-        aggregateby = DF.index.dayofyear
+        cycleby = Qseries.index.dayofyear
         x_label = ' (day # of the year)'
     elif cycle == 'annual-date':
-        aggregateby = DF.index.dayofyear
+        cycleby = Qseries.index.dayofyear
         x_label = ' (day # of the year)'
     elif cycle == 'annual-week':
         # aggregate into 52 bins to show annual cycles.
-        aggregateby = DF.index.week
+        cycleby = Qseries.index.week
         x_label = ' (week # of the year)'
     elif cycle == 'annual-month':
         # aggregate into 12 binds to show annual cycles.
-        aggregateby = DF.index.month
+        cycleby = Qseries.index.month
         x_label = ' (month # of the year)'
     elif cycle == 'weekly':
         # aggregate into 7 bins to show week-long cycles.
         # Note: 7-day cycles are not natural cycles.
-        aggregateby = DF.index.weekday
+        cycleby = Qseries.index.weekday
         x_label = ' (day of the week, Monday = 0)'
     elif cycle == 'diurnal':
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
-        aggregateby = DF.index.hour
+        cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
     elif cycle == 'diurnal-smallest':
         # Uses the smallest unit available in the time index to show 24-hour diurnal cycles.
-        aggregateby = DF.index.time
+        cycleby = Qseries.index.time
         x_label = ' (time of day)'
     elif cycle == 'diurnal-hour':
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
-        aggregateby = DF.index.hour
+        cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
     else:
         print("The cycle label '", cycle, "' is not recognized as an option. Using cycle='diurnal' instead.")
-        aggregateby = DF.index.hour
+        cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
 
     if compare is None:
         # Don't make a comparison plot.
         # TODO: This is a silly categorization to force all values in the index into the same category.
-        compareby = np.where(DF.index.weekday < 20, 'A', 'B')
+        compareby = np.where(Qseries.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
         sub_titles = ['']
     elif compare == 'month':
         # Break the time series into 12 months to compare to each other.
-        compareby = DF.index.month
+        compareby = Qseries.index.month
         sub_titles = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     elif compare == 'weekday':
         # Break the time series into 7 days of the week to compare to each other.
-        compareby = DF.index.weekday
+        compareby = Qseries.index.weekday
         sub_titles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     elif compare == 'weekend':
         # Break the time series into 2 groups, Weekdays and Weekends for comparison.
-        compareby = np.where(DF.index.weekday < 5, 'Weekday', 'Weekend')
+        compareby = np.where(Qseries.index.weekday < 5, 'Weekday', 'Weekend')
         sub_titles = ['Weekdays', 'Weekends']
     elif compare == 'night':
         # Break the time series into 2 groups to compare day versus night.
-        compareby = np.where((DF.index.hour >= 6) & (DF.index.hour < 19), 'Day', 'Night')
+        # TODO: This assumes the index hour is in local time, but it is in UTC time
+        compareby = np.where((Qseries.index.hour >= 6) & (DF.index.hour < 19), 'Day', 'Night')
         sub_titles = ['Day', 'Night']
     else:
         print("The compare label '", compare, "' is not recognized as an option. Using compare=None instead.")
-        compareby = np.where(DF.index.weekday < 20, 'A', 'B')
+        compareby = np.where(Qseries.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
         sub_titles = ['data']
 
-    selection = [compareby, aggregateby]
-    compare = list(np.unique(compareby))
+    selection = [compareby, cycleby]
+    compare_list = list(np.unique(compareby))
 
     # group first by the compareby series, then by the cycle.
-    by_time = DF.groupby(selection)
-    mean = by_time.mean()
-    Q2 = by_time.quantile(.2)
-    Q4 = by_time.quantile(.4)
-    Q5 = by_time.quantile(.5)
-    Q6 = by_time.quantile(.6)
-    Q8 = by_time.quantile(.8)
+    grouped = Qseries.groupby(selection)
 
-    Nplots = len(compare)
+    #complicated_multiindex_DF_of_results = Qseries.groupby(selection).agg('mean', q2, q4, 'median', q6, q8)
+#    results2 = Qseries.groupby(selection).agg(
+#            mean=
+#            Q2=
+#            Q4=
+#            Q5=
+#            Q6=
+#            Q8=
+#            )
+    # Why is this necessary? Pandas 0.25.0 won't let you do this:
+    # grouped.quantile()  anymore. !?!
+    def q2(x):
+        return x.quantile(.2)
+    def q4(x):
+        return x.quantile(.4)
+    def q6(x):
+        return x.quantile(.6)
+    def q8(x):
+        return x.quantile(.8)
+
+    mean = grouped.mean()
+    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
+    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
+    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
+    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
+    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
+
+    Nplots = len(compare_list)
     fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
     if Nplots == 1:
         # If there is only one subplot, it gets returned as a single subplot instead of as a numpy array. In this case, we convert it to an array.
         axs = np.array([axs])
 
-    for i, item in enumerate(compare):
+    for i, item in enumerate(compare_list):
         axs[i].plot(mean.loc[item], label='mean')
         # axs[i].plot(Q2.loc[item], label='20th percentile', color='black', linestyle='dotted', linewidth=2)
         axs[i].plot(Q5.loc[item], label='median', color='black', linestyle='dotted', linewidth=2)
@@ -251,7 +275,7 @@ def cycleplot(DF, cycle='diurnal', compare=None):
     # Get the yaxis limits, set bottom to zero.
     ymin, ymax = axs[0].get_ylim()
     axs[0].set_ylim(0, ymax)
-    axs[0].set_ylabel('Stream Discharge (m³/s)')
+    axs[0].set_ylabel(y_label)
     axs[0].set_xlabel('Time' + x_label)
     plt.tight_layout()
 

@@ -9,6 +9,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import unittest
 from unittest import mock
 import pandas as pd
+from pandas.util.testing import assert_frame_equal
 import numpy as np
 
 from hydrofunctions import station, typing
@@ -155,7 +156,7 @@ class TestNWISinit(unittest.TestCase):
         mock_extract_nwis_df.return_value = (mock_df, 'expected_dict')
 
         actual = station.NWIS()
-        self.assertEqual(actual.url, expected_url, "NWIS.__init__() did not set self.url properly.")
+        #self.assertEqual(actual.url, expected_url, "NWIS.__init__() did not set self.url properly.")
         self.assertEqual(actual.ok, expected_ok, "NWIS.__init__() did not set self.ok properly.")
         self.assertEqual(actual.json, expected_json, "NWIS.__init__() did not set self.json properly.")
 
@@ -170,6 +171,62 @@ class TestNWISinit(unittest.TestCase):
         mock_extract_nwis_df.return_value = (mock_df, 'expected dict')
         actual = station.NWIS()
         mock_extract_nwis_df.assert_called_once_with(expected_json)
+
+    @mock.patch('hydrofunctions.hydrofunctions.read_parquet')
+    def test_NWIS_init_filename_calls_read_parquet(self, mock_read):
+        expected_filename = 'expected_filename'
+        expected_meta = 'expected meta'
+        expected_df = pd.DataFrame(np.random.randn(5, 1), columns=['A'],
+                                   index=pd.date_range('20130101', periods=5, freq='T'))
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        mock_read.return_value = (expected_df, expected_meta)
+        actual = station.NWIS(file=expected_filename)
+        mock_read.assert_called_once_with(expected_filename)
+        assert_frame_equal(expected_df, actual._dataframe)
+        self.assertEqual(expected_meta, actual.meta, 'The metadata were not retrieved by NWIS.read().')
+
+    @mock.patch('hydrofunctions.hydrofunctions.read_parquet')
+    @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
+    #@mock.patch("hydrofunctions.hydrofunctions.get_nwis_property")
+    @mock.patch("hydrofunctions.hydrofunctions.extract_nwis_df")
+    @mock.patch('hydrofunctions.hydrofunctions.save_parquet')
+    def test_NWIS_init_filename_calls_read_parquet_then_get_nwis(self, mock_save, mock_extract_nwis_df, mock_get_nwis, mock_read):
+        # Mocks listed in order that they get called.
+
+        # mock_read: pretend file doesn't exist, so return OSError
+        #    file exists:
+        #         mock_read.return_value = (expected_df, expected_meta)
+        #    file doesn't exist, raise error:
+        mock_read.side_effect = OSError()
+
+        # mock_get_nwis
+        expected_json = 'expected json'
+        mock_get_nwis.return_value = fakeResponse(json=expected_json)
+
+        # mock_get_nwis_property
+            # never called
+
+        # mock_extract_nwis_df
+        mock_df = pd.DataFrame(np.random.randn(5, 1), columns=['A'],
+                               index=pd.date_range('20130101', periods=5, freq='T'))
+        mock_meta = 'mock meta'
+        mock_extract_nwis_df.return_value = (mock_df, mock_meta)
+
+        # mock_save
+        expected_filename = 'expected_filename'
+        mock_save.return_value = 'expected self'
+
+        # Create an NWIS with a filename, but the filename doesn't exist.
+        # so an OSError is returned.
+        # So now get_nwis is called, extract_nwis_df, save().
+        actual = station.NWIS(file=expected_filename)
+        mock_save.assert_called_once_with(expected_filename, mock_df, mock_meta)
+
+
+
+
+
 
     @mock.patch("hydrofunctions.hydrofunctions.get_nwis")
     def test_NWIS_init_request_most_recent_only(self, mock_get_nwis):
@@ -639,6 +696,30 @@ Start: expected start
 End:   expected end"""
         self.assertEqual(repr(test_nwis), expected_repr)
 
+    @mock.patch('hydrofunctions.hydrofunctions.save_parquet')
+    def test_NWIS_save_calls_save_parquet(self, mock_save):
+        expected_filename = 'expected_filename'
+        expected_meta = 'expected meta'
+        expected_df = 'expected df'
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        test_nwis = TestingNWIS(dataframe = expected_df, meta = expected_meta, start=mock_start, end=mock_end)
+        test_nwis.save(expected_filename)
+        mock_save.assert_called_once_with(expected_filename, expected_df, expected_meta)
+
+    @mock.patch('hydrofunctions.hydrofunctions.read_parquet')
+    def test_NWIS_read_calls_read_parquet(self, mock_read):
+        expected_filename = 'expected_filename'
+        expected_meta = 'expected meta'
+        expected_df = 'expected df'
+        mock_start = 'expected start'
+        mock_end = 'expected end'
+        mock_read.return_value = (expected_df, expected_meta)
+        test_nwis = TestingNWIS()
+        test_nwis.read(expected_filename)
+        mock_read.assert_called_once_with(expected_filename)
+        self.assertEqual(expected_df, test_nwis._dataframe, 'NWIS.read() did not retrieve the dataframe properly.')
+        self.assertEqual(expected_meta, test_nwis.meta, 'The metadata were not retrieved by NWIS.read().')
 
 
 """
