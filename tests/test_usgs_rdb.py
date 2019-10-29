@@ -112,6 +112,102 @@ INDEP	SHIFT	DEP	STOR
 """
 
 
+# A shortened version of this request: https://nwis.waterdata.usgs.gov/nwis/peak?site_no=01542500&agency_cd=USGS&format=rdb
+peaks_fixture="""#
+# U.S. Geological Survey
+# National Water Information System
+# Retrieved: 2019-10-28 22:35:01 EDT
+#
+# ---------------------------------- WARNING ----------------------------------------
+# Some of the data that you have obtained from this U.S. Geological Survey database
+# may not have received Director's approval. Any such data values are qualified
+# as provisional and are subject to revision. Provisional data are released on the
+# condition that neither the USGS nor the United States Government may be held liable
+# for any damages resulting from its use.
+#
+# More data may be available offline.
+# For more information on these data,  contact  USGS Water Data Inquiries.
+# This file contains the annual peak streamflow data.
+#
+# This information includes the following fields:
+#
+#  agency_cd     Agency Code
+#  site_no       USGS station number
+#  peak_dt       Date of peak streamflow (format YYYY-MM-DD)
+#  peak_tm       Time of peak streamflow (24 hour format, 00:00 - 23:59)
+#  peak_va       Annual peak streamflow value in cfs
+#  peak_cd       Peak Discharge-Qualification codes (see explanation below)
+#  gage_ht       Gage height for the associated peak streamflow in feet
+#  gage_ht_cd    Gage height qualification codes
+#  year_last_pk  Peak streamflow reported is the highest since this year
+#  ag_dt         Date of maximum gage-height for water year (if not concurrent with peak)
+#  ag_tm         Time of maximum gage-height for water year (if not concurrent with peak
+#  ag_gage_ht    maximum Gage height for water year in feet (if not concurrent with peak
+#  ag_gage_ht_cd maximum Gage height code
+#
+# Sites in this file include:
+#  USGS 01542500 WB Susquehanna River at Karthaus, PA
+#
+# Peak Streamflow-Qualification Codes(peak_cd):
+#   1 ... Discharge is a Maximum Daily Average
+#   2 ... Discharge is an Estimate
+#   3 ... Discharge affected by Dam Failure
+#   4 ... Discharge less than indicated value,
+#           which is Minimum Recordable Discharge at this site
+#   5 ... Discharge affected to unknown degree by
+#           Regulation or Diversion
+#   6 ... Discharge affected by Regulation or Diversion
+#   7 ... Discharge is an Historic Peak
+#   8 ... Discharge actually greater than indicated value
+#   9 ... Discharge due to Snowmelt, Hurricane,
+#           Ice-Jam or Debris Dam breakup
+#   A ... Year of occurrence is unknown or not exact
+#   Bd ... Day of occurrence is unknown or not exact
+#   Bm ... Month of occurrence is unknown or not exact
+#   C ... All or part of the record affected by Urbanization,
+#            Mining, Agricultural changes, Channelization, or other
+#   F ... Peak supplied by another agency
+#   O ... Opportunistic value not from systematic data collection
+#   R ... Revised
+#
+# Gage height qualification codes(gage_ht_cd,ag_gage_ht_cd):
+#   1 ... Gage height affected by backwater
+#   2 ... Gage height not the maximum for the year
+#   3 ... Gage height at different site and(or) datum
+#   4 ... Gage height below minimum recordable elevation
+#   5 ... Gage height is an estimate
+#   6 ... Gage datum changed during this year
+#   7 ... Debris, mud, or hyper-concentrated flow
+#   8 ... Gage height tidally affected
+#   Bd ... Day of occurrence is unknown or not exact
+#   Bm ... Month of occurrence is unknown or not exact
+#   F ... Peak supplied by another agency
+#   R ... Revised
+#
+#
+agency_cd	site_no	peak_dt	peak_tm	peak_va	peak_cd	gage_ht	gage_ht_cd	year_last_pk	ag_dt	ag_tm	ag_gage_ht	ag_gage_ht_cd
+5s	15s	10d	6s	8s	33s	8s	27s	4s	10d	6s	8s	27s
+USGS	01542500	1936-03-18		135000	7	24.50
+USGS	01542500	1940-04-01		50900		12.40	3
+USGS	01542500	1941-04-06		19600		8.79	2		1941-03-05		8.95	1
+USGS	01542500	1942-03-10		22600		9.38
+USGS	01542500	1942-12-30		50200		13.82
+USGS	01542500	1962-04-01		17000	6	8.35
+USGS	01542500	1963-03-18		22700	6	9.63
+USGS	01542500	1964-03-10		63500	6	15.98
+USGS	01542500	1965-03-30		13600	6	7.54
+USGS	01542500	1966-02-14		18900	6	8.88	2		1966-02-13		9.19	1
+USGS	01542500	1967-03-16		17400	6	8.49
+USGS	01542500	1968-05-25		11800	6	7.12	2		1968-01-31		7.12	1
+USGS	01542500	1968-12-29		9500	6	6.35
+USGS	01542500	1970-04-02		25800	6	10.29
+USGS	01542500	1971-02-28		18400	6	8.79
+USGS	01542500	2016-02-04		7880	6	6.05
+USGS	01542500	2017-05-30		15700	6	8.43
+USGS	01542500	2018-09-10	21:30	41000	6	13.22
+"""
+
+
 class TestReadRdb(unittest.TestCase):
     """Test the functions that request and parse rdb files from the USGS.
 
@@ -199,6 +295,84 @@ class TestReadRdb(unittest.TestCase):
         # This works better when comparing nans, sometimes.
         np.testing.assert_array_equal(actual_row_2, expected_row_2,
                                       err_msg="field_meas returned the wrong values for row 2.")
+
+
+#************
+    @mock.patch('requests.get')
+    def test_peaks_request_proper_url(self, mock_get):
+        sample_site_id = '666'
+        expected_url = 'https://nwis.waterdata.usgs.gov/nwis/peak?site_no='\
+                       + sample_site_id + '&agency_cd=USGS&format=rdb'
+
+        expected_status_code = 200
+        expected_text = peaks_fixture
+
+        expected = fakeResponse(code=expected_status_code, text=expected_text)
+        expected_headers = {'Accept-encoding': 'gzip'}
+
+        mock_get.return_value = expected
+        actual = hf.peaks(sample_site_id)
+        mock_get.assert_called_once_with(expected_url, headers=expected_headers)
+
+    @mock.patch('requests.get')
+    def test_peaks_returns_well_formed_DF(self, mock_get):
+        sample_site_id = '026546'
+
+        expected = fakeResponse()
+        expected.status_code = 200
+        expected.reason = "any text"
+        expected.text = peaks_fixture
+        expected_rows = 18
+        expected_cols = 12  # 12 = 13 cols - 1 col for index.
+        expected_col_names = ['agency_cd',
+                              'site_no',
+                              'peak_tm',
+                              'peak_va',
+                              'peak_cd',
+                              'gage_ht',
+                              'gage_ht_cd',
+                              'year_last_pk',
+                              'ag_dt',
+                              'ag_tm',
+                              'ag_gage_ht',
+                              'ag_gage_ht_cd'
+                              ]
+
+        expected_row_2 = ['USGS',
+                          '01542500',
+                          np.nan,
+                          '19600',
+                          np.nan,
+                          '8.79',
+                          '2.0',
+                          np.nan,
+                          '1941-03-05',
+                          np.nan,
+                          '8.95',
+                          '1.0'
+                          ]
+
+        mock_get.return_value = expected
+        actual = hf.peaks(sample_site_id)
+
+        self.assertIs(type(actual), pd.core.frame.DataFrame,
+                      msg="field_meas did not return a dataframe as expected.")
+        actual_rows, actual_cols = actual.shape
+        self.assertEqual(actual_rows, expected_rows,
+                         msg="field_meas returned the wrong number of rows.")
+        self.assertEqual(actual_cols, expected_cols,
+                         msg="field_meas returned the wrong number of columns.")
+        actual_col_names = actual.columns.values.tolist()
+        self.assertListEqual(actual_col_names, expected_col_names,
+                             msg="field_meas returned the wrong set of column names.")
+        actual_row_2 = actual.iloc[2].values.tolist()
+        # This works better when comparing nans, sometimes.
+        np.testing.assert_array_equal(actual_row_2, expected_row_2,
+                                      err_msg="field_meas returned the wrong values for row 2.")
+
+
+#**************
+
 
     @mock.patch('requests.get')
     def test_rating_curve_requests_proper_url(self, mock_get):

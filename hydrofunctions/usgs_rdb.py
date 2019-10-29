@@ -56,6 +56,9 @@ def read_rdb(text):
                            dtype={'site_no': str}
                            )
 
+    #outputDF.outputDF.filter(like='_cd').columns
+    #TODO: code columns ('*._cd') should be interpreted as strings.
+
     return outputDF, columns, dtype, header
 
 
@@ -122,6 +125,34 @@ def field_meas(site):
 
     return outputDF
 
+
+def peaks(site):
+    """Return a series of annual peak discharges.
+
+    Args:
+        site(str):
+            The gauge ID number for the site.
+
+    Returns:
+        a dataframe with the annual peak discharge series.
+
+        a header of meta-data supplied by the USGS with the data series.
+    """
+    url = 'https://nwis.waterdata.usgs.gov/nwis/peak?site_no=' + site + \
+    '&agency_cd=USGS&format=rdb'
+
+    headers = {'Accept-encoding': 'gzip'}
+
+    print("Retrieving annual peak discharges for site #", site, " from ", url)
+    response = requests.get(url, headers=headers)
+
+    outputDF, columns, dtype, header = read_rdb(response.text)
+    outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
+
+    outputDF.set_index('peak_dt', inplace=True)
+
+
+    return outputDF
 
 def rating_curve(site):
     """Return the most recent USGS expanded-shift-adjusted rating curve for a given stream gage into a dataframe.

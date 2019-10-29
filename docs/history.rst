@@ -73,6 +73,7 @@ History
     - different frequencies raise a warning when resampled
 * Missing data can now be replaced with interpolated values.
 * hf.rating_curve(site) returns the current rating curve for a site.
+* hf.peaks(site) returns the annual peak discharges for a site.
 * hf.field_meas(site) returns the field data and notes used to create a rating curve.
 * NWIS.df() allows you to create dataframes with subsets of the data, such as only 'discharge' or 'stage' or data quality 'flags'.
 * New and improved REPR: lists stations & parameters in dataset.

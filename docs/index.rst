@@ -16,6 +16,7 @@ Welcome to the Hydrofunctions |version| Users Guide!
    notebooks/Selecting_Sites
    notebooks/viewing
    graphing
+   notebooks/Peak_Discharge
    contributing
    authors
    history
