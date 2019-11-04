@@ -63,22 +63,27 @@ History
 0.1.8 (in development)
 ----------------------
 
-* Dropped Python 3.4 support.
-* parameterCd now accepts multiple parameters in request.
-* If parameterCd is not specified, then all available parameters will be requested (default).
+* NWIS has a simpler interface and improved functionality:
+    - No need to use .get_data; data is fetched automatically.
+    - NWIS.df() creates dataframes using only the parts you want
+        - .df('discharge') returns a dataframe with only discharge data
+        - .df('01585200') returns all of the data for just this site
+        - .df('flags') returns a dataframe with the qualifier flags.
+    - New and improved REPR: lists stations, parameters, and frequency for a dataset.
+* Saving data to a file:
+    - the 'file' parameter for NWIS allows you to save your data locally
+    - If the file doesn't exist, NWIS requests the data and creates the file
+    - Uses the parquet format for faster load times and smaller file sizes
 * Improved parsing of data from NWIS:
     - missing observations are noted
     - duplicates found & removed
     - unsorted data found & cleaned.
     - different frequencies raise a warning when resampled
 * Missing data can now be replaced with interpolated values.
+* parameterCd now accepts multiple parameters in request.
+* If parameterCd is not specified, then all available parameters will be requested (default).
 * hf.rating_curve(site) returns the current rating curve for a site.
 * hf.field_meas(site) returns the field data and notes used to create a rating curve.
-* NWIS.df() allows you to create dataframes with subsets of the data, such as only 'discharge' or 'stage' or data quality 'flags'.
-* New and improved REPR: lists stations & parameters in dataset.
-* Saving data to a file:
-    - the 'file' parameter for NWIS allows you to save your data locally
-    - If the file doesn't exist, NWIS requests the data and creates the file
-    - Uses the parquet format for faster load times and smaller file sizes
+* Dropped Python 3.4 support.
 
 
