@@ -617,6 +617,73 @@ class TestNWISmethods(unittest.TestCase):
         with self.assertRaises(ValueError, msg="An eight-digit input that doesn't match a station id should raise a ValueError."):
             actual_df = test_nwis.df('12345678')
 
+    def test_NWIS_df_two_sites_returns_two_site_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+        actual_df = test_nwis.df('01541200', '01541303')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('01541200', '01541303') should return data columns for two sites.")
+
+    def test_NWIS_df_two_params_returns_two_param_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000',
+                         'USGS:01541200:00065:00000',
+                         'USGS:01541303:00060:00000',
+                         'USGS:01541303:00065:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+        actual_df = test_nwis.df('00060', '00065')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('00060', '00065') should return data columns for two parameters.")
+
+    def test_NWIS_df_flag_and_data_returns_flags_and_data_columns(self):
+        cols = ['USGS:01541200:00060:00000_qualifiers',
+                'USGS:01541200:00060:00000',
+                'USGS:01541200:00065:00000_qualifiers',
+                'USGS:01541200:00065:00000',
+                'USGS:01541303:00060:00000_qualifiers',
+                'USGS:01541303:00060:00000',
+                'USGS:01541303:00065:00000_qualifiers',
+                'USGS:01541303:00065:00000']
+
+        expected_cols = ['USGS:01541200:00060:00000_qualifiers',
+                         'USGS:01541200:00060:00000']
+
+        data = [['test', 5, 'test', 5, 'test', 5, 'test', 5],
+                ['test', 5, 'test', 5, 'test', 5, 'test', 5]]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = TestingNWIS(dataframe=test_df)
+        actual_df = test_nwis.df('flags', 'data', 'discharge', '01541200')
+        actual_cols = actual_df.columns.tolist()
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('flags', 'data', 'discharge', '01541200') should return data columns and flags for one site and one parameter.")
+
     def test_NWIS_repr_returns_str(self):
         mock_meta = {'USGS:01541200': {
              'siteName': 'WB Susquehanna River near Curwensville, PA',
