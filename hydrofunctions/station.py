@@ -187,49 +187,57 @@ class NWIS(Station):
 
             int any eight to twelve digit number: any matching stations will be returned.
         """
-        data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data ends in a number.
+        all_cols = self._dataframe.columns != ""  #all true
+        no_cols = ~all_cols  #all false
+        data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data columns end in a number.
         flag_cols = self._dataframe.columns.str.contains('_qualifiers')
         Q_cols = self._dataframe.columns.str.contains(':00060:') # This includes data & flags
         stage_cols = self._dataframe.columns.str.contains(':00065:')
-        all_cols = self._dataframe.columns != ""
         param_re = r'^\d{5}$' # parameters are a five-digit number.
         station_re = r'\d{8,12}$' # station ID's are between 8 and 12 digits.
 
-        sites = all_cols
-        params = all_cols
-        meta = all_cols
-        if len(args) == 0:
-            pass
+        sites = no_cols
+        params = no_cols
+        meta = no_cols
+        if len(args) == 0:  #If no args are given, return every column.
+            sites = all_cols
+            params = all_cols
+            meta = all_cols
         else:
-            meta = data_cols
             for item in args:
                 if item == 'all':
                     sites = all_cols
                     params = all_cols
                     meta = all_cols
-                    break
+                    break # If one param is 'all', ignore the other params and deliver everything.
                 elif item == 'discharge':
-                    params = Q_cols
+                    params = Q_cols | params
                 elif item == 'q':
-                    params = Q_cols
+                    params = Q_cols | params
                 elif item == 'stage':
-                    params = stage_cols
+                    params = stage_cols | params
                 elif item == 'data':
-                    meta = data_cols
+                    meta = data_cols | meta
                 elif item == 'flags':
-                    meta = flag_cols
+                    meta = flag_cols | meta
                 elif re.search(param_re, item):
                     param_arg = ":" + item + ":"
-                    params = self._dataframe.columns.str.contains(param_arg)
+                    params = self._dataframe.columns.str.contains(param_arg) | params
                     if not params.any():
                         raise ValueError("The parameter '{param}' is not contained in this dataset.".format(param=item))
                 elif re.search(station_re, item):
                     station_arg = ":" + item + ":"
-                    sites = self._dataframe.columns.str.contains(station_arg)
+                    sites = self._dataframe.columns.str.contains(station_arg) | sites
                     if not sites.any():
                         raise ValueError("The site '{site}' is not in this dataset.".format(site=item))
                 else:
                     raise ValueError("The argument '{item}' is not recognized.".format(item=item))
+        if not sites.any(): #If no sites are selected, select them all.
+            sites = all_cols
+        if not params.any(): #If no params are selected, select them all.
+            params = all_cols
+        if not meta.any(): #If neither flags nor data are selected, select data columns.
+            meta = data_cols
         selection = sites & params & meta
         requested_df = self._dataframe.loc[:, selection]
         return requested_df
