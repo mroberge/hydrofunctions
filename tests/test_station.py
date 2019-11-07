@@ -290,7 +290,7 @@ class TestNWISmethods(unittest.TestCase):
         test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('all')
         actual_cols = actual_df.columns.tolist()
-        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('all') should return all of the columns.")
 
     def test_NWIS_df_data_returns_data_columns(self):
         cols = ['USGS:01541200:00060:00000_qualifiers',
@@ -334,7 +334,7 @@ class TestNWISmethods(unittest.TestCase):
         test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('discharge')
         actual_cols = actual_df.columns.tolist()
-        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('discharge') should return all of the discharge data columns.")
 
     def test_NWIS_df_q_returns_discharge_data_columns(self):
         cols = ['USGS:01541200:00060:00000_qualifiers',
@@ -355,7 +355,7 @@ class TestNWISmethods(unittest.TestCase):
         test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('q')
         actual_cols = actual_df.columns.tolist()
-        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('q') should return all of the discharge data columns.")
 
     def test_NWIS_df_stage_returns_stage_data_columns(self):
         cols = ['USGS:01541200:00060:00000_qualifiers',
@@ -376,7 +376,7 @@ class TestNWISmethods(unittest.TestCase):
         test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('stage')
         actual_cols = actual_df.columns.tolist()
-        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('stage') should return all of the stage data columns.")
 
     def test_NWIS_df_flags_returns_qualifiers_columns(self):
         cols = ['USGS:01541200:00060:00000_qualifiers',
@@ -399,7 +399,7 @@ class TestNWISmethods(unittest.TestCase):
         test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('flags')
         actual_cols = actual_df.columns.tolist()
-        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('flags') should return all of the qualifier columns.")
 
     def test_NWIS_df_flags_q_returns_discharge_qualifiers_columns(self):
         cols = ['USGS:01541200:00060:00000_qualifiers',
@@ -420,7 +420,7 @@ class TestNWISmethods(unittest.TestCase):
         test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('flags', 'q')
         actual_cols = actual_df.columns.tolist()
-        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('flags', 'q') should return all of the discharge qualifier columns.")
 
     def test_NWIS_df_stage_flags_returns_stage_qualifiers_columns(self):
         cols = ['USGS:01541200:00060:00000_qualifiers',
@@ -441,7 +441,7 @@ class TestNWISmethods(unittest.TestCase):
         test_nwis = TestingNWIS(dataframe=test_df)
         actual_df = test_nwis.df('stage', 'flags')
         actual_cols = actual_df.columns.tolist()
-        self.assertListEqual(actual_cols, expected_cols, "NWIS.df() should return all of the columns.")
+        self.assertListEqual(actual_cols, expected_cols, "NWIS.df('stage', 'flags') should return all of the stage qualifier columns.")
 
     def test_NWIS_df_crazy_input_raises_ValueError(self):
         cols = ['USGS:01541200:00060:00000_qualifiers',
@@ -458,7 +458,7 @@ class TestNWISmethods(unittest.TestCase):
         test_df = pd.DataFrame(data=data, columns=cols)
         test_nwis = TestingNWIS(dataframe=test_df)
 
-        with self.assertRaises(ValueError, msg="crazy input should cause NWIS.df() to raise a ValueError."):
+        with self.assertRaises(ValueError, msg="unmatched args such as NWIS.df('crazy', 'input') should cause NWIS.df() to raise a ValueError."):
             actual_df = test_nwis.df('discharge', 'crazy', 'input')
 
     def test_NWIS_df_5digits_returns_param_data_columns(self):
