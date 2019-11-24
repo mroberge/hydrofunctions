@@ -36,7 +36,9 @@ Example Applications
    notebooks/Draw_Map_Demo
    notebooks/Graphing
    notebooks/Hydrofunctions_Tutorial
-
+   notebooks/Hydrofunctions_two_stream_comparison
+   notebooks/Hydrofunctions_nested_watersheds
+   notebooks/Hydrofunctions_Comparing_Stream_Environments
 
 
 
