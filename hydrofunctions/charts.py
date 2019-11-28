@@ -90,8 +90,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
         ax.legend(loc=legend_loc)
     if title:
         ax.title.set_text(title)
-    # A pyplot bug causes a valueError value if the xlabel is set.
-    #ax.set_xlabel('Probability of Exceedence')
+    ax.set_xlabel('Probability of Exceedence')
     ax.xaxis.set_minor_formatter(NullFormatter())
     return fig, ax
 
