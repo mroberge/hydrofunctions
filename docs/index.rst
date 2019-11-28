@@ -33,12 +33,12 @@ Example Applications
    :caption: Example Applications
 
    notebooks/Comparing_Urban_and_Rural_Streams
+   notebooks/Hydrofunctions_nested_watersheds
+   notebooks/Hydrofunctions_Comparing_Stream_Environments
    notebooks/Draw_Map_Demo
    notebooks/Graphing
    notebooks/Hydrofunctions_Tutorial
-   notebooks/Hydrofunctions_two_stream_comparison
-   notebooks/Hydrofunctions_nested_watersheds
-   notebooks/Hydrofunctions_Comparing_Stream_Environments
+
 
 
 
