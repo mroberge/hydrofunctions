@@ -125,5 +125,10 @@ class TestCyclePlot(unittest.TestCase):
         self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
         self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
 
+    def test_charts_cycleplot_cycle_nonsense_raises_ValueError(self):
+        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        with self.assertRaises(ValueError):
+            actual_fig, actual_ax = charts.cycleplot(expected_df, 'nonsense')
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

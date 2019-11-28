@@ -213,9 +213,7 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
     else:
-        print("The cycle label '", cycle, "' is not recognized as an option. Using cycle='diurnal' instead.")
-        cycleby = Qseries.index.hour
-        x_label = ' (hour of the day)'
+        raise ValueError("The cycle label '", cycle, "' is not recognized as an option.")
 
     if compare is None:
         # Don't make a comparison plot.
