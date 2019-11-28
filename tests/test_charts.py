@@ -97,15 +97,21 @@ class TestCyclePlot(unittest.TestCase):
     def test_charts_cycleplot_parts(self):
         expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
 
-        actual_fig, actual_ax = charts.cycleplot(expected_df)
+        actual_fig, actual_ax = charts.cycleplot(expected_df, legend_loc='center', title='test title')
 
         actual_xscale = actual_ax[0].xaxis.get_scale()
         actual_yscale = actual_ax[0].yaxis.get_scale()
         actual_ylabel = actual_ax[0].yaxis.get_label_text()
+        actual_legend = actual_ax[0].get_legend()
+        actual_legend_loc = actual_legend._loc
+        actual_title = actual_fig._suptitle.get_text() # unofficial title accessor! A little wonky.
 
         self.assertEqual(actual_xscale, 'linear')
         self.assertEqual(actual_yscale, 'linear')
         self.assertEqual(actual_ylabel, 'Discharge (ft³/s)')
+        self.assertTrue(actual_legend)
+        self.assertEqual(actual_legend_loc, 10) # '10' is internal code for legend(loc = 'center')
+        self.assertEqual(actual_title, 'test title')
 
     def test_charts_cycleplot_compare_month(self):
         expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)

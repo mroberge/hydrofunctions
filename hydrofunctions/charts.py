@@ -96,7 +96,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     return fig, ax
 
 
-def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)'):
+def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)', legend=True, legend_loc='best', title=''):
     """Creates a chart to illustrate annual and diurnal cycles.
 
     This chart will use the pandas groupby method to plot the mean and median
@@ -150,6 +150,19 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
             one for day (6am to 6pm).
 
         y_label (str): The label for the y axis.
+
+        legend (bool, default: True): whether the legend should be plotted.
+
+        legend_loc (str, default: 'best'): the location of the legend.
+
+            * 'best': Automatically choose the option below with the least overlap.
+            * 'upper left', 'upper right', 'lower left', 'lower right': place the legend at the corresponding corner of the axes/figure.
+            * 'upper center', 'lower center', 'center left', 'center right': place the legend at the center of the corresponding edge of the axes/figure.
+            * 'center': place the legend at the center of the axes/figure.
+            * The location can also be a 2-tuple giving the coordinates of the lower-left corner of the legend in axes coordinates.
+
+        title (str, default: ''): text to use as a figure title. If no text
+            is provided, no title will be created (default).
 
     Returns:
         fig (matplotlib.figure.Figure):
@@ -282,7 +295,8 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         # axs[i].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H'))
 
     # Set the legend on either the ax or fig.
-    axs[0].legend(loc='best', fancybox=True, framealpha=0.5)
+    if legend:
+        axs[0].legend(loc=legend_loc, fancybox=True, framealpha=0.5)
     # fig.legend(loc='upper center', shadow=True, frameon=True, fancybox=True, framealpha=0.5)
 
     # Get the yaxis limits, set bottom to zero.
@@ -291,5 +305,7 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
     axs[0].set_ylabel(y_label)
     axs[0].set_xlabel('Time' + x_label)
     plt.tight_layout()
+    if title:
+        fig.suptitle(title)
 
     return fig, axs
