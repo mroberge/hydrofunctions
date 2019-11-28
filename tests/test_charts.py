@@ -34,18 +34,28 @@ class TestFlowDuration(unittest.TestCase):
         actual_yscale = actual_ax.yaxis.get_scale()
         actual_ylabel = actual_ax.yaxis.get_label_text()
         actual_marker = actual_ax.get_lines()[0].get_marker()
+        actual_legend = actual_ax.get_legend()
+        actual_legend_loc = actual_legend._loc
+        actual_title = actual_ax.get_title()
 
         self.assertEqual(actual_xscale, 'logit')
         self.assertEqual(actual_yscale, 'log')
         self.assertEqual(actual_ylabel, 'Stream Discharge (m³/s)')
         self.assertEqual(actual_marker, '.')
+        self.assertTrue(actual_legend)
+        self.assertEqual(actual_legend_loc, 0) # '0' is internal code for 'best'.
+        self.assertEqual(actual_title, '')
 
     def test_charts_flowduration_accepts_params(self):
         expected = pd.DataFrame(data=dummy)
         params = {'xscale': 'linear',
                   'yscale': 'linear',
                   'ylabel': 'test value',
-                  'symbol': ','}
+                  'symbol': ',',
+                  'legend': False,
+                  'legend_loc': 'center',
+                  'title': 'Test Title',
+                  }
 
         actual_fig, actual_ax = charts.flow_duration(expected, **params)
 
@@ -53,12 +63,19 @@ class TestFlowDuration(unittest.TestCase):
         actual_yscale = actual_ax.yaxis.get_scale()
         actual_ylabel = actual_ax.yaxis.get_label_text()
         actual_marker = actual_ax.get_lines()[0].get_marker()
+        actual_legend = actual_ax.get_legend()
+        # There is no legend in this test, so there is no legend property.
+        #actual_legend_loc = actual_legend._loc
+        actual_title = actual_ax.get_title()
 
         self.assertEqual(actual_xscale, 'linear')
         self.assertEqual(actual_yscale, 'linear')
         self.assertEqual(actual_ylabel, 'test value')
         self.assertEqual(actual_marker, ',')
-
+        self.assertIsNone(actual_legend)
+        # There is no legend, so there is no legend location property.
+        #self.assertEqual(actual_legend_loc, 10) # 'center' is equal to 10.
+        self.assertEqual(actual_title, 'Test Title')
 
 class TestCyclePlot(unittest.TestCase):
 

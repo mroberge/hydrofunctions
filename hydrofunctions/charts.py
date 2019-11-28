@@ -20,7 +20,7 @@ from matplotlib.ticker import NullFormatter
 import numpy as np
 
 
-def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.', legend=True):
+def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.', legend=True, legend_loc='best', title=''):
     """Creates a flow duration chart from a dataframe of discharges.
 
     Args:
@@ -56,6 +56,17 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
 
         legend (bool, default: True): whether the legend should be plotted.
 
+        legend_loc (str, default: 'best'): the location of the legend.
+
+            * 'best': Automatically choose the option below with the least overlap.
+            * 'upper left', 'upper right', 'lower left', 'lower right': place the legend at the corresponding corner of the axes/figure.
+            * 'upper center', 'lower center', 'center left', 'center right': place the legend at the center of the corresponding edge of the axes/figure.
+            * 'center': place the legend at the center of the axes/figure.
+            * The location can also be a 2-tuple giving the coordinates of the lower-left corner of the legend in axes coordinates.
+
+        title (str, default: ''): text to use as a figure title. If no text
+            is provided, no title will be created (default).
+
     Returns:
         fig (matplotlib.figure.Figure):
             a matplotlib figure. This will plot immediately in a Jupyter
@@ -76,7 +87,9 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     ax.set_yscale(yscale)
     ax.set_ylabel(ylabel)
     if legend:
-        ax.legend()
+        ax.legend(loc=legend_loc)
+    if title:
+        ax.title.set_text(title)
     # A pyplot bug causes a valueError value if the xlabel is set.
     #ax.set_xlabel('Probability of Exceedence')
     ax.xaxis.set_minor_formatter(NullFormatter())
