@@ -103,4 +103,8 @@ from .usgs_rdb import (
 
 from .nldi import (
         get_nldi,
+        get_station,
+        get_DS_stations,
+        get_basin,
+        get_DS_channels,
         )

@@ -126,3 +126,91 @@ def get_nldi(path='', parameters=None):
                                "data for a site that does not exist.")
 
     return response
+
+def get_station(site):
+    """Return information about a USGS stream gauging station.
+
+    Args:
+        site (str): usually an 8-digit number representing a gauging station id.
+
+    Raises:
+        HydroNoDataError: if the provided site number is not recognized.
+
+    Returns:
+        a Requests response object. This response object may be checked for the
+            json using request.text, or the json may be translated into a
+            python dict using the .json() method.
+
+    Example:
+
+    """
+    path = 'nwissite/USGS-' + site
+    return get_nldi(path)
+
+def get_DS_stations(site, distance_km=''):
+    """Return a list of USGS stream gauging stations downstream from a station.
+
+    Args:
+        site (str): usually an 8-digit number representing a gauging station id.
+        distance_km (int or str): the maximum distance given in kilometers to
+            check for stations.
+
+    Raises:
+        HydroNoDataError: if the provided site number is not recognized.
+
+    Returns:
+        a Requests response object. This response object may be checked for the
+            json using request.text, or the json may be translated into a
+            python dict using the .json() method.
+
+    Example:
+
+    """
+    if distance_km:
+        distance_km = '?distance=' + str(distance_km)
+    path = 'nwissite/USGS-' + site + '/navigate/DM/nwissite' + distance_km
+    return get_nldi(path)
+
+def get_basin(site):
+    """Return information about a USGS stream gauging station.
+
+    Args:
+        site (str): usually an 8-digit number representing a gauging station id.
+
+    Raises:
+        HydroNoDataError: if the provided site number is not recognized.
+
+    Returns:
+        a Requests response object. This response object may be checked for the
+            json using request.text, or the json may be translated into a
+            python dict using the .json() method.
+
+    Example:
+
+    """
+    path = 'nwissite/USGS-' + site + '/basin'
+    return get_nldi(path)
+
+def get_DS_channels(site, distance_km=''):
+    """Return information about a USGS stream gauging station.
+
+    Args:
+        site (str): usually an 8-digit number representing a gauging station id.
+        distance_km (int or str): the maximum distance given in kilometers to
+            check for stations.
+
+    Raises:
+        HydroNoDataError: if the provided site number is not recognized.
+
+    Returns:
+        a Requests response object. This response object may be checked for the
+            json using request.text, or the json may be translated into a
+            python dict using the .json() method.
+
+    Example:
+
+    """
+    if distance_km:
+        distance_km = '?distance=' + str(distance_km)
+    path = 'nwissite/USGS-' + site + '/navigate/DM' + distance_km
+    return get_nldi(path)
