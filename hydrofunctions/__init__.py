@@ -100,3 +100,7 @@ from .usgs_rdb import (
         rating_curve,
         peaks,
         )
+
+from .nldi import (
+        get_nldi,
+        )
