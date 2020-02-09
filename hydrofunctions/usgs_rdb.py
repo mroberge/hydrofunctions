@@ -151,11 +151,12 @@ def peaks(site):
 
     outputDF.set_index('peak_dt', inplace=True)
 
-
     return outputDF
 
+
 def rating_curve(site):
-    """Return the most recent USGS expanded-shift-adjusted rating curve for a given stream gage into a dataframe.
+    """Return the most recent USGS expanded-shift-adjusted rating curve for a
+    given stream gage into a dataframe.
 
     Args:
         site (str):
