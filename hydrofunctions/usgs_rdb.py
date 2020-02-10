@@ -3,7 +3,6 @@
 
 """
 import pandas as pd
-import numpy as np
 import requests
 from io import StringIO
 from IPython.core import display
@@ -188,11 +187,11 @@ def rating_curve(site):
     return outputDF
 
 
-def stats(sites, statReportType='daily', **kwargs):
+def stats(site, statReportType='daily', **kwargs):
     """Return statistics from the USGS Stats Service as a dataframe.
 
     Args:
-        sites (str):
+        site (str):
             The gage ID number for the site, or a series of gage IDs separated
             by commas, like this: '01546500,01548000'.
 
@@ -245,7 +244,7 @@ def stats(sites, statReportType='daily', **kwargs):
     params = {
             'statReportType': statReportType,
             'statType': 'all',
-            'sites': sites,
+            'sites': site,
             'format': 'rdb',
             }
     # Overwrite defaults if they are specified.
