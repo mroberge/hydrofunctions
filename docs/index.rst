@@ -17,6 +17,7 @@ Welcome to the Hydrofunctions |version| Users Guide!
    notebooks/viewing
    graphing
    notebooks/Peak_Discharge
+   notebooks/USGS_Statistics_Service
    contributing
    authors
    history
