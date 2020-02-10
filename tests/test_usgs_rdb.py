@@ -237,3 +237,28 @@ class TestReadRdb(unittest.TestCase):
         actual_row_2 = actual.loc[2].values.tolist()
         self.assertListEqual(actual_row_2, expected_row_2,
                               msg="rating_curve returned the wrong values for row 2.")
+
+    @mock.patch('requests.get')
+    def test_stats_requests_proper_url(self, mock_get):
+        sample_site_id = '095695826546'
+        expected_url = "https://waterservices.usgs.gov/nwis/stat/"
+
+        expected = fakeResponse()
+        expected.text = rating_fixture
+        expected.status_code = 200
+        expected_headers = {'Accept-encoding': 'gzip'}
+        expected_params = {
+            'statReportType': 'daily',
+            'statType': 'all',
+            'sites': sample_site_id,
+            'format': 'rdb',
+            'parameterCd': '00060'
+            }
+
+        mock_get.return_value = expected
+        actual = hf.stats(sample_site_id, 'daily', parameterCd='00060')
+        mock_get.assert_called_once_with(
+                expected_url,
+                headers=expected_headers,
+                params=expected_params)
+
