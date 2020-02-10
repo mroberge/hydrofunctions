@@ -53,7 +53,7 @@ def read_rdb(text):
                            comment='#',
                            header=None,
                            names=columns,
-                           dtype={'site_no': str}
+                           dtype={'site_no': str, 'parameter_cd': str},
                            )
 
     #outputDF.outputDF.filter(like='_cd').columns
