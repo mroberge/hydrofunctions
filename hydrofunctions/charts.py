@@ -256,23 +256,42 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
 #            Q6=
 #            Q8=
 #            )
-    # Why is this necessary? Pandas 0.25.0 won't let you do this:
-    # grouped.quantile()  anymore. !?!
-    def q2(x):
-        return x.quantile(.2)
-    def q4(x):
-        return x.quantile(.4)
-    def q6(x):
-        return x.quantile(.6)
-    def q8(x):
-        return x.quantile(.8)
 
+#    # Method 3 =================================
+#
+#    Q2 = np.percentile(grouped, .2)
+#    Q4 = np.percentile(grouped, .4)
+#    Q5 = np.percentile(grouped, .5)
+#    Q6 = np.percentile(grouped, .6)
+#    Q8 = np.percentile(grouped, .8)
+#
+#    # Method 2====================================================
+#    # Why is this necessary? Pandas 0.25.0 won't let you do this:
+#    # grouped.quantile()  anymore. !?!
+#    def q2(x):
+#        return x.quantile(.2)
+#    def q4(x):
+#        return x.quantile(.4)
+#    def q6(x):
+#        return x.quantile(.6)
+#    def q8(x):
+#        return x.quantile(.8)
+#
+#    mean = grouped.mean()
+#    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
+#    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
+#    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
+#    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
+#    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
+#
+    # Method 1 =================================
     mean = grouped.mean()
-    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
-    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
-    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
-    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
-    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
+    Q2 = grouped.quantile(.2)
+    Q4 = grouped.quantile(0.4)
+    Q5 = grouped.quantile(.5)
+    Q6 = grouped.quantile(.6)
+    Q8 = grouped.quantile(.8)
+    # ==============================
 
     Nplots = len(compare_list)
     fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
