@@ -31,7 +31,7 @@ requirements = [
     'pandas',
     'requests',
     'IPython',
-    'pyarrow',
+    'pyarrow==0.12.1',
     'ipykernel',
     'nbsphinx',
 ]
