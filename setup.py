@@ -28,7 +28,7 @@ readme = relative2absolute(readme, relative, stem)
 requirements = [
     'matplotlib',
     'numpy',
-    'pandas',
+    'pandas==0.25.3',
     'requests',
     'IPython',
     'pyarrow==0.12.1',
