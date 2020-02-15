@@ -211,10 +211,10 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
         cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
-    elif cycle == 'diurnal-smallest':
+#    elif cycle == 'diurnal-smallest':
         # Uses the smallest unit available in the time index to show 24-hour diurnal cycles.
-        cycleby = Qseries.index.time
-        x_label = ' (time of day)'
+#        cycleby = Qseries.index.time
+#        x_label = ' (time of day)'
     elif cycle == 'diurnal-hour':
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
         cycleby = Qseries.index.hour
