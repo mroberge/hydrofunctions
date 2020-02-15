@@ -90,13 +90,18 @@ class TestCyclePlot(unittest.TestCase):
 
     def test_charts_cycleplot_exists(self):
         expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+        # Select first numeric column
+        expected_df = expected_df.loc[:,expected_df.select_dtypes(include='number').columns[0]]
         actual_fig, actual_ax = charts.cycleplot(expected_df)
         self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
         self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
 
+    def test_charts_cycleplot_raises_for_non_series(self):
+        with self.assertRaises(ValueError):
+            actual_fig, actual_ax = charts.cycleplot('nonsense')
+
     def test_charts_cycleplot_parts(self):
         expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
-
         actual_fig, actual_ax = charts.cycleplot(expected_df, legend_loc='center', title='test title')
 
         actual_xscale = actual_ax[0].xaxis.get_scale()
@@ -149,11 +154,11 @@ class TestCyclePlot(unittest.TestCase):
         self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
         self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
 
-    def test_charts_cycleplot_cycle_diurnalsmallest(self):
-        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
-        actual_fig, actual_ax = charts.cycleplot(expected_df, 'diurnal-smallest')
-        self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
-        self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
+#    def test_charts_cycleplot_cycle_diurnalsmallest(self):
+#        expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)
+#        actual_fig, actual_ax = charts.cycleplot(expected_df, 'diurnal-smallest')
+#        self.assertIsInstance(actual_fig, matplotlib.figure.Figure)
+#        self.assertIsInstance(actual_ax[0], matplotlib.axes.Axes)
 
     def test_charts_cycleplot_cycle_diurnalhour(self):
         expected_df, expected_dict = hf.extract_nwis_df(test_json, interpolate=False)

@@ -18,6 +18,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 import numpy as np
+import pandas as pd
 
 
 def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.', legend=True, legend_loc='best', title=''):
@@ -176,8 +177,15 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
         Jake VanderPlas. 2016. Python Data Science Handbook. O'Reilly Media, Inc.'
     """
-
-
+#is Qseries a series of discharge? if not, raise error.
+    # or, select the discharge...
+    if isinstance(Qseries, pd.DataFrame):
+        #Qseries = Qseries.iloc[:,0] # Select first column; but this is not always numeric.
+        # Select the first of the numeric columns.
+        Qseries = Qseries.loc[:,Qseries.select_dtypes(include='number').columns[0]]
+    if not isinstance(Qseries, pd.Series):
+        raise ValueError(f'Cycleplot only accepts a single series of data as '
+                         ' an argument. You supplied a {type(Qseries).}')
 
     if cycle == 'annual':
         # aggregate into 365 bins to show annual cycles. Same as annual-date
@@ -203,10 +211,10 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
         cycleby = Qseries.index.hour
         x_label = ' (hour of the day)'
-    elif cycle == 'diurnal-smallest':
+#    elif cycle == 'diurnal-smallest':
         # Uses the smallest unit available in the time index to show 24-hour diurnal cycles.
-        cycleby = Qseries.index.time
-        x_label = ' (time of day)'
+#        cycleby = Qseries.index.time
+#        x_label = ' (time of day)'
     elif cycle == 'diurnal-hour':
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
         cycleby = Qseries.index.hour
@@ -256,23 +264,42 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
 #            Q6=
 #            Q8=
 #            )
-    # Why is this necessary? Pandas 0.25.0 won't let you do this:
-    # grouped.quantile()  anymore. !?!
-    def q2(x):
-        return x.quantile(.2)
-    def q4(x):
-        return x.quantile(.4)
-    def q6(x):
-        return x.quantile(.6)
-    def q8(x):
-        return x.quantile(.8)
 
+#    # Method 3 =================================
+#
+#    Q2 = np.percentile(grouped, .2)
+#    Q4 = np.percentile(grouped, .4)
+#    Q5 = np.percentile(grouped, .5)
+#    Q6 = np.percentile(grouped, .6)
+#    Q8 = np.percentile(grouped, .8)
+#
+#    # Method 2====================================================
+#    # Why is this necessary? Pandas 0.25.0 won't let you do this:
+#    # grouped.quantile()  anymore. !?!
+#    def q2(x):
+#        return x.quantile(.2)
+#    def q4(x):
+#        return x.quantile(.4)
+#    def q6(x):
+#        return x.quantile(.6)
+#    def q8(x):
+#        return x.quantile(.8)
+#
+#    mean = grouped.mean()
+#    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
+#    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
+#    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
+#    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
+#    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
+#
+    # Method 1 =================================
     mean = grouped.mean()
-    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
-    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
-    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
-    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
-    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
+    Q2 = grouped.quantile(.2)
+    Q4 = grouped.quantile(.4)
+    Q5 = grouped.quantile(.5)
+    Q6 = grouped.quantile(.6)
+    Q8 = grouped.quantile(.8)
+    # ==============================
 
     Nplots = len(compare_list)
     fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
