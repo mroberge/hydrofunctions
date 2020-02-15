@@ -18,6 +18,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 import numpy as np
+import pandas as pd
 
 
 def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.', legend=True, legend_loc='best', title=''):
@@ -176,8 +177,15 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
         Jake VanderPlas. 2016. Python Data Science Handbook. O'Reilly Media, Inc.'
     """
-
-
+#is Qseries a series of discharge? if not, raise error.
+    # or, select the discharge...
+    if isinstance(Qseries, pd.DataFrame):
+        #Qseries = Qseries.iloc[:,0] # Select first column; but this is not always numeric.
+        # Select the first of the numeric columns.
+        Qseries = Qseries.loc[:,Qseries.select_dtypes(include='number').columns[0]]
+    if not isinstance(Qseries, pd.Series):
+        raise ValueError(f'Cycleplot only accepts a single series of data as '
+                         ' an argument. You supplied a {type(Qseries).}')
 
     if cycle == 'annual':
         # aggregate into 365 bins to show annual cycles. Same as annual-date
@@ -287,7 +295,7 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
     # Method 1 =================================
     mean = grouped.mean()
     Q2 = grouped.quantile(.2)
-    Q4 = grouped.quantile(0.4)
+    Q4 = grouped.quantile(.4)
     Q5 = grouped.quantile(.5)
     Q6 = grouped.quantile(.6)
     Q8 = grouped.quantile(.8)
