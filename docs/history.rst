@@ -82,9 +82,10 @@ History
 * Missing data can now be replaced with interpolated values.
 * parameterCd now accepts multiple parameters in request.
 * If parameterCd is not specified, then all available parameters will be requested (default).
-* hf.rating_curve(site) returns the current rating curve for a site.
-* hf.peaks(site) returns the annual peak discharges for a site.
-* hf.field_meas(site) returns the field data and notes used to create a rating curve.
+* hf.rating_curve(site) retrieves the current rating curve for a USGS site.
+* hf.peaks(site) retrieves the annual peak discharges for a USGS site.
+* hf.field_meas(site) retrieves the field data and notes used by the USGS to create a rating curve.
+* hf.stats(site, statReportType) retrieves Annual, Monthly, or Daily reports from the USGS.
 * Dropped Python 3.4 support.
 
 

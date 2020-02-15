@@ -5,6 +5,7 @@ python:
   - 3.7
   - 3.8
 
+
 install:
   # Travis has a pre-installed copy of numpy in their Python 3.5 & 3.6
   # environments, but not for Python 3.4. The 3.5 & 3.6 builds took 70 seconds,

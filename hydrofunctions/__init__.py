@@ -99,4 +99,5 @@ from .usgs_rdb import (
         field_meas,
         rating_curve,
         peaks,
+        stats,
         )

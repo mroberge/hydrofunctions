@@ -3,9 +3,9 @@
 
 """
 import pandas as pd
-import numpy as np
 import requests
 from io import StringIO
+from IPython.core import display
 
 
 def read_rdb(text):
@@ -53,7 +53,7 @@ def read_rdb(text):
                            comment='#',
                            header=None,
                            names=columns,
-                           dtype={'site_no': str}
+                           dtype={'site_no': str, 'parameter_cd': str},
                            )
 
     #outputDF.outputDF.filter(like='_cd').columns
@@ -151,11 +151,12 @@ def peaks(site):
 
     outputDF.set_index('peak_dt', inplace=True)
 
-
     return outputDF
 
+
 def rating_curve(site):
-    """Return the most recent USGS expanded-shift-adjusted rating curve for a given stream gage into a dataframe.
+    """Return the most recent USGS expanded-shift-adjusted rating curve for a
+    given stream gage into a dataframe.
 
     Args:
         site (str):
@@ -183,4 +184,84 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
+    return outputDF
+
+
+def stats(site, statReportType='daily', **kwargs):
+    """Return statistics from the USGS Stats Service as a dataframe.
+
+    Args:
+        site (str):
+            The gage ID number for the site, or a series of gage IDs separated
+            by commas, like this: '01546500,01548000'.
+
+        statReportType ('annual'|'monthly'|'daily'):
+            There are three different types of report that you can request.
+            - 'daily' (default): this
+
+    Returns:
+        a dataframe with the requested statistics.
+
+    Raises:
+        HTTPError when a non-200 http status code is returned.
+
+    Note:
+        This function is based on the USGS statistics service, described here:
+        https://waterservices.usgs.gov/rest/Statistics-Service.html
+
+        The USGS Statistics Service allows you to specify a wide array of
+        additional parameters in your request. You can provide these parameters
+        as keyword arguments, like in this example:
+        `hf.stats('01452500', parameterCD='00060')`  This will only request
+        statistics for discharge, which is specified with the '00060'
+        parameter code.
+
+        Additional useful parameters include:
+            - `parameterCD='00060,00065'` Limit the request for statistics to
+            only one parameter or to a list of parameters. The default behavior
+            is to provide statistics for every parameter that has been measured
+            at this site. In this example, statistics for discharge ('00060')
+            and stage ('00065') are requested.
+            - `statYearType='water'` Calculate annual statistics based on the
+            water year, which runs from October 1st to September 31st. This
+            parameter is only for use with annual reports. If not specified,
+            the default behavior will use calendar years for reporting.
+            - `missingData='on'`  Calculate statistics even when there are some
+            missing values. If not specified, the default behavior is to drop
+            years that have fewer than 365 values from annual reports, and to
+            drop months that have fewer than 30 values in monthly reports. The
+            number of values used to calculate a statistic is reported in the
+            'count_nu' column.
+            - You can read about other useful parameters here: https://waterservices.usgs.gov/rest/Statistics-Service.html#statistical_Controls
+    """
+    url = "https://waterservices.usgs.gov/nwis/stat/"
+
+    headers = {
+            'Accept-encoding': 'gzip',
+            }
+    # Set default values for parameters that are too obscure to put into call
+    # signature.
+    params = {
+            'statReportType': statReportType,
+            'statType': 'all',
+            'sites': site,
+            'format': 'rdb',
+            }
+    # Overwrite defaults if they are specified.
+    params.update(kwargs)
+
+    response = requests.get(url, headers=headers, params=params)
+    print(f"Retrieving {params['statReportType']} statistics for site #{params['sites']} from {response.url}")
+
+    if response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+        return response
+    else:
+        outputDF, columns, dtype, header = read_rdb(response.text)
     return outputDF
