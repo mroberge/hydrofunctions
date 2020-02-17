@@ -22,7 +22,7 @@ provide Jupyter with a directive to automatically display all charts from
 matplotlib::
 
     >>> import hydrofunctions as hf
-    >>> `%matplotlib inline`
+    >>> %matplotlib inline
 
 Second Step: Preparing our data for plotting
 --------------------------------------------
@@ -103,7 +103,7 @@ data. <https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-ti
 This graph is designed for discovering cyclical components within a series. For
 example, there is a 'diurnal' cycle in the amount of sunlight that you get over
 the course of a day.  Because the amount of sunlight also changes with the
-seasons, you can also see an 'annual' cycle in sunlight and in temperatures
+seasons, you can see an 'annual' cycle in sunlight and in temperatures
 over the course of a year.
 
 .. code-block:: ipython
@@ -114,11 +114,16 @@ over the course of a year.
 .. image:: _static/cycleplot_annual-week.png
         :alt: a cycleplot of the annual cycle grouped by week.
 
-In this graph, several years of data for a site along the Shenandoah River were
+In the graph above, several years of data for a site along the Shenandoah River were
 grouped into 52 different bins, each corresponding to a different week of the
 year. Then the mean and median values in each bin were connected with lines.
 A light gray band was drawn around the 0.2 to 0.8 quantile range and a dark
 gray band was drawn around the 0.4 to 0.6 quantile range.
+
+.. code-block:: ipython
+
+    In  [7]: hf.cycleplot(temp_data, 'diurnal', compare='month', y_label="Water Temperature (°C)")
+    Out [7]:
 
 .. image:: _static/cycleplot_diurnal_compare-month.jpg
         :alt: a cycleplot of a diurnal cycle, comparing months.

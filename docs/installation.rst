@@ -31,8 +31,8 @@ scientific software like Jupyter notebooks and the Spyder IDE all into one
 pre-configured, pre-compiled download, along with a huge number of scientific
 libraries (packages). It also includes a tool, `conda`, which manages and
 updates these packages. Conda also creates 'environments', which are isolated
-installations of Python, just in case your ArcGIS software uses a different
-version of Python than some other piece of software.
+installations of Python, just in case your ArcGIS software (for example) uses a
+different version of Python than some other piece of software.
 
 If you want to install Jupyter notebooks at the same time that you install
 hydrofunctions, or if you want to use Python 2 and 3 at the same time, or if
@@ -84,7 +84,7 @@ available::
 3. The active environment will have a star next to it. To activate a
 different environment, such as the one you just created, type::
 
-        > activate name_of_environment
+        > conda activate name_of_environment
 
 
 4. To test that you have the correct version

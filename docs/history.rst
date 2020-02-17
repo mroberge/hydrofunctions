@@ -86,6 +86,6 @@ History
 * hf.peaks(site) retrieves the annual peak discharges for a USGS site.
 * hf.field_meas(site) retrieves the field data and notes used by the USGS to create a rating curve.
 * hf.stats(site, statReportType) retrieves Annual, Monthly, or Daily reports from the USGS.
-* Dropped Python 3.4 support.
+* Dropped Python 3.4 & 3.5 support.
 
 

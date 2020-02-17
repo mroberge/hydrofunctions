@@ -1,5 +1,5 @@
-hydrofunctions package
-======================
+hydrofunctions |version| package
+================================
 
 
 Package contents
@@ -54,6 +54,14 @@ hydrofunctions.typing module
 ----------------------------
 
 .. automodule:: hydrofunctions.typing
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+hydrofunctions.usgs_rdb module
+------------------------------
+
+.. automodule:: hydrofunctions.usgs_rdb
     :members:
     :undoc-members:
     :show-inheritance:

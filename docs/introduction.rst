@@ -34,7 +34,7 @@ Features
    * cycle plots to illustrate annual or diurnal cycles
    * Interactive map for finding stream gauge ID numbers
 * Plotting and manipulation through Pandas dataframes
-* Retrieve rating curves and field notes for sites
+* Retrieve peak discharges, rating curves, field notes, and statistics for sites
 * Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
 
 
@@ -122,7 +122,7 @@ methods associated with Pandas, including .plot(), .describe(), and .info() !
 
 Plot the data using Pandas and mathplotlib::
 
-    >>> herring.df().plot()
+    >>> herring.df('q').plot()
 
 .. image:: _static/HerringHydrograph.png
         :alt: a stream hydrograph for Herring Run
