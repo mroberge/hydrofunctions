@@ -217,22 +217,27 @@ def stats(site, statReportType='daily', **kwargs):
         parameter code.
 
         Additional useful parameters include:
+
             - `parameterCD='00060,00065'` Limit the request for statistics to
-            only one parameter or to a list of parameters. The default behavior
-            is to provide statistics for every parameter that has been measured
-            at this site. In this example, statistics for discharge ('00060')
-            and stage ('00065') are requested.
+              only one parameter or to a list of parameters. The default behavior
+              is to provide statistics for every parameter that has been measured
+              at this site. In this example, statistics for discharge ('00060')
+              and stage ('00065') are requested.
+
             - `statYearType='water'` Calculate annual statistics based on the
-            water year, which runs from October 1st to September 31st. This
-            parameter is only for use with annual reports. If not specified,
-            the default behavior will use calendar years for reporting.
+              water year, which runs from October 1st to September 31st. This
+              parameter is only for use with annual reports. If not specified,
+              the default behavior will use calendar years for reporting.
+
             - `missingData='on'`  Calculate statistics even when there are some
-            missing values. If not specified, the default behavior is to drop
-            years that have fewer than 365 values from annual reports, and to
-            drop months that have fewer than 30 values in monthly reports. The
-            number of values used to calculate a statistic is reported in the
-            'count_nu' column.
+              missing values. If not specified, the default behavior is to drop
+              years that have fewer than 365 values from annual reports, and to
+              drop months that have fewer than 30 values in monthly reports. The
+              number of values used to calculate a statistic is reported in the
+              'count_nu' column.
+
             - You can read about other useful parameters here: https://waterservices.usgs.gov/rest/Statistics-Service.html#statistical_Controls
+
     """
     url = "https://waterservices.usgs.gov/nwis/stat/"
 
