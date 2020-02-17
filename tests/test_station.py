@@ -9,7 +9,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import unittest
 from unittest import mock
 import pandas as pd
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 import numpy as np
 
 from hydrofunctions import station, typing
