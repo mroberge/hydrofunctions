@@ -1,5 +1,10 @@
 """
+hydrofunctions.usgs_rdb
+~~~~~~~~~~~~~~~~~~~~~~~
 
+This module is for working with the various USGS dataservices that use the rdb
+text format. These include the statistics service, the field measurements
+service, the rating curve service, and the peak discharge service.
 """
 import pandas as pd
 import requests
