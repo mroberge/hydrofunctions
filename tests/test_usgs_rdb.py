@@ -18,8 +18,6 @@ import numpy as np
 import hydrofunctions as hf
 from .fixtures import (
         fakeResponse,
-        )
-from .fixtures_usgs_rdb import (
         field_fixture,
         rating_fixture,
         peaks_fixture,

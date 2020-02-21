@@ -11,7 +11,7 @@ import pandas as pd
 
 from hydrofunctions import charts
 import hydrofunctions as hf
-from .test_data import JSON15min2day as test_json
+from .fixtures import JSON15min2day as test_json
 
 dummy = {'col1': [1, 2, 3, 38, 23, 1, 19],
          'col2': [3, 4, 45, 23, 2, 4, 76]}

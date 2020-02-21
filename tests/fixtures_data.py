@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-test_data.py
+fixtures_data.py
 
 This file contains sample output from successful requests by hf.NWIS.json()
 In otherwords, these are not the raw JSON returned by the NWIS, but rather

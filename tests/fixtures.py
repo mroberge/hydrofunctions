@@ -4,7 +4,7 @@ fixtures.py
 
 This module is for storing all of the relavant fixtures used in testing.
 """
-from .test_data import (
+from .fixtures_data import (
         JSON15min2day,
         two_sites_two_params_iv,
         nothing_avail,
@@ -25,6 +25,12 @@ from .fixtures_tzfail import (
 
 from .fixtures_recent_only import (
         recent_only
+        )
+
+from .fixtures_usgs_rdb import (
+        field_fixture,
+        rating_fixture,
+        peaks_fixture,
         )
 
 class fakeResponse(object):
