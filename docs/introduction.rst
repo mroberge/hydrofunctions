@@ -38,7 +38,7 @@ Features
 * Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
 
 
-Quick Start
+Quick start
 ===========
 
 Hydrofunctions can be used from the Python command line, but its graphing

@@ -60,11 +60,11 @@ History
 * Improved the build scripts for TravisCI (mcr)
 * Updated to support Python 3.7
 
-0.1.8 (in development)
+0.2.0 (in development)
 ----------------------
 
 * NWIS has a simpler interface and improved functionality:
-    - No need to use .get_data; data is fetched automatically.
+    - No need to use .get_data(); data is fetched automatically.
     - NWIS.df() creates dataframes using only the parts you want
         - .df('discharge') returns a dataframe with only discharge data
         - .df('01585200') returns all of the data for just this site
@@ -75,17 +75,16 @@ History
     - If the file doesn't exist, NWIS requests the data and creates the file
     - Uses the parquet format for faster load times and smaller file sizes
 * Improved parsing of data from NWIS:
-    - missing observations are noted
+    - missing observations are noted & can be replaced with interpolated values
     - duplicates found & removed
     - unsorted data found & cleaned.
     - different frequencies raise a warning when resampled
-* Missing data can now be replaced with interpolated values.
 * parameterCd now accepts multiple parameters in request.
 * If parameterCd is not specified, then all available parameters will be requested (default).
 * hf.rating_curve(site) retrieves the current rating curve for a USGS site.
 * hf.peaks(site) retrieves the annual peak discharges for a USGS site.
 * hf.field_meas(site) retrieves the field data and notes used by the USGS to create a rating curve.
 * hf.stats(site, statReportType) retrieves Annual, Monthly, or Daily reports from the USGS.
-* Dropped Python 3.4 & 3.5 support.
+* Dropped Python 3.4 & 3.5 support, added 3.8.
 
 

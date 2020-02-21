@@ -11,10 +11,10 @@ Hydrofunctions includes it during installation.
 
 .. _matplotlib: https://matplotlib.org/
 
-Getting Ready
+Getting ready
 =============
 
-First Step: Automatic Display of Charts in Jupyter
+First step: Automatic display of charts in Jupyter
 --------------------------------------------------
 
 The first step for creating a graph is to import Hydrofunctions, and then
@@ -24,7 +24,7 @@ matplotlib::
     >>> import hydrofunctions as hf
     >>> %matplotlib inline
 
-Second Step: Preparing our data for plotting
+Second step: Preparing our data for plotting
 --------------------------------------------
 
 The next step is to request some data from the NWIS for us to plot::
@@ -38,7 +38,7 @@ Next, we create a dataframe called 'data' from our request::
 The rest of the examples will assume that we have a dataframe called data.
 
 
-Flow Duration Chart
+Flow duration chart
 ===================
 
 Flow duration charts are cumulative frequency charts that are used in hydrology
@@ -93,7 +93,7 @@ graph. In the second chart, the linear x axis uses the same distance between
 in the center of the x axis, at the 50% mark, since it has a 50% chance of
 happening on any given day.
 
-Cycle Plot
+Cycle plot
 ==========
 
 The cycle plot was inspired by an example created by Jake VanderPlas in his
@@ -147,20 +147,20 @@ Plotting a hydrograph:
 
     In  [1]: data.plot()
 
-Plotting a Histogram:
+Plotting a histogram:
 
 .. code-block:: ipython
 
     In  [1]: data.hist()
     In  [1]: data.plot.hist()
 
-Box Plot:
+Box plot:
 
 .. code-block:: ipython
 
     In  [1]: data.plot.box()
 
-Kernel Density Plot:
+Kernel density plot:
 
 .. code-block:: ipython
 

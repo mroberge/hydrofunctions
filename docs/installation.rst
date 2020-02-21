@@ -5,7 +5,7 @@ Installation
 ============
 
 
-Easy Install
+Easy install
 ============
 
 To install HydroFunctions, run this command in your terminal:
@@ -23,7 +23,7 @@ you through the process.
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
 
-Why Use Anaconda?
+Why use Anaconda?
 =================
 
 Anaconda is a free, open-source Python distribution. It bundles important
@@ -47,7 +47,7 @@ command line. Anaconda will install a shortcut called 'Anaconda Prompt'. Use
 this.
 
 
-Easy Anaconda Install
+Easy Anaconda install
 =====================
 
 *For people who are using Anaconda because they just wanted an easy way to get
@@ -63,7 +63,7 @@ all of the software installed at once.*
 That's it!
 
 
-Safe Anaconda Install for People Having Problems
+Safe Anaconda install for people having problems
 ================================================
 
 *For people who like to write their own code, or have Python already installed
@@ -99,7 +99,7 @@ pip tool::
         > pip install hydrofunctions
 
 
-Getting Started Once Everything Is Installed
+Getting started once everything is installed
 ============================================
 
 You now have several ways to run Python. If you installed Anaconda, then you
@@ -120,7 +120,7 @@ lines says this::
          > import hydrofunctions as hf
 
 
-Installations for People Wanting to Contribute Code to Hydrofunctions
+Installations for people wanting to contribute code to Hydrofunctions
 =====================================================================
 
 You are a brave and special person indeed. WE SALUTE YOU:

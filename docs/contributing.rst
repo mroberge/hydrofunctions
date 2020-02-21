@@ -12,7 +12,7 @@ You can contribute in many ways:
 
 .. _`issues page`: https://github.com/mroberge/hydrofunctions/issues
 
-Submitting a Pull Request
+Submitting a pull request
 -------------------------
 
 - Start by forking mroberge/hydrofunctions into your own GitHub account.
@@ -29,7 +29,7 @@ Submitting a Pull Request
       - all your subsequent commits get added to the pull request automatically.
 - Don't apologize for mistakes or not being done yet!
 
-Standards for the Ideal Pull Request
+Standards for the ideal pull request
 ------------------------------------
 *"We are all in the gutter, but some of us are looking at the stars."* -Oscar Wilde
 
@@ -43,7 +43,7 @@ Standards for the Ideal Pull Request
 - Your code should work for Python 3.5, 3.6, & 3.7. This gets tested in `TravisCI <https://travis-ci.org/mroberge/hydrofunctions/pull_requests>`_
 
 
-A Detailed Guide to Contributing New Code
+A detailed guide to contributing new code
 -----------------------------------------
 
 .. highlight:: doscon
@@ -155,7 +155,7 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
 
 
 
-The Non-Conda Version
+The non-conda version
 ---------------------
 **Caveat emptor:** I haven't tested the following steps recently!
 
