@@ -129,7 +129,7 @@ def field_meas(site):
 
     outputDF.set_index('measurement_dt', inplace=True)
 
-    return outputDF
+    return outputDF, header
 
 
 def peaks(site):
