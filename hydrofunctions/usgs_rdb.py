@@ -23,7 +23,8 @@ def read_rdb(text):
     Returns:
         outputDF (pandas.DataFrame):
             A dataframe containing the information in the rdb file. 'site_no'
-            is interpreted as a string, but every other number is interpreted
+            and parameter_cd
+            are interpreted as a string, but every other number is interpreted
             as a float or int; missing values as an np.nan; strings for
             everything else.
         columns (list of strings):
