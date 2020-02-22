@@ -37,12 +37,12 @@ def read_rdb(text):
             Every commented line at the top of the rdb file is marked with a
             '#' symbol. Each of these lines is stored in this output.
     """
-    header = []
+    headerlines = []
     datalines = []
     count = 0
     for line in text.splitlines():
         if line[0] == '#':
-            header.append(line)
+            headerlines.append(line)
         elif count == 0:
             columns = line.split()
             count = count + 1
@@ -52,6 +52,7 @@ def read_rdb(text):
         else:
             datalines.append(line)
     data = "\n".join(datalines)
+    header = "\n".join(headerlines)
 
     outputDF = pd.read_csv(StringIO(data),
                            sep='\t',
