@@ -12,7 +12,7 @@ from io import StringIO
 from IPython.core import display
 
 
-class rdb(object):
+class RDB:
     """A class for holding the information from USGS rdb files.
 
     Args:
@@ -169,7 +169,7 @@ def field_meas(site):
 
     outputDF.set_index('measurement_dt', inplace=True)
 
-    output_obj = rdb(outputDF, columns, dtype, header)
+    output_obj = RDB(outputDF, columns, dtype, header)
 
     return output_obj
 
@@ -207,7 +207,7 @@ def peaks(site):
 
     outputDF.set_index('peak_dt', inplace=True)
 
-    output_obj = rdb(outputDF, columns, dtype, header)
+    output_obj = RDB(outputDF, columns, dtype, header)
     return output_obj
 
 
@@ -251,7 +251,7 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
-    output_obj = rdb(outputDF, columns, dtype, header)
+    output_obj = RDB(outputDF, columns, dtype, header)
     return output_obj
 
 
@@ -338,5 +338,5 @@ def stats(site, statReportType='daily', **kwargs):
     else:
         outputDF, columns, dtype, header = read_rdb(response.text)
 
-    output_obj = rdb(outputDF, columns, dtype, header)
+    output_obj = RDB(outputDF, columns, dtype, header)
     return output_obj
