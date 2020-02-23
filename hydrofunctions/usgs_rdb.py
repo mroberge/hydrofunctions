@@ -145,7 +145,15 @@ def field_meas(site):
 
     print("Retrieving field measurements for site #", site, " from ", url)
     response = requests.get(url, headers=headers)
-
+    if response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+        return response
     # It may be desireable to keep the original na_values, like 'unkn' for many
     # of the columns. However, it is still a good idea to replace for the gage
     # depth and discharge values, since these variables get used in plotting
@@ -183,7 +191,15 @@ def peaks(site):
 
     print("Retrieving annual peak discharges for site #", site, " from ", url)
     response = requests.get(url, headers=headers)
-
+    if response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+        return response
     outputDF, columns, dtype, header = read_rdb(response.text)
     outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
 
@@ -211,6 +227,16 @@ def rating_curve(site):
     headers = {'Accept-encoding': 'gzip'}
     print("Retrieving rating curve for site #", site, " from ", url)
     response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+        return response
     outputDF, columns, dtype, header = read_rdb(response.text)
     outputDF.columns = ['stage', 'shift', 'discharge', 'stor']
     """
