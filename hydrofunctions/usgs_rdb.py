@@ -169,7 +169,9 @@ def field_meas(site):
 
     outputDF.set_index('measurement_dt', inplace=True)
 
-    return outputDF, header
+    output_obj = rdb(outputDF, columns, dtype, header)
+
+    return output_obj
 
 
 def peaks(site):
@@ -205,7 +207,8 @@ def peaks(site):
 
     outputDF.set_index('peak_dt', inplace=True)
 
-    return outputDF
+    output_obj = rdb(outputDF, columns, dtype, header)
+    return output_obj
 
 
 def rating_curve(site):
@@ -248,7 +251,8 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
-    return outputDF
+    output_obj = rdb(outputDF, columns, dtype, header)
+    return output_obj
 
 
 def stats(site, statReportType='daily', **kwargs):
@@ -333,4 +337,6 @@ def stats(site, statReportType='daily', **kwargs):
         return response
     else:
         outputDF, columns, dtype, header = read_rdb(response.text)
-    return outputDF
+
+    output_obj = rdb(outputDF, columns, dtype, header)
+    return output_obj
