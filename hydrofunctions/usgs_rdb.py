@@ -12,6 +12,38 @@ from io import StringIO
 from IPython.core import display
 
 
+class rdb(object):
+    """A class for holding the information from USGS rdb files.
+
+    Args:
+        df (pandas dataframe):
+            This is a dataframe made from the rdb file.
+        columns (str):
+            A string from the rdb file that lists the column names.
+        dtype (str):
+            A string from the rdb file that gives the data type and length of
+            each column.
+        header (str):
+            A multi-line string from the header of the rdb file. The header
+            often contain important metadata and user warnings.
+
+    Note:
+        The args to create this object are supplied by hf.read_rdb().
+    """
+    def __init__(self, df, columns, dtype, header):
+        self.df = df
+        self.columns = columns
+        self.dtype = dtype
+        self.header = header
+
+    def __repr__(self):
+        return self.header + '\n' + repr(self.df)
+
+    def _repr_html_(self):
+        html_header = '<p>' + self.header.replace('\n', '<br />') + '</p>'
+        return html_header + self.df._repr_html_()
+
+
 def read_rdb(text):
     """Read strings that are in rdb format.
 
