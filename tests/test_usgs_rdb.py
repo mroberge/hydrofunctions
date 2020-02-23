@@ -42,14 +42,14 @@ class TestReadRdb(unittest.TestCase):
         - Are dates recorded as dates?
         - Are dates recorded with the proper time zone and converted to UTC?
     """
-    def test_read_rdb_returns_4_tuple_of_DF_list_list_list(self):
+    def test_read_rdb_returns_4_tuple_of_DF_list_list_str(self):
         test_data = field_fixture
         outputDF, columns, dtype, header = hf.read_rdb(test_data)
         self.assertIs(type(outputDF), pd.core.frame.DataFrame,
                       msg="Read_dbf did not return a dataframe.")
         self.assertIs(type(columns), list, msg="read_dbf did not return columns as a list.")
         self.assertIs(type(dtype), list, msg="read_dbf did not return dtype as a list.")
-        self.assertIs(type(header), list, msg="read_dbf did not return header as a list.")
+        self.assertIs(type(header), str, msg="read_dbf did not return header as a string.")
 
     @mock.patch('requests.get')
     def test_field_meas_request_proper_url(self, mock_get):
@@ -97,17 +97,17 @@ class TestReadRdb(unittest.TestCase):
         mock_get.return_value = expected
         actual = hf.field_meas(sample_site_id)
 
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        self.assertIs(type(actual.df), pd.core.frame.DataFrame,
                       msg="field_meas did not return a dataframe as expected.")
-        actual_rows, actual_cols = actual.shape
+        actual_rows, actual_cols = actual.df.shape
         self.assertEqual(actual_rows, expected_rows,
                          msg="field_meas returned the wrong number of rows.")
         self.assertEqual(actual_cols, expected_cols,
                          msg="field_meas returned the wrong number of columns.")
-        actual_col_names = actual.columns.values.tolist()
+        actual_col_names = actual.df.columns.values.tolist()
         self.assertListEqual(actual_col_names, expected_col_names,
                              msg="field_meas returned the wrong set of column names.")
-        actual_row_2 = actual.iloc[2].values.tolist()
+        actual_row_2 = actual.df.iloc[2].values.tolist()
         # This works better when comparing nans, sometimes.
         np.testing.assert_array_equal(actual_row_2, expected_row_2,
                                       err_msg="field_meas returned the wrong values for row 2.")
@@ -171,17 +171,17 @@ class TestReadRdb(unittest.TestCase):
         mock_get.return_value = expected
         actual = hf.peaks(sample_site_id)
 
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        self.assertIs(type(actual.df), pd.core.frame.DataFrame,
                       msg="field_meas did not return a dataframe as expected.")
-        actual_rows, actual_cols = actual.shape
+        actual_rows, actual_cols = actual.df.shape
         self.assertEqual(actual_rows, expected_rows,
                          msg="field_meas returned the wrong number of rows.")
         self.assertEqual(actual_cols, expected_cols,
                          msg="field_meas returned the wrong number of columns.")
-        actual_col_names = actual.columns.values.tolist()
+        actual_col_names = actual.df.columns.values.tolist()
         self.assertListEqual(actual_col_names, expected_col_names,
                              msg="field_meas returned the wrong set of column names.")
-        actual_row_2 = actual.iloc[2].values.tolist()
+        actual_row_2 = actual.df.iloc[2].values.tolist()
         # This works better when comparing nans, sometimes.
         np.testing.assert_array_equal(actual_row_2, expected_row_2,
                                       err_msg="field_meas returned the wrong values for row 2.")
@@ -222,17 +222,17 @@ class TestReadRdb(unittest.TestCase):
         mock_get.return_value = expected
         actual = hf.rating_curve(sample_site_id)
 
-        self.assertIs(type(actual), pd.core.frame.DataFrame,
+        self.assertIs(type(actual.df), pd.core.frame.DataFrame,
                       msg="rating_curve did not return a dataframe as expected.")
-        actual_rows, actual_cols = actual.shape
+        actual_rows, actual_cols = actual.df.shape
         self.assertEqual(actual_rows, expected_rows,
                          msg="rating_curve returned the wrong number of rows.")
         self.assertEqual(actual_cols, expected_cols,
                          msg="rating_curve returned the wrong number of columns.")
-        actual_col_names = actual.columns.values.tolist()
+        actual_col_names = actual.df.columns.values.tolist()
         self.assertListEqual(actual_col_names, expected_col_names,
                              msg="rating_curve returned the wrong set of column names.")
-        actual_row_2 = actual.loc[2].values.tolist()
+        actual_row_2 = actual.df.loc[2].values.tolist()
         self.assertListEqual(actual_row_2, expected_row_2,
                               msg="rating_curve returned the wrong values for row 2.")
 
