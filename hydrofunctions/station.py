@@ -137,7 +137,7 @@ class NWIS(Station):
                     print('Saving data to', file)
             except json.JSONDecodeError as err:
                 self.ok = False
-                print('JSON decoding error. URL: {self.response.url}')
+                print(f'JSON decoding error. URL: {self.response.url}')
                 raise json.JSONDecodeError(err)
 
         # Can I get rid of this, and only keep metadata in the meta dict?
