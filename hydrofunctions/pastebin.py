@@ -412,3 +412,16 @@ def butterworth(Qdata, order=2, low_wave_days=10, high_wave_days=1, sample_rate_
     result = {'data': df, 'label': datalabel}
 
     return result
+
+
+import gzip, json
+def write_json_zip(write_file, data):
+    with gzip.open(write_file, 'wt', encoding="ascii") as zipfile:
+       json.dump(data, zipfile)
+
+def read_json_zip(read_file):
+    with gzip.open(read_file, '', encoding='utf-8') as zipfile:
+        data = json.read(zipfile)
+        self.json = data
+        self._dataframe, self.meta = hf.extract_nwis_df(data)
+        return data
