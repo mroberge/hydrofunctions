@@ -161,7 +161,14 @@ class NWIS(Station):
         "End:   " + str(self.end)
         return repr_string
 
-    def df(self, *args):
+    def __getitem__(self, subscript):
+        return self._select(subscript)
+
+    @property
+    def df(self):
+        return self._dataframe
+
+    def _select(self, *args):
         """
         Return a subset of columns from the dataframe.
 
