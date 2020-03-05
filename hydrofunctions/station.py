@@ -11,6 +11,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import re
 
 import json
+import warnings
 from . import typing
 from . import hydrofunctions as hf
 from . import helpers
@@ -241,7 +242,10 @@ class NWIS(Station):
         return requested_df
 
     def get_data(self):
-        print("It is no longer necessary to call .get_data() to request data.")
+        warnings.warn(
+            "It is no longer necessary to call .get_data() to request data.",
+            FutureWarning
+        )
         return self
 
     def save(self, file):
