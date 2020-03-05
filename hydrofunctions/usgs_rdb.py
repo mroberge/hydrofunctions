@@ -12,6 +12,38 @@ from io import StringIO
 from IPython.core import display
 
 
+class RDB:
+    """A class for holding the information from USGS rdb files.
+
+    Args:
+        df (pandas dataframe):
+            This is a dataframe made from the rdb file.
+        columns (str):
+            A string from the rdb file that lists the column names.
+        dtype (str):
+            A string from the rdb file that gives the data type and length of
+            each column.
+        header (str):
+            A multi-line string from the header of the rdb file. The header
+            often contain important metadata and user warnings.
+
+    Note:
+        The args to create this object are supplied by hf.read_rdb().
+    """
+    def __init__(self, df, columns, dtype, header):
+        self.df = df
+        self.columns = columns
+        self.dtype = dtype
+        self.header = header
+
+    def __repr__(self):
+        return self.header + '\n' + repr(self.df)
+
+    def _repr_html_(self):
+        html_header = '<p>' + self.header.replace('\n', '<br />') + '</p>'
+        return html_header + self.df._repr_html_()
+
+
 def read_rdb(text):
     """Read strings that are in rdb format.
 
@@ -23,7 +55,8 @@ def read_rdb(text):
     Returns:
         outputDF (pandas.DataFrame):
             A dataframe containing the information in the rdb file. 'site_no'
-            is interpreted as a string, but every other number is interpreted
+            and parameter_cd
+            are interpreted as a string, but every other number is interpreted
             as a float or int; missing values as an np.nan; strings for
             everything else.
         columns (list of strings):
@@ -36,12 +69,12 @@ def read_rdb(text):
             Every commented line at the top of the rdb file is marked with a
             '#' symbol. Each of these lines is stored in this output.
     """
-    header = []
+    headerlines = []
     datalines = []
     count = 0
     for line in text.splitlines():
         if line[0] == '#':
-            header.append(line)
+            headerlines.append(line)
         elif count == 0:
             columns = line.split()
             count = count + 1
@@ -51,6 +84,7 @@ def read_rdb(text):
         else:
             datalines.append(line)
     data = "\n".join(datalines)
+    header = "\n".join(headerlines)
 
     outputDF = pd.read_csv(StringIO(data),
                            sep='\t',
@@ -111,7 +145,15 @@ def field_meas(site):
 
     print("Retrieving field measurements for site #", site, " from ", url)
     response = requests.get(url, headers=headers)
-
+    if response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+        return response
     # It may be desireable to keep the original na_values, like 'unkn' for many
     # of the columns. However, it is still a good idea to replace for the gage
     # depth and discharge values, since these variables get used in plotting
@@ -127,7 +169,9 @@ def field_meas(site):
 
     outputDF.set_index('measurement_dt', inplace=True)
 
-    return outputDF
+    output_obj = RDB(outputDF, columns, dtype, header)
+
+    return output_obj
 
 
 def peaks(site):
@@ -149,13 +193,22 @@ def peaks(site):
 
     print("Retrieving annual peak discharges for site #", site, " from ", url)
     response = requests.get(url, headers=headers)
-
+    if response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+        return response
     outputDF, columns, dtype, header = read_rdb(response.text)
     outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
 
     outputDF.set_index('peak_dt', inplace=True)
 
-    return outputDF
+    output_obj = RDB(outputDF, columns, dtype, header)
+    return output_obj
 
 
 def rating_curve(site):
@@ -177,6 +230,16 @@ def rating_curve(site):
     headers = {'Accept-encoding': 'gzip'}
     print("Retrieving rating curve for site #", site, " from ", url)
     response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+        return response
     outputDF, columns, dtype, header = read_rdb(response.text)
     outputDF.columns = ['stage', 'shift', 'discharge', 'stor']
     """
@@ -188,7 +251,8 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
-    return outputDF
+    output_obj = RDB(outputDF, columns, dtype, header)
+    return output_obj
 
 
 def stats(site, statReportType='daily', **kwargs):
@@ -273,4 +337,6 @@ def stats(site, statReportType='daily', **kwargs):
         return response
     else:
         outputDF, columns, dtype, header = read_rdb(response.text)
-    return outputDF
+
+    output_obj = RDB(outputDF, columns, dtype, header)
+    return output_obj
