@@ -162,13 +162,15 @@ class NWIS(Station):
         return repr_string
 
     def __getitem__(self, subscript):
-        return self._select(subscript)
+        selectors = [x.strip() for x in subscript.split(',')]
+        print(f'subscript: {subscript}\n selectors: {selectors}')
+        return self._select(selectors)
 
     @property
     def df(self):
         return self._dataframe
 
-    def _select(self, *args):
+    def _select(self, args):
         """
         Return a subset of columns from the dataframe.
 
@@ -192,6 +194,7 @@ class NWIS(Station):
 
             int any eight to twelve digit number: any matching stations will be returned.
         """
+        print(f'args: {args}')
         all_cols = self._dataframe.columns != ""  #all true
         no_cols = ~all_cols  #all false
         data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data columns end in a number.
@@ -210,6 +213,7 @@ class NWIS(Station):
             meta = all_cols
         else:
             for item in args:
+                print(f'item: {item}')
                 if item == 'all':
                     sites = all_cols
                     params = all_cols
