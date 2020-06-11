@@ -30,6 +30,7 @@ class hydroRDB:
 
     Note:
         The args to create this object are supplied by hf.read_rdb().
+        You can read more about the RDB format here: https://pubs.usgs.gov/of/2003/ofr03123/6.4rdb_format.pdf
     """
     def __init__(self, header, table, columns, dtypes):
         self.header = header
