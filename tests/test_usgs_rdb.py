@@ -276,3 +276,18 @@ class Test_hydroRDB(unittest.TestCase):
         dtypes = 'expected dtypes'
         actual = hf.hydroRDB(header, table, columns, dtypes)
         self.assertIsInstance(actual, hf.hydroRDB)
+
+    def test_hydroRDB_has_properties_and_methods(self):
+        header = 'expected header'
+        table = 'expected table'
+        columns = 'expected columns'
+        dtypes = 'expected dtypes'
+        actual = hf.hydroRDB(header, table, columns, dtypes)
+        self.assertIsInstance(actual, hf.hydroRDB)
+        self.assertEqual(actual.header, header)
+        self.assertEqual(actual.table, table)
+        self.assertEqual(actual.columns, columns)
+        self.assertEqual(actual.dtypes, dtypes)
+        actual_repr = actual.__repr__()
+        # actual._repr_html_() requires that table is a dataframe with a _repr_html_()
+        #actual_html_repr = actual._repr_html_()
