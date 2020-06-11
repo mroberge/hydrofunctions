@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 from io import StringIO
 from IPython.core import display
+from . import exceptions
 
 
 class hydroRDB:
@@ -48,6 +49,48 @@ class hydroRDB:
         html_header = '<p>' + self.header.replace('\n', '<br />') + '</p>'
         #return html_header + self.df._repr_html_()
         return f'<p>hydroRDB(header=<br />{html_header}</p><p>table=<br />{self.table._repr_html_()})</p>'
+
+
+def get_usgs_RDB_service(url, headers=None, params=None):
+    """Request data from a USGS dataservice and handle errors
+
+    Args:
+        url (str):
+            a string used by Requests as the base URL.
+        header (dict):
+            a dict of parameters used to request the data.
+        params (dict):
+            a dict of parameters used to modify the url of a REST service.
+    Returns:
+        A Requests response object.
+    Raises:
+        This function will raise an exception for any non-200 status code, and
+        in cases where the USGS service returns anything that is not obviously
+        an RDB file. If an exception is raised, then an attempt will be made to
+        display the error page which the USGS sometimes sends back to the user.
+    """
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        if response.text[0] == '#':
+            # Everything seems good; they apparently returned an RDB file.
+            return response
+        else:
+            print('The USGS has apparently not returned any data. Check the'
+                  'following message for further information for why this'
+                  'request failed.')
+            display.display(display.HTML(response.text))
+            raise exceptions.HydroNoDataError('The USGS did not return a valid RDB file'
+                                   'for this request.')
+    else:
+        #response.status_code != 200:
+        print(f'The USGS has returned an error code of {response.status_code}')
+        # If this code is being run inside of a notebook, the USGS error page
+        # will be displayed.
+        display.display(display.HTML(response.text))
+        # raise an exception
+        response.raise_for_status()
+        # or raise some sort of Hydro http error based on requests http error.
+    return response
 
 
 def read_rdb(text):
@@ -150,16 +193,7 @@ def field_meas(site):
     headers = {'Accept-encoding': 'gzip'}
 
     print("Retrieving field measurements for site #", site, " from ", url)
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        print(f'The USGS has returned an error code of {response.status_code}')
-        # If this code is being run inside of a notebook, the USGS error page
-        # will be displayed.
-        display.display(display.HTML(response.text))
-        # raise an exception
-        response.raise_for_status()
-        # or raise some sort of Hydro http error based on requests http error.
-        return response
+    response = get_usgs_RDB_service(url, headers)
     # It may be desireable to keep the original na_values, like 'unkn' for many
     # of the columns. However, it is still a good idea to replace for the gage
     # depth and discharge values, since these variables get used in plotting
@@ -193,21 +227,12 @@ def peaks(site):
         a header of meta-data supplied by the USGS with the data series.
     """
     url = 'https://nwis.waterdata.usgs.gov/nwis/peak?site_no=' + site + \
-    '&agency_cd=USGS&format=rdb'
+        '&agency_cd=USGS&format=rdb'
 
     headers = {'Accept-encoding': 'gzip'}
 
     print("Retrieving annual peak discharges for site #", site, " from ", url)
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        print(f'The USGS has returned an error code of {response.status_code}')
-        # If this code is being run inside of a notebook, the USGS error page
-        # will be displayed.
-        display.display(display.HTML(response.text))
-        # raise an exception
-        response.raise_for_status()
-        # or raise some sort of Hydro http error based on requests http error.
-        return response
+    response = get_usgs_RDB_service(url, headers)
     header, outputDF, columns, dtype = read_rdb(response.text)
     outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
 
@@ -235,17 +260,7 @@ def rating_curve(site):
           site + ".exsa.rdb"
     headers = {'Accept-encoding': 'gzip'}
     print("Retrieving rating curve for site #", site, " from ", url)
-    response = requests.get(url, headers=headers)
-
-    if response.status_code != 200:
-        print(f'The USGS has returned an error code of {response.status_code}')
-        # If this code is being run inside of a notebook, the USGS error page
-        # will be displayed.
-        display.display(display.HTML(response.text))
-        # raise an exception
-        response.raise_for_status()
-        # or raise some sort of Hydro http error based on requests http error.
-        return response
+    response = get_usgs_RDB_service(url, headers)
     header, outputDF, columns, dtype = read_rdb(response.text)
     outputDF.columns = ['stage', 'shift', 'discharge', 'stor']
     """
@@ -329,20 +344,10 @@ def stats(site, statReportType='daily', **kwargs):
     # Overwrite defaults if they are specified.
     params.update(kwargs)
 
-    response = requests.get(url, headers=headers, params=params)
+    response = get_usgs_RDB_service(url, headers, params)
     print(f"Retrieving {params['statReportType']} statistics for site #{params['sites']} from {response.url}")
 
-    if response.status_code != 200:
-        print(f'The USGS has returned an error code of {response.status_code}')
-        # If this code is being run inside of a notebook, the USGS error page
-        # will be displayed.
-        display.display(display.HTML(response.text))
-        # raise an exception
-        response.raise_for_status()
-        # or raise some sort of Hydro http error based on requests http error.
-        return response
-    else:
-        header, outputDF, columns, dtype = read_rdb(response.text)
+    header, outputDF, columns, dtype = read_rdb(response.text)
 
     output_obj = hydroRDB(header, outputDF, columns, dtype)
     return output_obj

@@ -55,7 +55,7 @@ class TestReadRdb(unittest.TestCase):
     @mock.patch('requests.get')
     def test_field_meas_request_proper_url(self, mock_get):
         sample_site_id = '666'
-        expected_url = 'https://waterdata.usgs.gov/pa/nwis/measurements?site_no='\
+        expected_url = 'https://waterdata.usgs.gov/nwis/measurements?site_no='\
                        + sample_site_id + '&agency_cd=USGS&format=rdb_expanded'
 
         expected_status_code = 200
@@ -64,9 +64,11 @@ class TestReadRdb(unittest.TestCase):
         expected = fakeResponse(code=expected_status_code, text=expected_text)
         expected_headers = {'Accept-encoding': 'gzip'}
 
+        expected_params = None
+
         mock_get.return_value = expected
         actual = hf.field_meas(sample_site_id)
-        mock_get.assert_called_once_with(expected_url, headers=expected_headers)
+        mock_get.assert_called_once_with(expected_url, headers=expected_headers, params = expected_params)
 
     @mock.patch('requests.get')
     def test_field_meas_returns_well_formed_DF(self, mock_get):
@@ -127,9 +129,11 @@ class TestReadRdb(unittest.TestCase):
         expected = fakeResponse(code=expected_status_code, text=expected_text)
         expected_headers = {'Accept-encoding': 'gzip'}
 
+        expected_params = None
+
         mock_get.return_value = expected
         actual = hf.peaks(sample_site_id)
-        mock_get.assert_called_once_with(expected_url, headers=expected_headers)
+        mock_get.assert_called_once_with(expected_url, headers=expected_headers, params=expected_params)
 
     @mock.patch('requests.get')
     def test_peaks_returns_well_formed_DF(self, mock_get):
@@ -203,9 +207,11 @@ class TestReadRdb(unittest.TestCase):
         expected.text = rating_fixture
         expected_headers = {'Accept-encoding': 'gzip'}
 
+        expected_params = None
+
         mock_get.return_value = expected
         actual = hf.rating_curve(sample_site_id)
-        mock_get.assert_called_once_with(expected_url, headers=expected_headers)
+        mock_get.assert_called_once_with(expected_url, headers=expected_headers, params=expected_params)
 
     @mock.patch('requests.get')
     def test_rating_curve_returns_well_formed_DF(self, mock_get):
