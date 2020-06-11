@@ -16,25 +16,26 @@ class hydroRDB:
     """A class for holding the information from USGS rdb files.
 
     Args:
-        df (pandas dataframe):
-            This is a dataframe made from the rdb file.
-        columns (str):
-            A string from the rdb file that lists the column names.
-        dtype (str):
-            A string from the rdb file that gives the data type and length of
-            each column.
         header (str):
             A multi-line string from the header of the rdb file. The header
             often contain important metadata and user warnings.
+        table (pandas dataframe):
+            This is a dataframe made from the rdb file.
+        columns (str):
+            A string from the rdb file that lists the column names.
+        dtypes (str):
+            A string from the rdb file that gives the data type and length of
+            each column.
+
 
     Note:
         The args to create this object are supplied by hf.read_rdb().
     """
-    def __init__(self, df, columns, dtype, header):
-        self.df = df
-        self.columns = columns
-        self.dtype = dtype
+    def __init__(self, header, table, columns, dtypes):
         self.header = header
+        self.table = table
+        self.columns = columns
+        self.dtypes = dtypes
 
     def __repr__(self):
         return self.header + '\n' + repr(self.df)
@@ -48,11 +49,14 @@ def read_rdb(text):
     """Read strings that are in rdb format.
 
     Args:
-        test (str):
+        text (str):
             A long string containing the contents of a rdb file. A common way
             to obtain these would be from the .text property of a requests
             response, as in the example usage below.
     Returns:
+        header (list of strings):
+            Every commented line at the top of the rdb file is marked with a
+            '#' symbol. Each of these lines is stored in this output.
         outputDF (pandas.DataFrame):
             A dataframe containing the information in the rdb file. 'site_no'
             and parameter_cd
@@ -61,13 +65,10 @@ def read_rdb(text):
             everything else.
         columns (list of strings):
             The column names, taken from the rdb header row.
-        dtype (list of strings):
+        dtypes (list of strings):
             The second header row from the rdb file. These mostly tell the
             column width, and typically record everything as string data ('s')
             type. The exception to this are dates, which are listed with a 'd'.
-        header (list of strings):
-            Every commented line at the top of the rdb file is marked with a
-            '#' symbol. Each of these lines is stored in this output.
     """
     headerlines = []
     datalines = []
@@ -79,7 +80,7 @@ def read_rdb(text):
             columns = line.split()
             count = count + 1
         elif count == 1:
-            dtype = line.split()
+            dtypes = line.split()
             count = count + 1
         else:
             datalines.append(line)
@@ -97,7 +98,7 @@ def read_rdb(text):
     #outputDF.outputDF.filter(like='_cd').columns
     #TODO: code columns ('*._cd') should be interpreted as strings.
 
-    return outputDF, columns, dtype, header
+    return header, outputDF, columns, dtypes
 
 
 def field_meas(site):
@@ -158,7 +159,7 @@ def field_meas(site):
     # of the columns. However, it is still a good idea to replace for the gage
     # depth and discharge values, since these variables get used in plotting
     # functions.
-    outputDF, columns, dtype, header = read_rdb(response.text)
+    header, outputDF, columns, dtype, = read_rdb(response.text)
     outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
 
     # An attempt to use the tz_cd column to make measurement_dt timezone aware.
@@ -169,7 +170,7 @@ def field_meas(site):
 
     outputDF.set_index('measurement_dt', inplace=True)
 
-    output_obj = RDB(outputDF, columns, dtype, header)
+    output_obj = hydroRDB(header, outputDF, columns, dtype)
 
     return output_obj
 
@@ -202,12 +203,12 @@ def peaks(site):
         response.raise_for_status()
         # or raise some sort of Hydro http error based on requests http error.
         return response
-    outputDF, columns, dtype, header = read_rdb(response.text)
+    header, outputDF, columns, dtype = read_rdb(response.text)
     outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
 
     outputDF.set_index('peak_dt', inplace=True)
 
-    output_obj = RDB(outputDF, columns, dtype, header)
+    output_obj = hydroRDB(header, outputDF, columns, dtype)
     return output_obj
 
 
@@ -240,7 +241,7 @@ def rating_curve(site):
         response.raise_for_status()
         # or raise some sort of Hydro http error based on requests http error.
         return response
-    outputDF, columns, dtype, header = read_rdb(response.text)
+    header, outputDF, columns, dtype = read_rdb(response.text)
     outputDF.columns = ['stage', 'shift', 'discharge', 'stor']
     """
     outputDF = pd.read_csv(StringIO(response.text),
@@ -251,7 +252,7 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
-    output_obj = RDB(outputDF, columns, dtype, header)
+    output_obj = hydroRDB(header, outputDF, columns, dtype)
     return output_obj
 
 
@@ -336,7 +337,7 @@ def stats(site, statReportType='daily', **kwargs):
         # or raise some sort of Hydro http error based on requests http error.
         return response
     else:
-        outputDF, columns, dtype, header = read_rdb(response.text)
+        header, outputDF, columns, dtype = read_rdb(response.text)
 
-    output_obj = RDB(outputDF, columns, dtype, header)
+    output_obj = hydroRDB(header, outputDF, columns, dtype)
     return output_obj
