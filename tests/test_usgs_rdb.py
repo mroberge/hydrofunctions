@@ -42,6 +42,10 @@ class TestReadRdb(unittest.TestCase):
         - Are strings recorded as strings?
         - Are dates recorded as dates?
         - Are dates recorded with the proper time zone and converted to UTC?
+        - Do the RDB functions (peaks, stats, rating_curve, field_meas) return
+        hydroRDB object?
+        - Does the hydroRDB have a proper repr?
+        - Does the hydroRDB have a working __iter__ function?
     """
     def test_read_rdb_returns_4_tuple_of_DF_list_list_str(self):
         test_data = field_fixture
