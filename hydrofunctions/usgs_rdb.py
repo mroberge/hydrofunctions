@@ -37,6 +37,9 @@ class hydroRDB:
         self.columns = columns
         self.dtypes = dtypes
 
+    def __iter__(self):
+        return iter((self.header, self.table))
+
     def __repr__(self):
         return f'hydroRDB(header={self.header},\ntable={self.table}'
 
