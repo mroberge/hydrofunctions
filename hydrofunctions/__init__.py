@@ -100,4 +100,5 @@ from .usgs_rdb import (
         rating_curve,
         peaks,
         stats,
+        hydroRDB,
         )
