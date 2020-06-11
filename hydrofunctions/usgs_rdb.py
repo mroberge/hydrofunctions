@@ -38,11 +38,12 @@ class hydroRDB:
         self.dtypes = dtypes
 
     def __repr__(self):
-        return self.header + '\n' + repr(self.df)
+        return f'hydroRDB(header={self.header},\ntable={self.table}'
 
     def _repr_html_(self):
         html_header = '<p>' + self.header.replace('\n', '<br />') + '</p>'
-        return html_header + self.df._repr_html_()
+        #return html_header + self.df._repr_html_()
+        return f'<p>hydroRDB(header=<br />{html_header}</p><p>table=<br />{self.table._repr_html_()})</p>'
 
 
 def read_rdb(text):
