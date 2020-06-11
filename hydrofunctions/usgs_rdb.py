@@ -144,7 +144,7 @@ def field_meas(site):
         adjusted' rating curve constructed for this site.
 
     """
-    url = 'https://waterdata.usgs.gov/pa/nwis/measurements?site_no=' + site + \
+    url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + site + \
           '&agency_cd=USGS&format=rdb_expanded'
     headers = {'Accept-encoding': 'gzip'}
 
