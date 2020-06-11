@@ -12,7 +12,7 @@ from io import StringIO
 from IPython.core import display
 
 
-class RDB:
+class hydroRDB:
     """A class for holding the information from USGS rdb files.
 
     Args:
