@@ -38,9 +38,12 @@ Features
    * cycle plots to illustrate annual or diurnal cycles
    * Interactive map for finding stream gauge ID numbers
 * Plotting and manipulation through Pandas dataframes
-* Retrieve rating curves and field notes for sites
+* Retrieve USGS rating curves, peak discharges, field notes, and site files for gauging stations
+* Retrieve USGS daily, monthly, and annual statistics for gauging stations
 * Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
-* Still in active development! Let me know what features you want!
+* **Massive User's Guide that makes Hydrology AND Data Science easy!**
+
+⇨ Still in active development! Let me know what features you want!
 
 Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for more details.
 
