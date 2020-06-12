@@ -94,11 +94,11 @@ def get_usgs_RDB_service(url, headers=None, params=None):
             # Everything seems good; they apparently returned an RDB file.
             return response
         else:
-            print('The USGS has apparently not returned any data. Check the'
-                  'following message for further information for why this'
+            print('The USGS has apparently not returned any data. Check the '
+                  'following message for further information for why this '
                   'request failed.')
             display.display(display.HTML(response.text))
-            raise exceptions.HydroNoDataError('The USGS did not return a valid RDB file'
+            raise exceptions.HydroNoDataError('The USGS did not return a valid RDB file '
                                    'for this request.')
     else:
         #response.status_code != 200:
