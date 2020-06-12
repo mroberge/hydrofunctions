@@ -80,17 +80,41 @@ class TestReadRdb(unittest.TestCase):
             hf.get_usgs_RDB_service(expected_url)
 
     @mock.patch("requests.get")
-    def test_get_usgs_RDB_raises_for_400(self, requests_get):
+    def test_get_usgs_RDB_raises_for_400(self, mock_get):
         # Does this raise for a non-200 status code?
         expected_url = 'expected_url'
         failed_response = mock.Mock(Response)
         failed_response.status_code = 400
         failed_response.text = ''
         failed_response.raise_for_status.side_effect = HTTPError()
-        requests_get.return_value = failed_response
+        mock_get.return_value = failed_response
 
         with self.assertRaises(HTTPError):
             hf.get_usgs_RDB_service(expected_url)
+
+    @mock.patch('requests.get')
+    def test_site_file(self, mock_get):
+        mock_response = mock.Mock(Response)
+        mock_response.status_code = 200
+        mock_response.text = field_fixture
+        mock_get.return_value = mock_response
+        actual = hf.site_file('site')
+        self.assertIs(type(actual.table), pd.core.frame.DataFrame,
+                      msg="site_file did not return a dataframe as expected.")
+        self.assertIs(type(actual), hf.hydroRDB,
+                      msg="site_file did not return a hydroRDB as expected.")
+
+    @mock.patch('requests.get')
+    def test_data_catalog(self, mock_get):
+        mock_response = mock.Mock(Response)
+        mock_response.status_code = 200
+        mock_response.text = field_fixture
+        mock_get.return_value = mock_response
+        actual = hf.data_catalog('site')
+        self.assertIs(type(actual.table), pd.core.frame.DataFrame,
+                      msg="data_catalog did not return a dataframe as expected.")
+        self.assertIs(type(actual), hf.hydroRDB,
+                      msg="data_catalog did not return a hydroRDB as expected.")
 
     @mock.patch('requests.get')
     def test_field_meas_request_proper_url(self, mock_get):
