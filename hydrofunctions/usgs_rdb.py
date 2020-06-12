@@ -186,6 +186,45 @@ def site_file(site):
     output_obj = hydroRDB(header, outputDF, columns, dtype)
 
     return output_obj
+def data_catalog(site):
+    """Load a catalog and history of the data collected at a site into a Pandas dataframe.
+
+    Args:
+        site (str):
+            The gauge ID number for the site.
+
+    Returns:
+        a hydroRDB object or tuple consisting of the header and a pandas
+        dataframe.
+
+    Example:
+        ```
+        test = data_catalog('01542500')
+        test
+
+        hydroRDB(header=<a mulit-line string of the header>,
+                 table=<a Pandas dataframe>)
+        ```
+        You can also access the header, dataframe, column names, and data types
+        through the associated properties:
+        ```
+        test.table
+
+        <a Pandas dataframe>
+        ```
+    """
+    url = 'https://waterservices.usgs.gov/nwis/site/?format=rdb&sites=' \
+          + site + '&seriesCatalogOutput=true&siteStatus=all'
+    headers = {'Accept-encoding': 'gzip'}
+
+    print("Retrieving the site file for site #", site, " from ", url)
+    response = get_usgs_RDB_service(url, headers)
+    header, outputDF, columns, dtype, = read_rdb(response.text)
+    output_obj = hydroRDB(header, outputDF, columns, dtype)
+
+    return output_obj
+
+
 def field_meas(site):
     """Load USGS field measurements of stream discharge into a Pandas dataframe
 
