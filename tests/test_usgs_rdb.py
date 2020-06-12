@@ -14,6 +14,8 @@ import unittest
 
 import pandas as pd
 import numpy as np
+from requests import Response
+from requests.exceptions import HTTPError
 
 import hydrofunctions as hf
 from .fixtures import (
@@ -51,6 +53,44 @@ class TestReadRdb(unittest.TestCase):
         self.assertIs(type(columns), list, msg="read_dbf did not return columns as a list.")
         self.assertIs(type(dtype), list, msg="read_dbf did not return dtype as a list.")
         self.assertIs(type(header), str, msg="read_dbf did not return header as a string.")
+
+    @mock.patch('requests.get')
+    def test_get_usgs_RDB_service_returns_response_if_RDB(self, mock_get):
+        # Does this call Requests.get properly?
+        expected_url = 'expected_url'
+        expected_status_code = 200
+        expected_text = field_fixture
+
+        expected = fakeResponse(code=expected_status_code, text=expected_text)
+        mock_get.return_value = expected
+
+        actual = hf.get_usgs_RDB_service(url=expected_url, headers=None, params=None)
+        mock_get.assert_called_once_with(expected_url, headers=None, params=None)
+
+    @mock.patch('requests.get')
+    def test_get_usgs_RDB_raises_for_200_but_not_RDB(self, mock_get):
+        # The function should raise even if status code is 200 but it doesn't return a RDB file.
+        expected_url = 'expected_url'
+        expected_status_code = 200
+        expected_text = 'not an RDB file'
+        expected = fakeResponse(code=expected_status_code, text=expected_text)
+        mock_get.return_value = expected
+
+        with self.assertRaises(hf.HydroNoDataError):
+            hf.get_usgs_RDB_service(expected_url)
+
+    @mock.patch("requests.get")
+    def test_get_usgs_RDB_raises_for_400(self, requests_get):
+        # Does this raise for a non-200 status code?
+        expected_url = 'expected_url'
+        failed_response = mock.Mock(Response)
+        failed_response.status_code = 400
+        failed_response.text = ''
+        failed_response.raise_for_status.side_effect = HTTPError()
+        requests_get.return_value = failed_response
+
+        with self.assertRaises(HTTPError):
+            hf.get_usgs_RDB_service(expected_url)
 
     @mock.patch('requests.get')
     def test_field_meas_request_proper_url(self, mock_get):
