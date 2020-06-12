@@ -95,6 +95,7 @@ from .charts import (
         cycleplot,
         )
 from .usgs_rdb import (
+        get_usgs_RDB_service,
         read_rdb,
         field_meas,
         rating_curve,
