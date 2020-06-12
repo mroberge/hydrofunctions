@@ -28,10 +28,29 @@ class hydroRDB:
             A string from the rdb file that gives the data type and length of
             each column.
 
+    Properties:
+        header (str):
+            A multi-line string from the header of the rdb file. The header
+            often contain important metadata and user warnings.
+        table (pandas dataframe):
+            This is a dataframe made from the rdb file.
+        columns (str):
+            A string from the rdb file that lists the column names.
+        dtypes (str):
+            A string from the rdb file that gives the data type and length of
+            each column.
+
+        You can also access the header and the dataframe as a named tuple:
+            ```
+            hydroRDB(header=<a multi-line string>, table=<pandas dataframe>)
+            ```
 
     Note:
-        The args to create this object are supplied by hf.read_rdb().
-        You can read more about the RDB format here: https://pubs.usgs.gov/of/2003/ofr03123/6.4rdb_format.pdf
+        - The args to create this object are supplied by hf.read_rdb().
+        - The hydroRDB object is returned from several functions that request
+        RDB files from a USGS data service, including: peaks(), field_meas(),
+        rating_curve(), stats(), site_file(), and data_catalog().
+        - You can read more about the RDB format here: https://pubs.usgs.gov/of/2003/ofr03123/6.4rdb_format.pdf
     """
     def __init__(self, header, table, columns, dtypes):
         self.header = header
@@ -149,6 +168,7 @@ def read_rdb(text):
     return header, outputDF, columns, dtypes
 
 
+
 def site_file(site):
     """Load USGS site file into a Pandas dataframe
 
@@ -186,6 +206,8 @@ def site_file(site):
     output_obj = hydroRDB(header, outputDF, columns, dtype)
 
     return output_obj
+
+
 def data_catalog(site):
     """Load a catalog and history of the data collected at a site into a Pandas dataframe.
 
@@ -230,11 +252,11 @@ def field_meas(site):
 
     Args:
         site (str):
-            The gage ID number for the site.
+            The gauge ID number for the site.
 
     Returns:
         a dataframe. Each row represents an observation on a given date of
-        river conditions at the gage by USGS personnel. Values are stored in
+        river conditions at the gauge by USGS personnel. Values are stored in
         columns, and include the measured stream discharge, channel width,
         channel area, depth, and velocity. These data can be used to create a
         rating curve, to estimate the gage height for a discharge of zero, and
