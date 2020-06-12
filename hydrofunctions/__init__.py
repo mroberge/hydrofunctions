@@ -97,6 +97,7 @@ from .charts import (
 from .usgs_rdb import (
         get_usgs_RDB_service,
         read_rdb,
+        site_file,
         field_meas,
         rating_curve,
         peaks,
