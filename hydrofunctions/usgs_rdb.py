@@ -96,7 +96,8 @@ def get_usgs_RDB_service(url, headers=None, params=None):
         else:
             print('The USGS has apparently not returned any data. Check the '
                   'following message for further information for why this '
-                  'request failed.')
+                  'request failed. One possibility is that your site number '
+                  'is incorrect.')
             display.display(display.HTML(response.text))
             raise exceptions.HydroNoDataError('The USGS did not return a valid RDB file '
                                    'for this request.')
@@ -137,31 +138,37 @@ def read_rdb(text):
             column width, and typically record everything as string data ('s')
             type. The exception to this are dates, which are listed with a 'd'.
     """
-    headerlines = []
-    datalines = []
-    count = 0
-    for line in text.splitlines():
-        if line[0] == '#':
-            headerlines.append(line)
-        elif count == 0:
-            columns = line.split()
-            count = count + 1
-        elif count == 1:
-            dtypes = line.split()
-            count = count + 1
-        else:
-            datalines.append(line)
-    data = "\n".join(datalines)
-    header = "\n".join(headerlines)
+    try:
+        headerlines = []
+        datalines = []
+        count = 0
+        for line in text.splitlines():
+            if line[0] == '#':
+                headerlines.append(line)
+            elif count == 0:
+                columns = line.split()
+                count = count + 1
+            elif count == 1:
+                dtypes = line.split()
+                count = count + 1
+            else:
+                datalines.append(line)
+        data = "\n".join(datalines)
+        header = "\n".join(headerlines)
 
-    outputDF = pd.read_csv(StringIO(data),
-                           sep='\t',
-                           comment='#',
-                           header=None,
-                           names=columns,
-                           dtype={'site_no': str, 'parameter_cd': str},
-                           )
-
+        outputDF = pd.read_csv(StringIO(data),
+                               sep='\t',
+                               comment='#',
+                               header=None,
+                               names=columns,
+                               dtype={'site_no': str, 'parameter_cd': str},
+                               )
+    except:
+        print("There appears to be an error processing the file that the USGS "
+              "returned. This sometimes occurs if you entered the wrong site "
+              "number. We were expecting an RDB file, but we received the "
+              f"following instead:\n{text}")
+        raise
     #outputDF.outputDF.filter(like='_cd').columns
     #TODO: code columns ('*._cd') should be interpreted as strings.
 
