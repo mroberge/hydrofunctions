@@ -52,6 +52,7 @@ class hydroRDB:
         rating_curve(), stats(), site_file(), and data_catalog().
         - You can read more about the RDB format here: https://pubs.usgs.gov/of/2003/ofr03123/6.4rdb_format.pdf
     """
+
     def __init__(self, header, table, columns, dtypes):
         self.header = header
         self.table = table
@@ -62,12 +63,12 @@ class hydroRDB:
         return iter((self.header, self.table))
 
     def __repr__(self):
-        return f'hydroRDB(header={self.header},\ntable={self.table}'
+        return f"hydroRDB(header={self.header},\ntable={self.table}"
 
     def _repr_html_(self):
-        html_header = '<p>' + self.header.replace('\n', '<br />') + '</p>'
-        #return html_header + self.df._repr_html_()
-        return f'<p>hydroRDB(header=<br />{html_header}</p><p>table=<br />{self.table._repr_html_()})</p>'
+        html_header = "<p>" + self.header.replace("\n", "<br />") + "</p>"
+        # return html_header + self.df._repr_html_()
+        return f"<p>hydroRDB(header=<br />{html_header}</p><p>table=<br />{self.table._repr_html_()})</p>"
 
 
 def get_usgs_RDB_service(url, headers=None, params=None):
@@ -90,20 +91,23 @@ def get_usgs_RDB_service(url, headers=None, params=None):
     """
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
-        if response.text[0] == '#':
+        if response.text[0] == "#":
             # Everything seems good; they apparently returned an RDB file.
             return response
         else:
-            print('The USGS has apparently not returned any data. Check the '
-                  'following message for further information for why this '
-                  'request failed. One possibility is that your site number '
-                  'is incorrect.')
+            print(
+                "The USGS has apparently not returned any data. Check the "
+                "following message for further information for why this "
+                "request failed. One possibility is that your site number "
+                "is incorrect."
+            )
             display.display(display.HTML(response.text))
-            raise exceptions.HydroNoDataError('The USGS did not return a valid RDB file '
-                                   'for this request.')
+            raise exceptions.HydroNoDataError(
+                "The USGS did not return a valid RDB file " "for this request."
+            )
     else:
-        #response.status_code != 200:
-        print(f'The USGS has returned an error code of {response.status_code}')
+        # response.status_code != 200:
+        print(f"The USGS has returned an error code of {response.status_code}")
         # If this code is being run inside of a notebook, the USGS error page
         # will be displayed.
         display.display(display.HTML(response.text))
@@ -143,7 +147,7 @@ def read_rdb(text):
         datalines = []
         count = 0
         for line in text.splitlines():
-            if line[0] == '#':
+            if line[0] == "#":
                 headerlines.append(line)
             elif count == 0:
                 columns = line.split()
@@ -156,24 +160,26 @@ def read_rdb(text):
         data = "\n".join(datalines)
         header = "\n".join(headerlines)
 
-        outputDF = pd.read_csv(StringIO(data),
-                               sep='\t',
-                               comment='#',
-                               header=None,
-                               names=columns,
-                               dtype={'site_no': str, 'parameter_cd': str},
-                               )
+        outputDF = pd.read_csv(
+            StringIO(data),
+            sep="\t",
+            comment="#",
+            header=None,
+            names=columns,
+            dtype={"site_no": str, "parameter_cd": str},
+        )
     except:
-        print("There appears to be an error processing the file that the USGS "
-              "returned. This sometimes occurs if you entered the wrong site "
-              "number. We were expecting an RDB file, but we received the "
-              f"following instead:\n{text}")
+        print(
+            "There appears to be an error processing the file that the USGS "
+            "returned. This sometimes occurs if you entered the wrong site "
+            "number. We were expecting an RDB file, but we received the "
+            f"following instead:\n{text}"
+        )
         raise
-    #outputDF.outputDF.filter(like='_cd').columns
-    #TODO: code columns ('*._cd') should be interpreted as strings.
+    # outputDF.outputDF.filter(like='_cd').columns
+    # TODO: code columns ('*._cd') should be interpreted as strings.
 
     return header, outputDF, columns, dtypes
-
 
 
 def site_file(site):
@@ -203,9 +209,12 @@ def site_file(site):
         <a Pandas dataframe>
         ```
     """
-    url = 'https://waterservices.usgs.gov/nwis/site/?format=rdb&sites=' \
-          + site + '&siteOutput=expanded&siteStatus=all'
-    headers = {'Accept-encoding': 'gzip'}
+    url = (
+        "https://waterservices.usgs.gov/nwis/site/?format=rdb&sites="
+        + site
+        + "&siteOutput=expanded&siteStatus=all"
+    )
+    headers = {"Accept-encoding": "gzip"}
 
     print("Retrieving the site file for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
@@ -242,9 +251,12 @@ def data_catalog(site):
         <a Pandas dataframe>
         ```
     """
-    url = 'https://waterservices.usgs.gov/nwis/site/?format=rdb&sites=' \
-          + site + '&seriesCatalogOutput=true&siteStatus=all'
-    headers = {'Accept-encoding': 'gzip'}
+    url = (
+        "https://waterservices.usgs.gov/nwis/site/?format=rdb&sites="
+        + site
+        + "&seriesCatalogOutput=true&siteStatus=all"
+    )
+    headers = {"Accept-encoding": "gzip"}
 
     print("Retrieving the site file for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
@@ -293,9 +305,12 @@ def field_meas(site):
         adjusted' rating curve constructed for this site.
 
     """
-    url = 'https://waterdata.usgs.gov/nwis/measurements?site_no=' + site + \
-          '&agency_cd=USGS&format=rdb_expanded'
-    headers = {'Accept-encoding': 'gzip'}
+    url = (
+        "https://waterdata.usgs.gov/nwis/measurements?site_no="
+        + site
+        + "&agency_cd=USGS&format=rdb_expanded"
+    )
+    headers = {"Accept-encoding": "gzip"}
 
     print("Retrieving field measurements for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
@@ -307,12 +322,12 @@ def field_meas(site):
     outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
 
     # An attempt to use the tz_cd column to make measurement_dt timezone aware.
-    #outputDF.tz_cd.replace({np.nan: 'UTC'}, inplace=True)
-    #def f(x, y):
+    # outputDF.tz_cd.replace({np.nan: 'UTC'}, inplace=True)
+    # def f(x, y):
     #    return x.tz_localize(y)
-    #outputDF['datetime'] = outputDF[['measurement_dt', 'tz_cd']].apply(lambda x: f(*x), axis=1)
+    # outputDF['datetime'] = outputDF[['measurement_dt', 'tz_cd']].apply(lambda x: f(*x), axis=1)
 
-    outputDF.set_index('measurement_dt', inplace=True)
+    outputDF.set_index("measurement_dt", inplace=True)
 
     output_obj = hydroRDB(header, outputDF, columns, dtype)
 
@@ -331,17 +346,20 @@ def peaks(site):
 
         a header of meta-data supplied by the USGS with the data series.
     """
-    url = 'https://nwis.waterdata.usgs.gov/nwis/peak?site_no=' + site + \
-        '&agency_cd=USGS&format=rdb'
+    url = (
+        "https://nwis.waterdata.usgs.gov/nwis/peak?site_no="
+        + site
+        + "&agency_cd=USGS&format=rdb"
+    )
 
-    headers = {'Accept-encoding': 'gzip'}
+    headers = {"Accept-encoding": "gzip"}
 
     print("Retrieving annual peak discharges for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
     header, outputDF, columns, dtype = read_rdb(response.text)
     outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
 
-    outputDF.set_index('peak_dt', inplace=True)
+    outputDF.set_index("peak_dt", inplace=True)
 
     output_obj = hydroRDB(header, outputDF, columns, dtype)
     return output_obj
@@ -361,13 +379,16 @@ def rating_curve(site):
     Note:
         Rating curves change over time
     """
-    url = "https://waterdata.usgs.gov/nwisweb/data/ratings/exsa/USGS." + \
-          site + ".exsa.rdb"
-    headers = {'Accept-encoding': 'gzip'}
+    url = (
+        "https://waterdata.usgs.gov/nwisweb/data/ratings/exsa/USGS."
+        + site
+        + ".exsa.rdb"
+    )
+    headers = {"Accept-encoding": "gzip"}
     print("Retrieving rating curve for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
     header, outputDF, columns, dtype = read_rdb(response.text)
-    outputDF.columns = ['stage', 'shift', 'discharge', 'stor']
+    outputDF.columns = ["stage", "shift", "discharge", "stor"]
     """
     outputDF = pd.read_csv(StringIO(response.text),
                      sep='\t',
@@ -381,7 +402,7 @@ def rating_curve(site):
     return output_obj
 
 
-def stats(site, statReportType='daily', **kwargs):
+def stats(site, statReportType="daily", **kwargs):
     """Return statistics from the USGS Stats Service as a dataframe.
 
     Args:
@@ -436,21 +457,23 @@ def stats(site, statReportType='daily', **kwargs):
     url = "https://waterservices.usgs.gov/nwis/stat/"
 
     headers = {
-            'Accept-encoding': 'gzip',
-            }
+        "Accept-encoding": "gzip",
+    }
     # Set default values for parameters that are too obscure to put into call
     # signature.
     params = {
-            'statReportType': statReportType,
-            'statType': 'all',
-            'sites': site,
-            'format': 'rdb',
-            }
+        "statReportType": statReportType,
+        "statType": "all",
+        "sites": site,
+        "format": "rdb",
+    }
     # Overwrite defaults if they are specified.
     params.update(kwargs)
 
     response = get_usgs_RDB_service(url, headers, params)
-    print(f"Retrieving {params['statReportType']} statistics for site #{params['sites']} from {response.url}")
+    print(
+        f"Retrieving {params['statReportType']} statistics for site #{params['sites']} from {response.url}"
+    )
 
     header, outputDF, columns, dtype = read_rdb(response.text)
 

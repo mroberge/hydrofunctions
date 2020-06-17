@@ -102,7 +102,7 @@ INDEP	SHIFT	DEP	STOR
 
 
 # A shortened version of this request: https://nwis.waterdata.usgs.gov/nwis/peak?site_no=01542500&agency_cd=USGS&format=rdb
-peaks_fixture="""#
+peaks_fixture = """#
 # U.S. Geological Survey
 # National Water Information System
 # Retrieved: 2019-10-28 22:35:01 EDT

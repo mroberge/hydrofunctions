@@ -4,10 +4,10 @@
 from setuptools import setup, find_packages
 import re
 
-with open('README.rst') as readme_file:
+with open("README.rst") as readme_file:
     readme = readme_file.read()
 
-with open('docs/history.rst') as history_file:
+with open("docs/history.rst") as history_file:
     history = history_file.read()
 
 
@@ -21,63 +21,62 @@ def relative2absolute(input, old, new):
     return output
 
 
-relative = r'_static'
-stem = r'https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static'
+relative = r"_static"
+stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static"
 readme = relative2absolute(readme, relative, stem)
 
 requirements = [
-    'matplotlib',
-    'numpy>=1.16.0',
-    'pandas',
-    'requests',
-    'IPython',
-    'pyarrow==0.16.0',
-    'ipykernel',
-    'nbsphinx',
+    "matplotlib",
+    "numpy>=1.16.0",
+    "pandas",
+    "requests",
+    "IPython",
+    "pyarrow==0.16.0",
+    "ipykernel",
+    "nbsphinx",
 ]
 
 test_requirements = [
     # Use coverage to run coverage tests locally.
     # Do not list codecov here. It is only listed in .travis.yml because
     # we only run codecov during Travis CI builds.
-    'coverage'
+    "coverage"
 ]
 
 setup(
-    name='hydrofunctions',
-    version='0.1.7',
+    name="hydrofunctions",
+    version="0.1.7",
     description="A suite of convenience functions for exploring water data in a Jupyter Notebook.",
-    long_description=readme + '\n\n' + history,
+    long_description=readme + "\n\n" + history,
     author="Martin Roberge",
-    author_email='mroberge.whois@gmail.com',
-    url='https://github.com/mroberge/hydrofunctions',
+    author_email="mroberge.whois@gmail.com",
+    url="https://github.com/mroberge/hydrofunctions",
     packages=find_packages(),
-    package_dir={'hydrofunctions':
-                 'hydrofunctions'},
+    package_dir={"hydrofunctions": "hydrofunctions"},
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
     zip_safe=False,
-    keywords='hydrofunctions hydrology USGS stream gauge water NWIS',
+    keywords="hydrofunctions hydrology USGS stream gauge water NWIS",
     project_urls={
-            'Documentation': 'https://hydrofunctions.readthedocs.io',
-            'Source': 'https://github.com/mroberge/hydrofunctions',
-            'Latest': 'https://github.com/mroberge/hydrofunctions/tree/develop',
-            'Tracker': 'https://github.com/mroberge/hydrofunctions/issues'
-            },
+        "Documentation": "https://hydrofunctions.readthedocs.io",
+        "Source": "https://github.com/mroberge/hydrofunctions",
+        "Latest": "https://github.com/mroberge/hydrofunctions/tree/develop",
+        "Tracker": "https://github.com/mroberge/hydrofunctions/issues",
+    },
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: MIT License',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Topic :: Scientific/Engineering :: Hydrology',
-        'Topic :: Scientific/Engineering :: Information Analysis',
-        'Topic :: Scientific/Engineering :: Visualization',
-        'Topic :: Utilities'
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Natural Language :: English",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Topic :: Scientific/Engineering :: Hydrology",
+        "Topic :: Scientific/Engineering :: Information Analysis",
+        "Topic :: Scientific/Engineering :: Visualization",
+        "Topic :: Utilities",
     ],
-    test_suite='tests',
-    tests_require=test_requirements
+    test_suite="tests",
+    tests_require=test_requirements,
 )

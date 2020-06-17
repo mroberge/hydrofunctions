@@ -13,46 +13,55 @@ from hydrofunctions import typing
 
 
 class TestTyping(unittest.TestCase):
-
     def test_typing_check_parameter_string_None_returns_None(self):
-        self.assertIsNone(typing.check_parameter_string(None, 'site'))
+        self.assertIsNone(typing.check_parameter_string(None, "site"))
 
     def test_typing_check_parameter_string_accepts_str_returns_str(self):
-        test1 = 'any string'
+        test1 = "any string"
         test2 = "any string"
-        test3 = u'any unicode string'
-        test4 = 'a,comma,delimited,list'
-        self.assertEqual(typing.check_parameter_string(test1, 'site'), test1, 'test 1 failed')
-        self.assertEqual(typing.check_parameter_string(test2, 'site'), test2, 'test 2 failed')
-        self.assertEqual(typing.check_parameter_string(test3, 'site'), test3, 'test 3 failed')
-        self.assertEqual(typing.check_parameter_string(test4, 'site'), test4, 'test 4 failed')
+        test3 = "any unicode string"
+        test4 = "a,comma,delimited,list"
+        self.assertEqual(
+            typing.check_parameter_string(test1, "site"), test1, "test 1 failed"
+        )
+        self.assertEqual(
+            typing.check_parameter_string(test2, "site"), test2, "test 2 failed"
+        )
+        self.assertEqual(
+            typing.check_parameter_string(test3, "site"), test3, "test 3 failed"
+        )
+        self.assertEqual(
+            typing.check_parameter_string(test4, "site"), test4, "test 4 failed"
+        )
 
     def test_typing_check_parameter_string_accepts_list_of_str(self):
         test1 = ["any string"]
         test2 = ["any string", "any string"]
-        test3 = ["1", "2", "3", "4", "5", "6", "7", '8', '9']
+        test3 = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
         # Why assert True?
-        self.assertTrue(typing.check_parameter_string(test1, 'site'), 'test 1 failed')
-        self.assertTrue(typing.check_parameter_string(test2, 'site'), 'test 2 failed')
-        self.assertTrue(typing.check_parameter_string(test3, 'site'), 'test 3 failed')
+        self.assertTrue(typing.check_parameter_string(test1, "site"), "test 1 failed")
+        self.assertTrue(typing.check_parameter_string(test2, "site"), "test 2 failed")
+        self.assertTrue(typing.check_parameter_string(test3, "site"), "test 3 failed")
 
     def test_typing_check_parameter_string_accepts_site_county_parameterCd(self):
-        text = 'text'
-        self.assertTrue(typing.check_parameter_string(text, 'site'), 'test 1 failed')
-        self.assertTrue(typing.check_parameter_string(text, 'county'), 'test 2 failed')
-        self.assertTrue(typing.check_parameter_string(text, 'parameterCd'), 'test 3 failed')
+        text = "text"
+        self.assertTrue(typing.check_parameter_string(text, "site"), "test 1 failed")
+        self.assertTrue(typing.check_parameter_string(text, "county"), "test 2 failed")
+        self.assertTrue(
+            typing.check_parameter_string(text, "parameterCd"), "test 3 failed"
+        )
 
     def test_typing_check_parameter_string_raises_TypeError(self):
         not_string = 5
-        self.assertRaises(TypeError, typing.check_parameter_string, not_string, 'site')
+        self.assertRaises(TypeError, typing.check_parameter_string, not_string, "site")
 
     def test_typing_check_parameter_string_rejects_bad_list(self):
         test1 = []
         test2 = [""]
-        test3 = ['']
+        test3 = [""]
         test4 = [4]
-        test5 = ['good', None]
-        test6 = ['good', 9]
+        test5 = ["good", None]
+        test6 = ["good", 9]
         test7 = ["good", ""]
         self.assertRaises(TypeError, typing.check_parameter_string, test1)
         self.assertRaises(TypeError, typing.check_parameter_string, test2)
@@ -65,7 +74,7 @@ class TestTyping(unittest.TestCase):
     def test_typing_check_NWIS_bBox_accepts_list_tuple_string(self):
         b0 = (-105.43, 39.655, -104.0, 39.863)
         b1 = [-105.43, 39.655, -104.0, 39.863]
-        bt = '-105.43,39.655,-104.0,39.863'
+        bt = "-105.43,39.655,-104.0,39.863"
         self.assertEqual(typing.check_NWIS_bBox(b0), bt)
         self.assertEqual(typing.check_NWIS_bBox(b1), bt)
         self.assertEqual(typing.check_NWIS_bBox(bt), bt)
@@ -76,7 +85,7 @@ class TestTyping(unittest.TestCase):
     def test_typing_bBox_accepts_list_of_four_latlongs(self):
         goodList = [-80, 20, -70, 30]
         actual = typing.check_NWIS_bBox(goodList)
-        expected = '-80,20,-70,30'
+        expected = "-80,20,-70,30"
         self.assertEqual(actual, expected)
 
     def test_typing_bBox_raises_TypeError_bad_input(self):
@@ -102,7 +111,7 @@ class TestTyping(unittest.TestCase):
     def test_typing_check_datestr_returns_true_for_good_date(self):
         # re pattern = r"[1-2]\d\d\d-[0-1]\d-[0-3]\d"
         actual = typing.check_datestr("2002-03-03")
-        actual = typing.check_datestr('2002-03-03')
+        actual = typing.check_datestr("2002-03-03")
         self.assertTrue(actual)
 
     def test_typing_check_datestr_rejects_bad_date(self):
@@ -127,15 +136,15 @@ class TestTyping(unittest.TestCase):
 
     def test_typing_check_period_rejects_bad_period(self):
         # pattern = r^P\d{1,3}D$
-        bad1 = 'p34d'
-        bad2 = 'bad'
-        bad3 = 'P1234D'  # Too long
-        bad4 = 'P12'
+        bad1 = "p34d"
+        bad2 = "bad"
+        bad3 = "P1234D"  # Too long
+        bad4 = "P12"
         self.assertRaises(TypeError, typing.check_datestr, bad1)
         self.assertRaises(TypeError, typing.check_datestr, bad2)
         self.assertRaises(TypeError, typing.check_datestr, bad3)
         self.assertRaises(TypeError, typing.check_datestr, bad4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

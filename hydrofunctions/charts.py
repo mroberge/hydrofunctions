@@ -12,14 +12,24 @@ This module contains charting functions for Hydrofunctions.
 # does not have this configured, so you need to set your backend explicitly.
 from __future__ import absolute_import, print_function, division, unicode_literals
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 import numpy as np
 import pandas as pd
 
 
-def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m³/s)', symbol='.', legend=True, legend_loc='best', title=''):
+def flow_duration(
+    Qdf,
+    xscale="logit",
+    yscale="log",
+    ylabel="Stream Discharge (m³/s)",
+    symbol=".",
+    legend=True,
+    legend_loc="best",
+    title="",
+):
     """Creates a flow duration chart from a dataframe of discharges.
 
     Args:
@@ -81,7 +91,7 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
     y = Qdf
     fig, ax = plt.subplots(1, 1)
     for column in Qdf.columns.values:
-        ax.plot(x.loc[:,column], y.loc[:,column], symbol, label=column)
+        ax.plot(x.loc[:, column], y.loc[:, column], symbol, label=column)
     ax.set_xscale(xscale)
     ax.set_yscale(yscale)
     ax.set_ylabel(ylabel)
@@ -89,12 +99,20 @@ def flow_duration(Qdf, xscale='logit', yscale='log', ylabel='Stream Discharge (m
         ax.legend(loc=legend_loc)
     if title:
         ax.title.set_text(title)
-    ax.set_xlabel('Probability of Exceedence')
+    ax.set_xlabel("Probability of Exceedence")
     ax.xaxis.set_minor_formatter(NullFormatter())
     return fig, ax
 
 
-def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s)', legend=True, legend_loc='best', title=''):
+def cycleplot(
+    Qseries,
+    cycle="diurnal",
+    compare=None,
+    y_label="Discharge (ft³/s)",
+    legend=True,
+    legend_loc="best",
+    title="",
+):
     """Creates a chart to illustrate annual and diurnal cycles.
 
     This chart will use the pandas groupby method to plot the mean and median
@@ -175,77 +193,112 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
         Jake VanderPlas. 2016. Python Data Science Handbook. O'Reilly Media, Inc.'
     """
-#is Qseries a series of discharge? if not, raise error.
+    # is Qseries a series of discharge? if not, raise error.
     # or, select the discharge...
     if isinstance(Qseries, pd.DataFrame):
-        #Qseries = Qseries.iloc[:,0] # Select first column; but this is not always numeric.
+        # Qseries = Qseries.iloc[:,0] # Select first column; but this is not always numeric.
         # Select the first of the numeric columns.
-        Qseries = Qseries.loc[:,Qseries.select_dtypes(include='number').columns[0]]
+        Qseries = Qseries.loc[:, Qseries.select_dtypes(include="number").columns[0]]
     if not isinstance(Qseries, pd.Series):
-        raise ValueError(f'Cycleplot only accepts a single series of data as '
-                         ' an argument. You supplied a {type(Qseries).}')
+        raise ValueError(
+            f"Cycleplot only accepts a single series of data as "
+            " an argument. You supplied a {type(Qseries).}"
+        )
 
-    if cycle == 'annual':
+    if cycle == "annual":
         # aggregate into 365 bins to show annual cycles. Same as annual-date
         cycleby = Qseries.index.dayofyear
-        x_label = ' (day # of the year)'
-    elif cycle == 'annual-date':
+        x_label = " (day # of the year)"
+    elif cycle == "annual-date":
         cycleby = Qseries.index.dayofyear
-        x_label = ' (day # of the year)'
-    elif cycle == 'annual-week':
+        x_label = " (day # of the year)"
+    elif cycle == "annual-week":
         # aggregate into 52 bins to show annual cycles.
         cycleby = Qseries.index.week
-        x_label = ' (week # of the year)'
-    elif cycle == 'annual-month':
+        x_label = " (week # of the year)"
+    elif cycle == "annual-month":
         # aggregate into 12 binds to show annual cycles.
         cycleby = Qseries.index.month
-        x_label = ' (month # of the year)'
-    elif cycle == 'weekly':
+        x_label = " (month # of the year)"
+    elif cycle == "weekly":
         # aggregate into 7 bins to show week-long cycles.
         # Note: 7-day cycles are not natural cycles.
         cycleby = Qseries.index.weekday
-        x_label = ' (day of the week, Monday = 0)'
-    elif cycle == 'diurnal':
+        x_label = " (day of the week, Monday = 0)"
+    elif cycle == "diurnal":
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
         cycleby = Qseries.index.hour
-        x_label = ' (hour of the day)'
-#    elif cycle == 'diurnal-smallest':
-        # Uses the smallest unit available in the time index to show 24-hour diurnal cycles.
-#        cycleby = Qseries.index.time
-#        x_label = ' (time of day)'
-    elif cycle == 'diurnal-hour':
+        x_label = " (hour of the day)"
+    #    elif cycle == 'diurnal-smallest':
+    # Uses the smallest unit available in the time index to show 24-hour diurnal cycles.
+    #        cycleby = Qseries.index.time
+    #        x_label = ' (time of day)'
+    elif cycle == "diurnal-hour":
         # aggregate into 24 bins to show 24-hour daily (diurnal) cycles.
         cycleby = Qseries.index.hour
-        x_label = ' (hour of the day)'
+        x_label = " (hour of the day)"
     else:
-        raise ValueError("The cycle label '", cycle, "' is not recognized as an option.")
+        raise ValueError(
+            "The cycle label '", cycle, "' is not recognized as an option."
+        )
 
     if compare is None:
         # Don't make a comparison plot.
         # TODO: This is a silly categorization to force all values in the index into the same category.
-        compareby = np.where(Qseries.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
-        sub_titles = ['']
-    elif compare == 'month':
+        compareby = np.where(
+            Qseries.index.weekday < 20, "A", "B"
+        )  # Since no comparison is desired, this puts all of the data into group A.
+        sub_titles = [""]
+    elif compare == "month":
         # Break the time series into 12 months to compare to each other.
         compareby = Qseries.index.month
-        sub_titles = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    elif compare == 'weekday':
+        sub_titles = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ]
+    elif compare == "weekday":
         # Break the time series into 7 days of the week to compare to each other.
         compareby = Qseries.index.weekday
-        sub_titles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    elif compare == 'weekend':
+        sub_titles = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+    elif compare == "weekend":
         # Break the time series into 2 groups, Weekdays and Weekends for comparison.
-        compareby = np.where(Qseries.index.weekday < 5, 'Weekday', 'Weekend')
-        sub_titles = ['Weekdays', 'Weekends']
-    elif compare == 'night':
+        compareby = np.where(Qseries.index.weekday < 5, "Weekday", "Weekend")
+        sub_titles = ["Weekdays", "Weekends"]
+    elif compare == "night":
         # Break the time series into 2 groups to compare day versus night.
         # TODO: This assumes the index hour is in local time, but it is in UTC time
-        compareby = np.where((Qseries.index.hour >= 6) & (DF.index.hour < 19), 'Day', 'Night')
-        sub_titles = ['Day', 'Night']
+        compareby = np.where(
+            (Qseries.index.hour >= 6) & (DF.index.hour < 19), "Day", "Night"
+        )
+        sub_titles = ["Day", "Night"]
     else:
-        print("The compare label '", compare, "' is not recognized as an option. Using compare=None instead.")
-        compareby = np.where(Qseries.index.weekday < 20, 'A', 'B') #Since no comparison is desired, this puts all of the data into group A.
-        sub_titles = ['data']
+        print(
+            "The compare label '",
+            compare,
+            "' is not recognized as an option. Using compare=None instead.",
+        )
+        compareby = np.where(
+            Qseries.index.weekday < 20, "A", "B"
+        )  # Since no comparison is desired, this puts all of the data into group A.
+        sub_titles = ["data"]
 
     selection = [compareby, cycleby]
     compare_list = list(np.unique(compareby))
@@ -253,50 +306,50 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
     # group first by the compareby series, then by the cycle.
     grouped = Qseries.groupby(selection)
 
-    #complicated_multiindex_DF_of_results = Qseries.groupby(selection).agg('mean', q2, q4, 'median', q6, q8)
-#    results2 = Qseries.groupby(selection).agg(
-#            mean=
-#            Q2=
-#            Q4=
-#            Q5=
-#            Q6=
-#            Q8=
-#            )
+    # complicated_multiindex_DF_of_results = Qseries.groupby(selection).agg('mean', q2, q4, 'median', q6, q8)
+    #    results2 = Qseries.groupby(selection).agg(
+    #            mean=
+    #            Q2=
+    #            Q4=
+    #            Q5=
+    #            Q6=
+    #            Q8=
+    #            )
 
-#    # Method 3 =================================
-#
-#    Q2 = np.percentile(grouped, .2)
-#    Q4 = np.percentile(grouped, .4)
-#    Q5 = np.percentile(grouped, .5)
-#    Q6 = np.percentile(grouped, .6)
-#    Q8 = np.percentile(grouped, .8)
-#
-#    # Method 2====================================================
-#    # Why is this necessary? Pandas 0.25.0 won't let you do this:
-#    # grouped.quantile()  anymore. !?!
-#    def q2(x):
-#        return x.quantile(.2)
-#    def q4(x):
-#        return x.quantile(.4)
-#    def q6(x):
-#        return x.quantile(.6)
-#    def q8(x):
-#        return x.quantile(.8)
-#
-#    mean = grouped.mean()
-#    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
-#    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
-#    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
-#    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
-#    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
-#
+    #    # Method 3 =================================
+    #
+    #    Q2 = np.percentile(grouped, .2)
+    #    Q4 = np.percentile(grouped, .4)
+    #    Q5 = np.percentile(grouped, .5)
+    #    Q6 = np.percentile(grouped, .6)
+    #    Q8 = np.percentile(grouped, .8)
+    #
+    #    # Method 2====================================================
+    #    # Why is this necessary? Pandas 0.25.0 won't let you do this:
+    #    # grouped.quantile()  anymore. !?!
+    #    def q2(x):
+    #        return x.quantile(.2)
+    #    def q4(x):
+    #        return x.quantile(.4)
+    #    def q6(x):
+    #        return x.quantile(.6)
+    #    def q8(x):
+    #        return x.quantile(.8)
+    #
+    #    mean = grouped.mean()
+    #    Q2 = grouped.agg(q2)  #    Q2 = DF.groupby(selection).quantile(.2)
+    #    Q4 = grouped.agg(q4)  #    Q4 = grouped.quantile(0.4)
+    #    Q5 = grouped.median() #    Q5 = grouped.quantile(.5)
+    #    Q6 = grouped.agg(q6)  #    Q6 = grouped.quantile(.6)
+    #    Q8 = grouped.agg(q8)  #    Q8 = grouped.quantile(.8)
+    #
     # Method 1 =================================
     mean = grouped.mean()
-    Q2 = grouped.quantile(.2)
-    Q4 = grouped.quantile(.4)
-    Q5 = grouped.quantile(.5)
-    Q6 = grouped.quantile(.6)
-    Q8 = grouped.quantile(.8)
+    Q2 = grouped.quantile(0.2)
+    Q4 = grouped.quantile(0.4)
+    Q5 = grouped.quantile(0.5)
+    Q6 = grouped.quantile(0.6)
+    Q8 = grouped.quantile(0.8)
     # ==============================
 
     Nplots = len(compare_list)
@@ -306,12 +359,26 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
         axs = np.array([axs])
 
     for i, item in enumerate(compare_list):
-        axs[i].plot(mean.loc[item], label='mean')
+        axs[i].plot(mean.loc[item], label="mean")
         # axs[i].plot(Q2.loc[item], label='20th percentile', color='black', linestyle='dotted', linewidth=2)
-        axs[i].plot(Q5.loc[item], label='median', color='black', linestyle='dotted', linewidth=2)
+        axs[i].plot(
+            Q5.loc[item], label="median", color="black", linestyle="dotted", linewidth=2
+        )
         # axs[i].plot(Q8.loc[item], label='80th percentile', color='grey', linestyle='dashed', linewidth=1)
-        axs[i].fill_between(Q2.loc[item].index, Q2.loc[item].values.flatten(), Q8.loc[item].values.flatten(), facecolor='grey', alpha=0.5)
-        axs[i].fill_between(Q4.loc[item].index, Q4.loc[item].values.flatten(), Q6.loc[item].values.flatten(), facecolor='grey', alpha=0.5)
+        axs[i].fill_between(
+            Q2.loc[item].index,
+            Q2.loc[item].values.flatten(),
+            Q8.loc[item].values.flatten(),
+            facecolor="grey",
+            alpha=0.5,
+        )
+        axs[i].fill_between(
+            Q4.loc[item].index,
+            Q4.loc[item].values.flatten(),
+            Q6.loc[item].values.flatten(),
+            facecolor="grey",
+            alpha=0.5,
+        )
         axs[i].set_title(sub_titles[i])
         # axs[i].xaxis.set_major_locator(plt.MaxNLocator(4))
         # axs[i].xaxis.set_major_formatter(matplotlib.dates.DateFormatter('%H'))
@@ -325,7 +392,7 @@ def cycleplot(Qseries, cycle='diurnal', compare=None, y_label='Discharge (ft³/s
     ymin, ymax = axs[0].get_ylim()
     axs[0].set_ylim(0, ymax)
     axs[0].set_ylabel(y_label)
-    axs[0].set_xlabel('Time' + x_label)
+    axs[0].set_xlabel("Time" + x_label)
     plt.tight_layout()
     if title:
         fig.suptitle(title)
