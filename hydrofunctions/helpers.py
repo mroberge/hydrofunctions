@@ -38,19 +38,19 @@ def draw_map(width=700, height=400, url="http://hydrocloud.org"):
 
         Draws a larger map.
 """
-#    TODO:
-#        use ipywidgets to allow users to click on the map, and this will
-#        return a value that can be used in another IPython cell. This
-#        feature would allow the map to act as an interactive site selection
-#        tool.
+    #    TODO:
+    #        use ipywidgets to allow users to click on the map, and this will
+    #        return a value that can be used in another IPython cell. This
+    #        feature would allow the map to act as an interactive site selection
+    #        tool.
 
-
-
-    output = HTML('<p>Use <a href="http://hydrocloud.org" target="_blank">'
-                  'HydroCloud.org</a> to find a stream gauge. '
-                  'Click on the dots to learn more about a site.</p>'
-                  '<iframe src=http://hydrocloud.org/ width={} height={}>'
-                  '</iframe>'.format(width, height))
+    output = HTML(
+        '<p>Use <a href="http://hydrocloud.org" target="_blank">'
+        "HydroCloud.org</a> to find a stream gauge. "
+        "Click on the dots to learn more about a site.</p>"
+        "<iframe src=http://hydrocloud.org/ width={} height={}>"
+        "</iframe>".format(width, height)
+    )
 
     return output
 

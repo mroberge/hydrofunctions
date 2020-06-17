@@ -20,6 +20,7 @@ from . import helpers
 class Station(object):
     """A class for organizing stream gauge data for a single request.
     """
+
     station_dict = {}
 
     def __init__(self, site=None):
@@ -95,50 +96,53 @@ class NWIS(Station):
 
     """
 
-    def __init__(self,
-                 site=None,
-                 service='dv',
-                 start_date=None,
-                 end_date=None,
-                 stateCd=None,
-                 countyCd=None,
-                 bBox=None,
-                 parameterCd='all',
-                 period=None,
-                 file=None):
+    def __init__(
+        self,
+        site=None,
+        service="dv",
+        start_date=None,
+        end_date=None,
+        stateCd=None,
+        countyCd=None,
+        bBox=None,
+        parameterCd="all",
+        period=None,
+        file=None,
+    ):
 
         self.ok = False
         if file is not None:
             try:
                 self._dataframe, self.meta = hf.read_parquet(file)
                 self.ok = True
-                print('Reading data from', file)
+                print("Reading data from", file)
 
             except OSError as err:
                 # File does not exist yet, we'll make it later.
                 pass
 
         if self.ok == False:
-            self.response = hf.get_nwis(site,
-                                        service,
-                                        start_date,
-                                        end_date,
-                                        stateCd=stateCd,
-                                        countyCd=countyCd,
-                                        bBox=bBox,
-                                        parameterCd=parameterCd,
-                                        period=period
-                                        )
+            self.response = hf.get_nwis(
+                site,
+                service,
+                start_date,
+                end_date,
+                stateCd=stateCd,
+                countyCd=countyCd,
+                bBox=bBox,
+                parameterCd=parameterCd,
+                period=period,
+            )
             try:
                 self.json = self.response.json()
                 self._dataframe, self.meta = hf.extract_nwis_df(self.json)
                 self.ok = self.response.ok
                 if file is not None:
                     self.save(file)
-                    print('Saving data to', file)
+                    print("Saving data to", file)
             except json.JSONDecodeError as err:
                 self.ok = False
-                print(f'JSON decoding error. URL: {self.response.url}')
+                print(f"JSON decoding error. URL: {self.response.url}")
                 raise json.JSONDecodeError(err)
 
         # Can I get rid of this, and only keep metadata in the meta dict?
@@ -153,13 +157,18 @@ class NWIS(Station):
     def __repr__(self):
         repr_string = ""
         for site_id in sorted(self.meta.keys()):
-            repr_string += site_id + ": " + self.meta[site_id]['siteName'] + "\n"
-            for param in sorted(self.meta[site_id]['timeSeries'].keys()):
-                repr_string += "    " + param + ": " + \
-                    self.meta[site_id]['timeSeries'][param]['variableFreq'] + \
-                    "  " + self.meta[site_id]['timeSeries'][param]['variableDescription'] + "\n"
-        repr_string += "Start: " + str(self.start) + "\n" + \
-        "End:   " + str(self.end)
+            repr_string += site_id + ": " + self.meta[site_id]["siteName"] + "\n"
+            for param in sorted(self.meta[site_id]["timeSeries"].keys()):
+                repr_string += (
+                    "    "
+                    + param
+                    + ": "
+                    + self.meta[site_id]["timeSeries"][param]["variableFreq"]
+                    + "  "
+                    + self.meta[site_id]["timeSeries"][param]["variableDescription"]
+                    + "\n"
+                )
+        repr_string += "Start: " + str(self.start) + "\n" + "End:   " + str(self.end)
         return repr_string
 
     def df(self, *args):
@@ -186,56 +195,72 @@ class NWIS(Station):
 
             int any eight to twelve digit number: any matching stations will be returned.
         """
-        all_cols = self._dataframe.columns != ""  #all true
-        no_cols = ~all_cols  #all false
-        data_cols = self._dataframe.columns.str.contains(r'[0-9]$') # Data columns end in a number.
-        flag_cols = self._dataframe.columns.str.contains('_qualifiers')
-        Q_cols = self._dataframe.columns.str.contains(':00060:') # This includes data & flags
-        stage_cols = self._dataframe.columns.str.contains(':00065:')
-        param_re = r'^\d{5}$' # parameters are a five-digit number.
-        station_re = r'\d{8,12}$' # station ID's are between 8 and 12 digits.
+        all_cols = self._dataframe.columns != ""  # all true
+        no_cols = ~all_cols  # all false
+        data_cols = self._dataframe.columns.str.contains(
+            r"[0-9]$"
+        )  # Data columns end in a number.
+        flag_cols = self._dataframe.columns.str.contains("_qualifiers")
+        Q_cols = self._dataframe.columns.str.contains(
+            ":00060:"
+        )  # This includes data & flags
+        stage_cols = self._dataframe.columns.str.contains(":00065:")
+        param_re = r"^\d{5}$"  # parameters are a five-digit number.
+        station_re = r"\d{8,12}$"  # station ID's are between 8 and 12 digits.
 
         sites = no_cols
         params = no_cols
         meta = no_cols
-        if len(args) == 0:  #If no args are given, return every column.
+        if len(args) == 0:  # If no args are given, return every column.
             sites = all_cols
             params = all_cols
             meta = all_cols
         else:
             for item in args:
-                if item == 'all':
+                if item == "all":
                     sites = all_cols
                     params = all_cols
                     meta = all_cols
-                    break # If one param is 'all', ignore the other params and deliver everything.
-                elif item == 'discharge':
+                    break  # If one param is 'all', ignore the other params and deliver everything.
+                elif item == "discharge":
                     params = Q_cols | params
-                elif item == 'q':
+                elif item == "q":
                     params = Q_cols | params
-                elif item == 'stage':
+                elif item == "stage":
                     params = stage_cols | params
-                elif item == 'data':
+                elif item == "data":
                     meta = data_cols | meta
-                elif item == 'flags':
+                elif item == "flags":
                     meta = flag_cols | meta
                 elif re.search(param_re, item):
                     param_arg = ":" + item + ":"
                     params = self._dataframe.columns.str.contains(param_arg) | params
                     if not params.any():
-                        raise ValueError("The parameter '{param}' is not contained in this dataset.".format(param=item))
+                        raise ValueError(
+                            "The parameter '{param}' is not contained in this dataset.".format(
+                                param=item
+                            )
+                        )
                 elif re.search(station_re, item):
                     station_arg = ":" + item + ":"
                     sites = self._dataframe.columns.str.contains(station_arg) | sites
                     if not sites.any():
-                        raise ValueError("The site '{site}' is not in this dataset.".format(site=item))
+                        raise ValueError(
+                            "The site '{site}' is not in this dataset.".format(
+                                site=item
+                            )
+                        )
                 else:
-                    raise ValueError("The argument '{item}' is not recognized.".format(item=item))
-        if not sites.any(): #If no sites are selected, select them all.
+                    raise ValueError(
+                        "The argument '{item}' is not recognized.".format(item=item)
+                    )
+        if not sites.any():  # If no sites are selected, select them all.
             sites = all_cols
-        if not params.any(): #If no params are selected, select them all.
+        if not params.any():  # If no params are selected, select them all.
             params = all_cols
-        if not meta.any(): #If neither flags nor data are selected, select data columns.
+        if (
+            not meta.any()
+        ):  # If neither flags nor data are selected, select data columns.
             meta = data_cols
         selection = sites & params & meta
         requested_df = self._dataframe.loc[:, selection]
@@ -244,7 +269,7 @@ class NWIS(Station):
     def get_data(self):
         warnings.warn(
             "It is no longer necessary to call .get_data() to request data.",
-            FutureWarning
+            FutureWarning,
         )
         return self
 

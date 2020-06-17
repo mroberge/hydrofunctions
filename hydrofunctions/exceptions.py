@@ -44,6 +44,7 @@ class HydroException(Exception):
         This is the base class for all exceptions created for the
         HydroFunctions package. This class is not meant to be raised.
     """
+
     pass
 
 
@@ -69,6 +70,7 @@ class HydroNoDataError(HydroException):
             print("This is just to illustrate how to capture this error.")
             print(err)
     """
+
     pass
 
 
@@ -82,6 +84,7 @@ class HydroEncodeError(HydroException):
         except HydroException:
             # blanked condition to handle all errors from your package
     """
+
     pass
 
 
@@ -107,4 +110,5 @@ class HydroUserWarning(UserWarning):
             fail anyway. This will at least give the user a helpful error
             message.
     """
+
     pass

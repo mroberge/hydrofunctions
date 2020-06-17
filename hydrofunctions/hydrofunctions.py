@@ -26,8 +26,8 @@ from . import helpers
 logging.basicConfig(
     filename="hydrofunctions_testing.log",
     level=logging.ERROR,
-    format="%(asctime)s:%(levelname)s:%(message)s"
-    )
+    format="%(asctime)s:%(levelname)s:%(message)s",
+)
 
 
 def select_data(nwis_df):
@@ -47,14 +47,14 @@ def select_data(nwis_df):
         returns a dataframe with only the data columns; the qualifier columns
         do not show.
     """
-    data_regex = r'[0-9]$'
+    data_regex = r"[0-9]$"
     return nwis_df.columns.str.contains(data_regex)
 
 
 def calc_freq(index):
     # Method 0: calc_freq() was called, but we haven't done anything yet.
     method = 0
-    if (isinstance(index, pd.DataFrame)):
+    if isinstance(index, pd.DataFrame):
         index = index.index
     try:
         # Method 1: Try the direct approach first. Maybe freq has already been set.
@@ -75,13 +75,13 @@ def calc_freq(index):
 
     if freq is None:
         # Method 3: divide the length of time by the number of observations.
-        freq = (index.max() - index.min())/len(index)
-        if pd.Timedelta('13 minutes') < freq < pd.Timedelta('17 minutes'):
-            freq = to_offset('15min')
-        elif pd.Timedelta('27 minutes') < freq < pd.Timedelta('33 minutes'):
-            freq = to_offset('30min')
-        elif pd.Timedelta('55 minutes') < freq < pd.Timedelta('65 minutes'):
-            freq = to_offset('60min')
+        freq = (index.max() - index.min()) / len(index)
+        if pd.Timedelta("13 minutes") < freq < pd.Timedelta("17 minutes"):
+            freq = to_offset("15min")
+        elif pd.Timedelta("27 minutes") < freq < pd.Timedelta("33 minutes"):
+            freq = to_offset("30min")
+        elif pd.Timedelta("55 minutes") < freq < pd.Timedelta("65 minutes"):
+            freq = to_offset("60min")
         else:
             freq = None
         method = 3
@@ -91,16 +91,26 @@ def calc_freq(index):
         if len(index) > 3:
             freq = to_offset(abs(index[2] - index[3]))
             method = 4
-            logging.debug("calc_freq4:" + str(freq) + "= index[2]:" + str(index[3]) + "- index [3]:" + str(index[2]))
+            logging.debug(
+                "calc_freq4:"
+                + str(freq)
+                + "= index[2]:"
+                + str(index[3])
+                + "- index [3]:"
+                + str(index[2])
+            )
 
     if freq is None:
         # Method 5: If all else fails, freq is 0 minutes!
-        warnings.warn("It is not possible to determine the frequency "
-                      "for one of the datasets in this request. "
-                      "This dataset will be set to a frequency of "
-                      "0 minutes", exceptions.HydroUserWarning)
+        warnings.warn(
+            "It is not possible to determine the frequency "
+            "for one of the datasets in this request. "
+            "This dataset will be set to a frequency of "
+            "0 minutes",
+            exceptions.HydroUserWarning,
+        )
 
-        freq = to_offset('0min')
+        freq = to_offset("0min")
         method = 5
 
     debug_msg = "Calc_freq method:" + str(method) + "freq:" + str(freq)
@@ -108,8 +118,17 @@ def calc_freq(index):
     return pd.Timedelta(freq)
 
 
-def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
-             countyCd=None, bBox=None, parameterCd='all', period=None):
+def get_nwis(
+    site,
+    service="dv",
+    start_date=None,
+    end_date=None,
+    stateCd=None,
+    countyCd=None,
+    bBox=None,
+    parameterCd="all",
+    period=None,
+):
     """Request stream gauge data from the USGS NWIS.
 
     Args:
@@ -216,52 +235,54 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
 
     service = typing.check_NWIS_service(service)
 
-    if (parameterCd == 'all'):
+    if parameterCd == "all":
         parameterCd = None
 
-    header = {
-        'Accept-encoding': 'gzip',
-        'max-age': '120'
-    }
+    header = {"Accept-encoding": "gzip", "max-age": "120"}
 
     values = {
         # specify version of nwis json. Based on WaterML1.1
         # json,1.1 works; json%2C works; json1.1 DOES NOT WORK
-        'format': 'json,1.1',
-        'sites': typing.check_parameter_string(site, 'site'),
-        'stateCd': stateCd,
-        'countyCd': typing.check_parameter_string(countyCd, 'county'),
-        'bBox': typing.check_NWIS_bBox(bBox),
-        'parameterCd': typing.check_parameter_string(parameterCd, 'parameterCd'),
-        'period': period,
-        'startDT': start_date,
-        'endDT': end_date
+        "format": "json,1.1",
+        "sites": typing.check_parameter_string(site, "site"),
+        "stateCd": stateCd,
+        "countyCd": typing.check_parameter_string(countyCd, "county"),
+        "bBox": typing.check_NWIS_bBox(bBox),
+        "parameterCd": typing.check_parameter_string(parameterCd, "parameterCd"),
+        "period": period,
+        "startDT": start_date,
+        "endDT": end_date,
     }
 
     # Check that site selection parameters are exclusive!
     total = helpers.count_number_of_truthy([site, stateCd, countyCd, bBox])
     if total == 1:
         pass
-    elif (total > 1):
-        raise ValueError("Select sites using either site, stateCd, "
-                         "countyCd, or bBox, but not more than one.")
-    elif (total < 1):
-        raise ValueError("Select sites using at least one of the following "
-                         "arguments: site, stateCd, countyCd or bBox.")
+    elif total > 1:
+        raise ValueError(
+            "Select sites using either site, stateCd, "
+            "countyCd, or bBox, but not more than one."
+        )
+    elif total < 1:
+        raise ValueError(
+            "Select sites using at least one of the following "
+            "arguments: site, stateCd, countyCd or bBox."
+        )
 
     # Check that time parameters are not both set.
     # If neither is set, then NWIS will return the most recent observation.
-    if (start_date and period):
-        raise ValueError("Use either start_date or period, or neither, "
-                         "but not both.")
+    if start_date and period:
+        raise ValueError(
+            "Use either start_date or period, or neither, " "but not both."
+        )
 
     if not (start_date or period):
         # User didn't specify time; must be requesting most recent data.
         # See issue #49.
         pass
 
-    url = 'https://waterservices.usgs.gov/nwis/'
-    url = url + service + '/?'
+    url = "https://waterservices.usgs.gov/nwis/"
+    url = url + service + "/?"
     response = requests.get(url, params=values, headers=header)
     print("Requested data from", response.url)
     # requests will raise a 'ConnectionError' if the connection is refused
@@ -275,7 +296,9 @@ def get_nwis(site, service='dv', start_date=None, end_date=None, stateCd=None,
     # Issue warnings for bad status codes
     nwis_custom_status_codes(response)
     if not response.text:
-        raise exceptions.HydroNoDataError("The NWIS has returned an empty string for this request.")
+        raise exceptions.HydroNoDataError(
+            "The NWIS has returned an empty string for this request."
+        )
 
     return response
 
@@ -317,12 +340,12 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
 
         ValueError when the key is not available in
     """
-    #nwis_dict = response_obj.json()
+    # nwis_dict = response_obj.json()
 
     # strip header and all metadata. ts is the 'timeSeries' element of the
     # response; it is an array of objects that contain time series data.
-    ts = nwis_dict['value']['timeSeries']
-    msg = 'The NWIS reports that it does not have any data for this request.'
+    ts = nwis_dict["value"]["timeSeries"]
+    msg = "The NWIS reports that it does not have any data for this request."
 
     if len(ts) < 1:
         raise exceptions.HydroNoDataError(msg)
@@ -339,22 +362,35 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     #    v = etc
     # else just return index or raise an error later
     #
-    sourceInfo = ['siteName', 'siteCode', 'timeZoneInfo', 'geoLocation',
-                  'siteType', 'siteProperty']
-    variable = ['variableCode', 'variableName', 'variableDescription',
-                'valueType', 'unit', 'options', 'noDataValue']
-    root = ['name']
+    sourceInfo = [
+        "siteName",
+        "siteCode",
+        "timeZoneInfo",
+        "geoLocation",
+        "siteType",
+        "siteProperty",
+    ]
+    variable = [
+        "variableCode",
+        "variableName",
+        "variableDescription",
+        "valueType",
+        "unit",
+        "options",
+        "noDataValue",
+    ]
+    root = ["name"]
     vals = []
     try:
         for idx, tts in enumerate(ts):
-            d = tts['values'][0]['value']
+            d = tts["values"][0]["value"]
             # skip stations with no data
             if len(d) < 1:
                 continue
             if key in variable:
-                v = tts['variable'][key]
+                v = tts["variable"][key]
             elif key in sourceInfo:
-                v = tts['sourceInfo'][key]
+                v = tts["sourceInfo"][key]
             elif key in root:
                 v = tts[key]
             else:
@@ -394,7 +430,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         nwis_dict = nwis_dict.json()
 
     # strip header and all metadata.
-    ts = nwis_dict['value']['timeSeries']
+    ts = nwis_dict["value"]["timeSeries"]
     if ts == []:
         # raise a HydroNoDataError if NWIS returns an empty set.
         #
@@ -410,8 +446,9 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         # needs to be reconsidered. The request was valid somehow, but
         # there is no data being collected.
 
-        raise exceptions.HydroNoDataError("The NWIS reports that it does not "
-                                          "have any data for this request.")
+        raise exceptions.HydroNoDataError(
+            "The NWIS reports that it does not " "have any data for this request."
+        )
 
     # create a list of time series;
     # set the index, set the data types, replace NaNs, sort, find the first and last
@@ -422,18 +459,18 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     freqs = []
     meta = {}
     for series in ts:
-        series_name = series['name']
-        temp_name = series_name.split(':')
+        series_name = series["name"]
+        temp_name = series_name.split(":")
         agency = str(temp_name[0])
-        site_id = agency + ':' + str(temp_name[1])
+        site_id = agency + ":" + str(temp_name[1])
         parameter_cd = str(temp_name[2])
         stat = str(temp_name[3])
-        siteName = series['sourceInfo']['siteName']
-        siteLatLongSrs = series['sourceInfo']['geoLocation']['geogLocation']
-        noDataValues = series['variable']['noDataValue']
-        variableDescription = series['variable']['variableDescription']
-        unit = series['variable']['unit']['unitCode']
-        data = series['values'][0]['value']
+        siteName = series["sourceInfo"]["siteName"]
+        siteLatLongSrs = series["sourceInfo"]["geoLocation"]["geogLocation"]
+        noDataValues = series["variable"]["noDataValue"]
+        variableDescription = series["variable"]["variableDescription"]
+        unit = series["variable"]["unit"]["unitCode"]
+        data = series["values"][0]["value"]
         if data == []:
             # This parameter has no data. Skip to next series.
             continue
@@ -443,11 +480,13 @@ def extract_nwis_df(nwis_dict, interpolate=True):
             pass
         qualifiers = series_name + "_qualifiers"
         DF = pd.DataFrame(data=data)
-        DF.index = pd.to_datetime(DF.pop('dateTime'), utc=True)
-        DF['value'] = DF['value'].astype(float)
+        DF.index = pd.to_datetime(DF.pop("dateTime"), utc=True)
+        DF["value"] = DF["value"].astype(float)
         DF = DF.replace(to_replace=noDataValues, value=np.nan)
-        DF['qualifiers'] = DF['qualifiers'].apply(lambda x: ','.join(x))
-        DF.rename(columns={'qualifiers': qualifiers, 'value': series_name}, inplace=True)
+        DF["qualifiers"] = DF["qualifiers"].apply(lambda x: ",".join(x))
+        DF.rename(
+            columns={"qualifiers": qualifiers, "value": series_name}, inplace=True
+        )
         DF.sort_index(inplace=True)
         local_start = DF.index.min()
         local_end = DF.index.max()
@@ -456,45 +495,55 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         local_freq = calc_freq(DF.index)
         freqs.append(local_freq)
         if not DF.index.is_unique:
-            print("Series index for " + series_name + " is not unique. Attempting to drop identical rows.")
-            DF = DF.drop_duplicates(keep='first')
+            print(
+                "Series index for "
+                + series_name
+                + " is not unique. Attempting to drop identical rows."
+            )
+            DF = DF.drop_duplicates(keep="first")
             if not DF.index.is_unique:
-                print("Series index for " + series_name + " is STILL not unique. Dropping first rows with duplicated date.")
-                DF = DF[~DF.index.duplicated(keep='first')]
-        if local_freq > to_offset('0min'):
-            local_clean_index = pd.date_range(start=local_start, end=local_end, freq=local_freq, tz='UTC')
-            #if len(local_clean_index) != len(DF):
-                # This condition happens quite frequently with missing data.
-                #print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
+                print(
+                    "Series index for "
+                    + series_name
+                    + " is STILL not unique. Dropping first rows with duplicated date."
+                )
+                DF = DF[~DF.index.duplicated(keep="first")]
+        if local_freq > to_offset("0min"):
+            local_clean_index = pd.date_range(
+                start=local_start, end=local_end, freq=local_freq, tz="UTC"
+            )
+            # if len(local_clean_index) != len(DF):
+            # This condition happens quite frequently with missing data.
+            # print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
             DF = DF.reindex(index=local_clean_index, copy=True)
         else:
             # The dataframe DF must contain only the most recent data.
             pass
-        qual_cols = DF.columns.str.contains('_qualifiers')
+        qual_cols = DF.columns.str.contains("_qualifiers")
         # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
         # Instead, create a temporary dataframe, fillna, then copy back into original.
         DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
         DF.loc[:, qual_cols] = DFquals
 
-        if local_freq > pd.Timedelta(to_offset('0min')):
+        if local_freq > pd.Timedelta(to_offset("0min")):
             variableFreq_str = str(to_offset(local_freq))
         else:
-            variableFreq_str = str(to_offset('0min'))
+            variableFreq_str = str(to_offset("0min"))
         parameter_info = {
-                'variableFreq': variableFreq_str,
-                'variableUnit': unit,
-                'variableDescription': variableDescription
-                }
+            "variableFreq": variableFreq_str,
+            "variableUnit": unit,
+            "variableDescription": variableDescription,
+        }
         site_info = {
-                'siteName': siteName,
-                'siteLatLongSrs': siteLatLongSrs,
-                'timeSeries' : {}
-                }
+            "siteName": siteName,
+            "siteLatLongSrs": siteLatLongSrs,
+            "timeSeries": {},
+        }
         # if site is not in meta keys, add it.
         if site_id not in meta:
             meta[site_id] = site_info
         # Add the variable info to the site dict.
-        meta[site_id]['timeSeries'][parameter_cd] = parameter_info
+        meta[site_id]["timeSeries"][parameter_cd] = parameter_info
         collection.append(DF)
 
     if len(collection) < 1:
@@ -506,46 +555,50 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         # Compare these requests:
         # empty:               https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=01570500&startDT=2018-06-01&endDT=2018-06-01&parameterCd=00045
         # one empty, one full: https://nwis.waterservices.usgs.gov/nwis/iv/?format=json&sites=01570500&startDT=2018-06-01&endDT=2018-06-01&parameterCd=00045,00060
-        raise exceptions.HydroNoDataError("The NWIS does not have any data for"
-                                          " the requested combination of sites"
-                                          ", parameters, and dates.")
+        raise exceptions.HydroNoDataError(
+            "The NWIS does not have any data for"
+            " the requested combination of sites"
+            ", parameters, and dates."
+        )
     startmin = min(starts)
     endmax = max(ends)
     # Remove all frequencies of zero from freqs list.
-    zero = to_offset('0min')
+    zero = to_offset("0min")
     freqs2 = list(filter(lambda x: x > zero, freqs))
     if len(freqs2) > 0:
         freqmin = min(freqs)
         freqmax = max(freqs)
-        if (freqmin != freqmax):
-            warnings.warn("One or more datasets in this request is going to be "
-                          "'upsampled' to " + str(freqmin) + " because the data "
-                          "were collected at a lower frequency of " + str(freqmax),
-                          exceptions.HydroUserWarning)
-        clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz='UTC')
+        if freqmin != freqmax:
+            warnings.warn(
+                "One or more datasets in this request is going to be "
+                "'upsampled' to " + str(freqmin) + " because the data "
+                "were collected at a lower frequency of " + str(freqmax),
+                exceptions.HydroUserWarning,
+            )
+        clean_index = pd.date_range(start=startmin, end=endmax, freq=freqmin, tz="UTC")
         cleanDF = pd.DataFrame(index=clean_index)
         for dataset in collection:
             cleanDF = pd.concat([cleanDF, dataset], axis=1)
         # Replace lines with missing _qualifier flags with hf.upsampled
-        qual_cols = cleanDF.columns.str.contains('_qualifiers')
-        cleanDFquals = cleanDF.loc[:, qual_cols].fillna('hf.upsampled')
+        qual_cols = cleanDF.columns.str.contains("_qualifiers")
+        cleanDFquals = cleanDF.loc[:, qual_cols].fillna("hf.upsampled")
         cleanDF.loc[:, qual_cols] = cleanDFquals
         if interpolate:
-            #TODO: mark interpolated values with 'hf.interp'
-            #select data, then replace Nans with interpolated values.
-            data_cols = cleanDF.columns.str.contains(r'[0-9]$')
-            cleanDFdata = cleanDF.loc[:,data_cols].interpolate()
-            cleanDF.loc[:,data_cols] = cleanDFdata
+            # TODO: mark interpolated values with 'hf.interp'
+            # select data, then replace Nans with interpolated values.
+            data_cols = cleanDF.columns.str.contains(r"[0-9]$")
+            cleanDFdata = cleanDF.loc[:, data_cols].interpolate()
+            cleanDF.loc[:, data_cols] = cleanDFdata
     else:
         # If datasets only contain most recent data, then
         # don't set an index or a freq. Just concat all of the datasets.
         cleanDF = pd.concat(collection, axis=1)
 
-    cleanDF.index.name = 'datetimeUTC'
+    cleanDF.index.name = "datetimeUTC"
 
-    if (not DF.index.is_unique):
-        DF = DF[~DF.index.duplicated(keep='first')]
-    if (not DF.index.is_monotonic):
+    if not DF.index.is_unique:
+        DF = DF[~DF.index.duplicated(keep="first")]
+    if not DF.index.is_monotonic:
         DF.sort_index(axis=0, inplace=True)
 
     return cleanDF, meta
@@ -579,46 +632,47 @@ def nwis_custom_status_codes(response):
             https://waterservices.usgs.gov/rest/IV-Service.html#Error
     """
     nwis_msg = {
-        '200': 'OK',
-        '400': "400 Bad Request - "
-               "This often occurs if the URL arguments "
-               "are inconsistent. For example, if you submit a request using "
-               "a startDT and an endDT with the period argument. "
-               "An accompanying error should describe why the request was "
-               "bad."
-               + "\nError message from NWIS: {}".format(response.reason),
-        '403': "403 Access Forbidden - "
-               "This should only occur if for some reason the USGS has "
-               "blocked your Internet Protocol (IP) address from using "
-               "the service. This can happen if we believe that your use "
-               "of the service is so excessive that it is seriously "
-               "impacting others using the service. To get unblocked, "
-               "send us the URL you are using along with the IP using "
-               "this form. We may require changes to your query and "
-               "frequency of use in order to give you access to the "
-               "service again.",
-        '404': "404 Not Found - "
-               "Returned if and only if the query expresses a combination "
-               "of elements where data do not exist. For multi-site "
-               "queries, if any data are found, it is returned for those "
-               "site/parameters/date ranges where there are data.",
-        '503': "500 Internal Server Error - "
-               "If you see this, it means there is a problem with the web "
-               "service itself. It usually means the application server "
-               "is down unexpectedly. This could be caused by a host of "
-               "conditions, but changing your query will not solve this "
-               "problem. The NWIS application support team has to fix it. Most "
-               "of these errors are quickly detected and the support team "
-               "is notified if they occur."
+        "200": "OK",
+        "400": "400 Bad Request - "
+        "This often occurs if the URL arguments "
+        "are inconsistent. For example, if you submit a request using "
+        "a startDT and an endDT with the period argument. "
+        "An accompanying error should describe why the request was "
+        "bad." + "\nError message from NWIS: {}".format(response.reason),
+        "403": "403 Access Forbidden - "
+        "This should only occur if for some reason the USGS has "
+        "blocked your Internet Protocol (IP) address from using "
+        "the service. This can happen if we believe that your use "
+        "of the service is so excessive that it is seriously "
+        "impacting others using the service. To get unblocked, "
+        "send us the URL you are using along with the IP using "
+        "this form. We may require changes to your query and "
+        "frequency of use in order to give you access to the "
+        "service again.",
+        "404": "404 Not Found - "
+        "Returned if and only if the query expresses a combination "
+        "of elements where data do not exist. For multi-site "
+        "queries, if any data are found, it is returned for those "
+        "site/parameters/date ranges where there are data.",
+        "503": "500 Internal Server Error - "
+        "If you see this, it means there is a problem with the web "
+        "service itself. It usually means the application server "
+        "is down unexpectedly. This could be caused by a host of "
+        "conditions, but changing your query will not solve this "
+        "problem. The NWIS application support team has to fix it. Most "
+        "of these errors are quickly detected and the support team "
+        "is notified if they occur.",
     }
     if response.status_code == 200:
         return None
     # All other status codes will raise a warning.
     else:
         # Use the status_code as a key, return None if key not in dict
-        msg = "The NWIS returned a code of {}.\n".format(response.status_code) \
-              + nwis_msg.get(str(response.status_code)) \
-              + "\n\nURL used in this request: {}".format(response.url)
+        msg = (
+            "The NWIS returned a code of {}.\n".format(response.status_code)
+            + nwis_msg.get(str(response.status_code))
+            + "\n\nURL used in this request: {}".format(response.url)
+        )
 
         # Warnings will not beak the flow. They just print a message.
         # However, they are often supressed in some applications.
@@ -630,9 +684,9 @@ def read_parquet(filename):
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()
     meta_dict = pa_table.schema.metadata
-    if b'hydrofunctions_meta' in meta_dict:
-        meta_string = meta_dict[b'hydrofunctions_meta'].decode()
-        meta = json.loads(meta_string, encoding='utf-8')
+    if b"hydrofunctions_meta" in meta_dict:
+        meta_string = meta_dict[b"hydrofunctions_meta"].decode()
+        meta = json.loads(meta_string, encoding="utf-8")
     else:
         meta = None
     return dataframe, meta
@@ -642,6 +696,6 @@ def save_parquet(filename, dataframe, hf_meta):
     table = pa.Table.from_pandas(dataframe, preserve_index=True)
     meta_dict = table.schema.metadata
     hf_string = json.dumps(hf_meta).encode()
-    meta_dict[b'hydrofunctions_meta'] = hf_string
+    meta_dict[b"hydrofunctions_meta"] = hf_string
     table = table.replace_schema_metadata(meta_dict)
     pq.write_table(table, filename)
