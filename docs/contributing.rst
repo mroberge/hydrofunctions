@@ -36,11 +36,11 @@ Standards for the ideal pull request
 - If you make a change, add your name to AUTHORS.rst
 - Note your change in HISTORY.rst and initial it.
 - Use docstrings, illustrate features in a notebook, add a section to docs/usage.rst
-- Follow PEP8 standards in your code!
+- I use 'Black' for code formatting. Follow PEP8 standards!
 - Use `Google-style docstrings <https://google.github.io/styleguide/pyguide.html?showone=Comments#Comments>`_
   , described `here <http://www.sphinx-doc.org/en/stable/ext/example_google.html>`_.
 - Add tests! Lots of tests! Make sure you test your code!
-- Your code should work for Python 3.5, 3.6, & 3.7. This gets tested in `TravisCI <https://travis-ci.org/mroberge/hydrofunctions/pull_requests>`_
+- Your code should work for Python 3.6, 3.7, & 3.8. This gets tested in `TravisCI <https://travis-ci.org/mroberge/hydrofunctions/pull_requests>`_
 
 
 A detailed guide to contributing new code
