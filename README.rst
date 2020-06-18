@@ -41,7 +41,7 @@ Features
 * Retrieve USGS rating curves, peak discharges, field notes, and site files for gauging stations
 * Retrieve USGS daily, monthly, and annual statistics for gauging stations
 * Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
-* **Massive `Users Guide`_ that makes Hydrology AND Data Science easy!**
+* **Massive** `Users Guide`_ **that makes Hydrology AND Data Science easy!**
 
 ⇨ Still in active development! Let me know what features you want!
 
