@@ -45,11 +45,11 @@ test_requirements = [
 
 setup(
     name="hydrofunctions",
-    version="0.1.7",
+    version="0.2.0",
     description="A suite of convenience functions for exploring water data in a Jupyter Notebook.",
     long_description=readme + "\n\n" + history,
     author="Martin Roberge",
-    author_email="mroberge.whois@gmail.com",
+    author_email="mroberge@towson.edu",
     url="https://github.com/mroberge/hydrofunctions",
     packages=find_packages(),
     package_dir={"hydrofunctions": "hydrofunctions"},
