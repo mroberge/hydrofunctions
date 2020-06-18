@@ -65,7 +65,7 @@ class HydroNoDataError(HydroException):
         request.
 
         try:
-            hf.NWIS('666666666').get_data()
+            hf.NWIS('666666666')
         except HydroNoDataError as err:
             print("This is just to illustrate how to capture this error.")
             print(err)
