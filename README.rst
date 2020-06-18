@@ -137,7 +137,7 @@ Draw an interactive map in a Jupyter Notebook:
 
 Learn more:
 
-* `More usage <https://hydrofunctions.readthedocs.io/en/master/usage.html>`_ tips
+* `More usage <https://hydrofunctions.readthedocs.io/en/latest>`_ tips
 * `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
 
 Easy Installation
