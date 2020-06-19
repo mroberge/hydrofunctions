@@ -1,24 +1,44 @@
-.. hydrofunctions documentation master file, created by
-   sphinx-quickstart on Tue Jul  9 22:26:36 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to the Hydrofunctions |version| Users Guide!
 ====================================================
-
-Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   readme
+   introduction
    installation
-   usage
+   notebooks/Writing_Valid_Requests_for_NWIS
+   notebooks/Saving_Data
+   notebooks/Selecting_Sites
+   notebooks/viewing
    graphing
+   notebooks/Peak_Discharge
+   notebooks/USGS_Statistics_Service
    contributing
    authors
    history
-   modules
+   hydrofunctions
+
+
+
+
+Example Applications
+====================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Example Applications
+
+   notebooks/Comparing_Urban_and_Rural_Streams
+   notebooks/Hydrofunctions_nested_watersheds
+   notebooks/Hydrofunctions_Comparing_Stream_Environments
+   notebooks/DailyMean_vs_Instant
+   notebooks/Draw_Map_Demo
+   notebooks/Graphing
+   notebooks/Hydrofunctions_Tutorial
+
+
+
+
 
 Indices and tables
 ==================

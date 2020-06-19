@@ -1,6 +1,38 @@
-hydrofunctions package
-======================
+hydrofunctions |version| package
+================================
 
+
+Package contents
+----------------
+
+.. automodule:: hydrofunctions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+hydrofunctions.charts module
+----------------------------
+
+.. automodule:: hydrofunctions.charts
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+hydrofunctions.exceptions module
+--------------------------------
+
+.. automodule:: hydrofunctions.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+hydrofunctions.helpers module
+-----------------------------
+
+.. automodule:: hydrofunctions.helpers
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 hydrofunctions.hydrofunctions module
 ------------------------------------
@@ -18,22 +50,6 @@ hydrofunctions.station module
     :undoc-members:
     :show-inheritance:
 
-hydrofunctions.helpers module
------------------------------
-
-.. automodule:: hydrofunctions.helpers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-hydrofunctions.charts module
------------------------------
-
-.. automodule:: hydrofunctions.charts
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 hydrofunctions.typing module
 ----------------------------
 
@@ -42,18 +58,10 @@ hydrofunctions.typing module
     :undoc-members:
     :show-inheritance:
 
-hydrofunctions.exceptions module
---------------------------------
+hydrofunctions.usgs_rdb module
+------------------------------
 
-.. automodule:: hydrofunctions.exceptions
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: hydrofunctions
+.. automodule:: hydrofunctions.usgs_rdb
     :members:
     :undoc-members:
     :show-inheritance:

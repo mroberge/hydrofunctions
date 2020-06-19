@@ -22,87 +22,128 @@ HydroFunctions
         :target: https://github.com/mroberge/hydrofunctions/blob/master/LICENSE
         :alt: MIT license
 
-a suite of convenience functions for exploring water data in Python.
+A suite of convenience functions for exploring water data in Python.
 
 Features
 --------
 
 * Retrieves stream data from the USGS NWIS service
-* Retrieve data using multiple site numbers, state, county codes, or boundary box
+* Select data using multiple site numbers, by state, county codes, or a boundary box
 * Preserves NWIS metadata, including NoData values
 * Helpful error messages to help you write valid requests
 * Extracts data into a Pandas dataframe, json, or dict
+* Plot beautiful graphs in Jupyter Notebooks
+   * hydrographs (or time series of any data)
+   * flow duration charts
+   * cycle plots to illustrate annual or diurnal cycles
+   * Interactive map for finding stream gauge ID numbers
 * Plotting and manipulation through Pandas dataframes
-* Interactive map for finding stream gage ID numbers
-* Still in early development! More features to come!
+* Retrieve USGS rating curves, peak discharges, field notes, and site files for gauging stations
+* Retrieve USGS daily, monthly, and annual statistics for gauging stations
+* Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
+* **Massive** `Users Guide`_ **that makes Hydrology AND Data Science easy!**
 
-Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for more details.
+⇨ Still in active development! Let me know what features you want!
+
+Read the `Users Guide`_ for more details.
 
 
 Basic Usage
 -----------
 
-First, import hydrofunctions into your project and enable automatic chart 
-display::
+First, import hydrofunctions into your project. If you plan to work with Jupyter
+notebooks, then go ahead and enable automatic chart display:
 
-    >>> import hydrofunctions as hf
-    >>> %matplotlib inline
+.. code-block:: ipython
 
-Create NWIS data object to hold our request and the data we will retrieve.
-We will request the daily values ('dv') for site '0158520' for the past
-55 days::
+    In  [1]: import hydrofunctions as hf
+             %matplotlib inline
 
-    >>> herring = hf.NWIS('01585200', 'dv', period='P55D')
+Create an NWIS data object to hold our request and the data we will retrieve.
+We will request the instantaneous values ('iv') for site '01585200' for the
+past 55 days:
 
-We've set up our system, now we submit our request for data and get a
-response::
+.. code-block:: ipython
 
-    >>> herring.get_data()
-    <hydrofunctions.station.NWIS at 0x127506d6ac8>
+    In  [2]: herring = hf.NWIS('01585200', 'iv', period='P55D')
+    Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01585200&period=P55D
 
-Create a dataframe from our data, and list the first five items::
+Check that the request went smoothly:
 
-    >>> herring.df().head()
+.. code-block:: ipython
+
+    In  [3]: herring.ok
+    Out [3]: True
+
+Find out what data we received:
+
+.. code-block:: ipython
+
+    In  [4]: herring
+    Out [4]: USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
+                 00060: <5 * Minutes>  Discharge, cubic feet per second
+                 00065: <5 * Minutes>  Gage height, feet
+             Start: 2019-05-25 01:05:00+00:00
+             End:   2019-07-19 19:05:00+00:00
+
+This tells us the name of our site, and gives a list of the parameters that we
+have. For each parameter it lists how frequently the data were collected, and
+it show the common name of the parameter and its units.
+
+Create a dataframe using only our discharge data, and list the first five items:
+
+.. code-block:: ipython
+
+    In  [5]: herring.df('discharge').head()
+    Out [5]:
 
 *--a table with our data appears--*
 
-    +------------+--------------------------------------------------+
-    |  datetime  | 01585200 - Mean Discharge, cubic feet per second |
-    +------------+--------------------------------------------------+
-    | 2017-06-01 |                                       0.71       |
-    +------------+--------------------------------------------------+
-    | 2017-06-02 |                                       0.64       |
-    +------------+--------------------------------------------------+
-    | 2017-06-03 |                                       0.61       |
-    +------------+--------------------------------------------------+
-    | 2017-06-04 |                                       0.58       |
-    +------------+--------------------------------------------------+
-    | 2017-06-05 |                                       1.95       |
-    +------------+--------------------------------------------------+
+    +------------------------------+---------------------------+
+    |          datetimeUTC         | USGS:01585200:00060:00000 |
+    +------------------------------+---------------------------+
+    |   2019-05-25 01:05:00+00:00  |                1.57       |
+    +------------------------------+---------------------------+
+    |   2019-05-25 01:10:00+00:00  |                1.57       |
+    +------------------------------+---------------------------+
+    |   2019-05-25 01:15:00+00:00  |                1.51       |
+    +------------------------------+---------------------------+
+    |   2019-05-25 01:20:00+00:00  |                1.57       |
+    +------------------------------+---------------------------+
+    |   2019-05-25 01:25:00+00:00  |                1.57       |
+    +------------------------------+---------------------------+
 
-Plot the data using built-in methods from Pandas and mathplotlib::
+Plot the data using built-in methods from Pandas and mathplotlib:
 
-    >>> herring.df().plot()
+.. code-block:: ipython
+
+    In  [6]: herring.df('q').plot()
+    Out [6]:
 
 *--a stream hydrograph appears--*
 
 .. image:: _static/HerringHydrograph.png
-        :alt: a stream hydrograph for Herring Run
+   :alt: a stream hydrograph for Herring Run
 
 Draw an interactive map in a Jupyter Notebook:
+
+.. code-block:: ipython
+
+    In  [7]: hf.draw_map()
+    Out [7]:
 
 .. image:: _static/draw_map.jpg
         :alt: a map in an interactive Jupyter Notebook.
 
 Learn more:
 
-* `More usage <https://hydrofunctions.readthedocs.io/en/master/usage.html>`_ tips
-* `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
+* `More usage <https://hydrofunctions.readthedocs.io/en/latest>`_ tips
+* `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
 
 Easy Installation
 -----------------
 
-The easiest way to install Hydrofunctions is by typing this from your 
+The easiest way to install Hydrofunctions is by typing this from your
 command line:
 
 .. code-block:: console
@@ -111,12 +152,12 @@ command line:
 
 
 Hydrofunctions depends upon Pandas and numerous other scientific packages
-for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_ 
+for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_
 is an easy, safe, open-source method for downloading everything and avoiding
 conflicts with other versions of Python that might be running on your
 computer.
 
-Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_ 
+Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_
 in the Users Guide to learn how to install
 Anaconda, or if you have problems using the Easy Installation method above.
 
@@ -136,3 +177,5 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 MIT License
 
 Copyright (c) 2016, Martin Roberge and contributors
+
+.. _`Users Guide`:  https://hydrofunctions.readthedocs.io/en/latest

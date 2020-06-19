@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-exceptions.py
+hydrofunctions.exceptions
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains all of the custom exceptions defined in this package. The
-base class is HydroException, and all custom exceptions are subclasses of
+base class is HydroException and all custom exceptions are subclasses of
 HydroException.
 
 Use the errors like this::
@@ -27,13 +27,16 @@ difficult to figure out what broke. On the other hand, like in my example
 above, it is more readable if you group a series of statements and then
 handle their exceptions together.
 
-Example::
+**Example:**
 
-    raise HydroNoDataError("Oh no, NWIS doesn't have this data for you!")
+    >>> raise HydroNoDataError("Oh no, NWIS doesn't have this data for you!")
 
 https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
+
+-----
 """
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import, print_function, division, unicode_literals
+import warnings
 
 
 class HydroException(Exception):
@@ -41,6 +44,7 @@ class HydroException(Exception):
         This is the base class for all exceptions created for the
         HydroFunctions package. This class is not meant to be raised.
     """
+
     pass
 
 
@@ -48,31 +52,65 @@ class HydroNoDataError(HydroException):
     """Raised when a service returns an empty dataset or indicates that\
         it has no data for the request.
 
-        Usage::
+        **Usage**::
 
             raise HydroNoDataError("The NWIS service had no data for this request.")
 
         Do not catch this error for interactive sessions: The user should
         get a useful message from the error when they try to request something
-        that doesn't exits.
+        that doesn't exist.
 
         Catch this error in automated systems so that the system can reconsider
         the request and either fix the request or move on to the next
         request.
+
+        **Example**::
+
+            try:
+                hf.NWIS('666666666')
+            except HydroNoDataError as err:
+                print("This is just to illustrate how to capture this error.")
+                print(err)
     """
+
     pass
 
 
 class HydroEncodeError(HydroException):
-    """An error occured while encoding or decoding an argument"""
+    """Raised when an error occurs while encoding or decoding an argument.
+
+        **Example**::
+
+            try:
+                # bunch of code from your package
+            except HydroException:
+                # blanked condition to handle all errors from your package
+    """
+
     pass
 
 
-"""
-example code::
+class HydroUserWarning(UserWarning):
+    """Warn user of a hazardous condition or when an action has been triggered\
+        that may be unexpected.
 
-try:
-    #bunch of code from your package
-except HydroException:
-    '''blanked condition to handle all errors from your package'''
-"""
+        This is the base class for all warnings created for the HydroFunctions
+        package. This class can be used if there is no more specific warning
+        available.
+
+        **Usage**::
+
+            import warnings
+            ... code
+            warnings.warn('This is my warning message.', HydroUserWarning)
+
+        Note:
+            Warnings can be hidden or turned off depending on how the user is
+            accessing Python and the settings for their interface.
+
+            Use HydroException if a process must be shut down, or is doomed to
+            fail anyway. This will at least give the user a helpful error
+            message.
+    """
+
+    pass
