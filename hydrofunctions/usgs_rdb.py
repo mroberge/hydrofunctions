@@ -28,27 +28,26 @@ class hydroRDB:
             A string from the rdb file that gives the data type and length of
             each column.
 
-    Properties:
-        header (str):
+    **Properties:**
+        **header** (str):
             A multi-line string from the header of the rdb file. The header
             often contain important metadata and user warnings.
-        table (pandas dataframe):
+        **table** (pandas dataframe):
             This is a dataframe made from the rdb file.
-        columns (str):
+        **columns** (str):
             A string from the rdb file that lists the column names.
-        dtypes (str):
+        **dtypes** (str):
             A string from the rdb file that gives the data type and length of
             each column.
 
-        You can also access the header and the dataframe as a named tuple:
-            ```
+        You can also access the header and the dataframe as a named tuple::
+
             hydroRDB(header=<a multi-line string>, table=<pandas dataframe>)
-            ```
 
     Note:
         - The args to create this object are supplied by hf.read_rdb().
-        - The hydroRDB object is returned from several functions that request
-        RDB files from a USGS data service, including: peaks(), field_meas(),
+        - The hydroRDB object is returned from several functions that request\
+        RDB files from a USGS data service, including: peaks(), field_meas(),\
         rating_curve(), stats(), site_file(), and data_catalog().
         - You can read more about the RDB format here: https://pubs.usgs.gov/of/2003/ofr03123/6.4rdb_format.pdf
     """
@@ -72,7 +71,7 @@ class hydroRDB:
 
 
 def get_usgs_RDB_service(url, headers=None, params=None):
-    """Request data from a USGS dataservice and handle errors
+    """Request data from a USGS dataservice and handle errors.
 
     Args:
         url (str):
@@ -84,9 +83,9 @@ def get_usgs_RDB_service(url, headers=None, params=None):
     Returns:
         A Requests response object.
     Raises:
-        This function will raise an exception for any non-200 status code, and
-        in cases where the USGS service returns anything that is not obviously
-        an RDB file. If an exception is raised, then an attempt will be made to
+        This function will raise an exception for any non-200 status code, and\
+        in cases where the USGS service returns anything that is not obviously\
+        an RDB file. If an exception is raised, then an attempt will be made to\
         display the error page which the USGS sometimes sends back to the user.
     """
     response = requests.get(url, headers=headers, params=params)
@@ -126,15 +125,14 @@ def read_rdb(text):
             to obtain these would be from the .text property of a requests
             response, as in the example usage below.
     Returns:
-        header (list of strings):
+        header (multi-line string):
             Every commented line at the top of the rdb file is marked with a
             '#' symbol. Each of these lines is stored in this output.
         outputDF (pandas.DataFrame):
-            A dataframe containing the information in the rdb file. 'site_no'
-            and parameter_cd
-            are interpreted as a string, but every other number is interpreted
-            as a float or int; missing values as an np.nan; strings for
-            everything else.
+            A dataframe containing the information in the rdb file. `site_no`
+            and `parameter_cd` are interpreted as a string, but every other number
+            is interpreted as a float or int; missing values as an np.nan;
+            strings for everything else.
         columns (list of strings):
             The column names, taken from the rdb header row.
         dtypes (list of strings):
@@ -183,7 +181,7 @@ def read_rdb(text):
 
 
 def site_file(site):
-    """Load USGS site file into a Pandas dataframe
+    """Load USGS site file into a Pandas dataframe.
 
     Args:
         site (str):
@@ -193,21 +191,20 @@ def site_file(site):
         a hydroRDB object or tuple consisting of the header and a pandas
         dataframe.
 
-    Example:
-        ```
-        test = site_file('01542500')
-        test
+    **Example:**
 
-        hydroRDB(header=<a mulit-line string of the header>,
+        >>> test = site_file('01542500')
+
+        >>> test
+        hydroRDB(header=<a multi-line string of the header>,
                  table=<a Pandas dataframe>)
-        ```
-        You can also access the header, dataframe, column names, and data types
-        through the associated properties:
-        ```
-        test.table
 
+    You can also access the header, dataframe, column names, and data types
+    through the associated properties `header`, `table`, `columns`, `dtypes`::
+
+        >>> test.table
         <a Pandas dataframe>
-        ```
+
     """
     url = (
         "https://waterservices.usgs.gov/nwis/site/?format=rdb&sites="
@@ -225,7 +222,7 @@ def site_file(site):
 
 
 def data_catalog(site):
-    """Load a catalog and history of the data collected at a site into a Pandas dataframe.
+    """Load a history of the data collected at a site into a Pandas dataframe.
 
     Args:
         site (str):
@@ -235,21 +232,19 @@ def data_catalog(site):
         a hydroRDB object or tuple consisting of the header and a pandas
         dataframe.
 
-    Example:
-        ```
-        test = data_catalog('01542500')
-        test
+    **Example:**
 
+        >>> test = data_catalog('01542500')
+        >>> test
         hydroRDB(header=<a mulit-line string of the header>,
                  table=<a Pandas dataframe>)
-        ```
-        You can also access the header, dataframe, column names, and data types
-        through the associated properties:
-        ```
-        test.table
 
+    You can also access the header, dataframe, column names, and data types
+    through the associated properties `header`, `table`, `columns`, `dtypes`::
+
+        >>> test.table
         <a Pandas dataframe>
-        ```
+
     """
     url = (
         "https://waterservices.usgs.gov/nwis/site/?format=rdb&sites="
@@ -267,28 +262,33 @@ def data_catalog(site):
 
 
 def field_meas(site):
-    """Load USGS field measurements of stream discharge into a Pandas dataframe
+    """Load USGS field measurements of stream discharge into a Pandas dataframe.
 
     Args:
         site (str):
             The gauge ID number for the site.
 
     Returns:
-        a dataframe. Each row represents an observation on a given date of
+        a hydroRDB object or tuple consisting of the header and a pandas
+        dataframe. Each row of the table represents an observation on a given date of
         river conditions at the gauge by USGS personnel. Values are stored in
         columns, and include the measured stream discharge, channel width,
-        channel area, depth, and velocity. These data can be used to create a
-        rating curve, to estimate the gage height for a discharge of zero, and
-        to get readings of water velocity.
+        channel area, depth, and velocity.
 
-    NOTES:
-        To plot a rating curve, use:
-            `output.plot(x='gage_height_va', y='discharge_va', kind='scatter')`
+    **Example:**
 
-        Rating curves are typically plotted with the indepedent variable,
-        gage_height, plotted on the Y axis.
+        >>> test = field_meas('01542500')
+        >>> test
+        hydroRDB(header=<a mulit-line string of the header>,
+                 table=<a Pandas dataframe>)
 
-    Discussion:
+    You can also access the header, dataframe, column names, and data types
+    through the associated properties `header`, `table`, `columns`, `dtypes`::
+
+        >>> test.table
+        <a Pandas dataframe>
+
+    **Discussion:**
         The USGS operates over 8,000 stream gages around the United States and
         territories. Each of these sensors records the depth, or 'stage' of the
         water. In order to translate this stage data into stream discharge, the
@@ -297,13 +297,23 @@ def field_meas(site):
         the USGS personnel visit all of the gage every one to eight weeks, and
         measure the stage and the discharge of the river manually.
 
-        The `field_meas()` function returns all of the field-collected data for
-        this site. You can use these data to create your own rating curve or to
+        The ``field_meas()`` function returns all of the field-collected data for
+        this site. The USGS uses these data to create the rating curve. You can use
+        these data to see how the site has changed over time, or to
         read the notes about local conditions.
 
-        The `rating_curve()` function returns the most recent 'expanded shift-
-        adjusted' rating curve constructed for this site.
+        The ``rating_curve()`` function returns the most recent 'expanded shift-
+        adjusted' rating curve constructed for this site. This is the current official
+        rating curve.
 
+        To plot a rating curve from the field measurements, use::
+
+            >>> header, data = hf.field_meas('01581830')
+
+            >>> data.plot(x='gage_height_va', y='discharge_va', kind='scatter')
+
+        Rating curves are typically plotted with the indepedent variable,
+        gage_height, plotted on the Y axis.
     """
     url = (
         "https://waterdata.usgs.gov/nwis/measurements?site_no="
@@ -342,9 +352,23 @@ def peaks(site):
             The gauge ID number for the site.
 
     Returns:
-        a dataframe with the annual peak discharge series.
+        a hydroRDB object or tuple consisting of the header and a table. The header
+        is a multi-line string of metadata supplied by the USGS with the data series.
+        The table is a dataframe containing the annual peak discharge series.
 
-        a header of meta-data supplied by the USGS with the data series.
+    **Example:**
+
+        >>> test = data_catalog('01542500')
+        >>> test
+        hydroRDB(header=<a mulit-line string of the header>,
+                 table=<a Pandas dataframe>)
+
+    You can also access the header, dataframe, column names, and data types
+    through the associated properties `header`, `table`, `columns`, `dtypes`::
+
+        >>> test.table
+        <a Pandas dataframe>
+
     """
     url = (
         "https://nwis.waterdata.usgs.gov/nwis/peak?site_no="
@@ -374,10 +398,35 @@ def rating_curve(site):
             The gage ID number for the site.
 
     Returns:
-        a dataframe with the most recent rating curve.
+        a hydroRDB object or tuple consisting of the header and a table. The header
+        is a multi-line string of metadata supplied by the USGS with the data series.
+        The table is a dataframe containing the latest official rating curve for the
+        site.
 
-    Note:
-        Rating curves change over time
+    **Example:**
+
+        >>> test = data_catalog('01542500')
+        >>> test
+        hydroRDB(header=<a mulit-line string of the header>,
+                 table=<a Pandas dataframe>)
+
+    You can also access the header, dataframe, column names, and data types
+    through the associated properties `header`, `table`, `columns`, `dtypes`::
+
+        >>> test.table
+        <a Pandas dataframe>
+
+    **Discussion:**
+        The USGS operates over 8,000 stream gauges around the United States and
+        territories. Each of these sensors records the depth, or 'stage' of the
+        water. In order to translate this stage data into stream discharge, the
+        USGS staff creates an empirical relationship called a 'rating curve'
+        between the river stage and stream discharge.
+
+        See ``hf.field_meas()`` to access the field data used to construct the
+        rating curve.
+
+        **Note:** Rating curves change over time.
     """
     url = (
         "https://waterdata.usgs.gov/nwisweb/data/ratings/exsa/USGS."
@@ -415,10 +464,26 @@ def stats(site, statReportType="daily", **kwargs):
             - 'daily' (default): this
 
     Returns:
-        a dataframe with the requested statistics.
+        a hydroRDB object or tuple consisting of the header and a table. The header
+        is a multi-line string of metadata supplied by the USGS with the data series.
+        The table is a dataframe containing the latest official statistics for the
+        site.
 
     Raises:
         HTTPError when a non-200 http status code is returned.
+
+    **Example:**
+
+        >>> test = stats('01542500', 'monthly')
+        >>> test
+        hydroRDB(header=<a mulit-line string of the header>,
+                 table=<a Pandas dataframe>)
+
+    You can also access the header, dataframe, column names, and data types
+    through the associated properties `header`, `table`, `columns`, `dtypes`::
+
+        >>> test.table
+        <a Pandas dataframe>
 
     Note:
         This function is based on the USGS statistics service, described here:
@@ -426,8 +491,11 @@ def stats(site, statReportType="daily", **kwargs):
 
         The USGS Statistics Service allows you to specify a wide array of
         additional parameters in your request. You can provide these parameters
-        as keyword arguments, like in this example:
-        `hf.stats('01452500', parameterCD='00060')`  This will only request
+        as keyword arguments, like in this example::
+
+            >>> hf.stats('01452500', parameterCD='00060')
+
+        This will only request
         statistics for discharge, which is specified with the '00060'
         parameter code.
 

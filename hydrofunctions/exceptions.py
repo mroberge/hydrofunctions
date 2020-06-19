@@ -27,9 +27,9 @@ difficult to figure out what broke. On the other hand, like in my example
 above, it is more readable if you group a series of statements and then
 handle their exceptions together.
 
-Example::
+**Example:**
 
-    raise HydroNoDataError("Oh no, NWIS doesn't have this data for you!")
+    >>> raise HydroNoDataError("Oh no, NWIS doesn't have this data for you!")
 
 https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 
@@ -52,23 +52,25 @@ class HydroNoDataError(HydroException):
     """Raised when a service returns an empty dataset or indicates that\
         it has no data for the request.
 
-        Usage::
+        **Usage**::
 
             raise HydroNoDataError("The NWIS service had no data for this request.")
 
         Do not catch this error for interactive sessions: The user should
         get a useful message from the error when they try to request something
-        that doesn't exits.
+        that doesn't exist.
 
         Catch this error in automated systems so that the system can reconsider
         the request and either fix the request or move on to the next
         request.
 
-        try:
-            hf.NWIS('666666666')
-        except HydroNoDataError as err:
-            print("This is just to illustrate how to capture this error.")
-            print(err)
+        **Example**::
+
+            try:
+                hf.NWIS('666666666')
+            except HydroNoDataError as err:
+                print("This is just to illustrate how to capture this error.")
+                print(err)
     """
 
     pass
@@ -77,12 +79,12 @@ class HydroNoDataError(HydroException):
 class HydroEncodeError(HydroException):
     """Raised when an error occurs while encoding or decoding an argument.
 
-    example code::
+        **Example**::
 
-        try:
-            # bunch of code from your package
-        except HydroException:
-            # blanked condition to handle all errors from your package
+            try:
+                # bunch of code from your package
+            except HydroException:
+                # blanked condition to handle all errors from your package
     """
 
     pass
@@ -96,13 +98,13 @@ class HydroUserWarning(UserWarning):
         package. This class can be used if there is no more specific warning
         available.
 
-        Usage::
+        **Usage**::
 
             import warnings
             ... code
             warnings.warn('This is my warning message.', HydroUserWarning)
 
-        Note::
+        Note:
             Warnings can be hidden or turned off depending on how the user is
             accessing Python and the settings for their interface.
 

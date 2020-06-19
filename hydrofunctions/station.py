@@ -32,20 +32,18 @@ class Station(object):
 class NWIS(Station):
     """A class for working with data from the USGS NWIS service.
 
-    description
-
     Args:
         site (str or list of strings):
             a valid site is '01585200' or ['01585200', '01646502']. Default is
-            None. If site is not specified, you will need to select sites using
+            `None`. If site is not specified, you will need to select sites using
             stateCd or countyCd.
 
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
-            'dv'(default): daily values. Mean value for an entire day.
-            'iv': instantaneous value measured at this time. Also known
-            as 'Real-time data'. Can be measured as often as every
-            five minutes by the USGS. 15 minutes is more typical.
+                * 'dv'(default): daily values. Mean value for an entire day.
+                * 'iv': instantaneous value measured at this time. Also known\
+                as 'Real-time data'. Can be measured as often as every\
+                five minutes by the USGS. 15 minutes is more typical.
 
         start_date (str):
            should take on the form 'yyyy-mm-dd'
@@ -265,6 +263,10 @@ class NWIS(Station):
         return requested_df
 
     def get_data(self):
+        """
+        .. deprecated:: version 0.2.0
+           No longer needed. NWIS object will request data upon creation.
+        """
         warnings.warn(
             "It is no longer necessary to call .get_data() to request data.",
             FutureWarning,

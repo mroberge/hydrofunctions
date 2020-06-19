@@ -42,14 +42,14 @@ def flow_duration(
                 separate color to the chart.
             * Only include columns with discharge values; no metadata
 
-        xscale ('logit' | 'linear'): Type of x scale for plotting probabilities
+        xscale (str, 'logit' | 'linear'): Type of x scale for plotting probabilities
             default is 'logit', so that each standard deviation is nearly the
             same distance on the x scale. 'linear' is the other option.
 
-        yscale ('log' | 'linear'): The type of y scale for plotting discharge.
+        yscale (str, 'log' | 'linear'): The type of y scale for plotting discharge.
             Default is 'log'.
 
-        ylabel (str, default: 'Stream Discharge (m³/s)'): The label for the Y axis.
+        ylabel (`str`, default `'Stream Discharge (ft³/s)'`): The label for the Y axis.
 
         xlabel (not implemented)
 
@@ -63,9 +63,9 @@ def flow_duration(
             See https://matplotlib.org/api/markers_api.html for full list of
             point formatters.
 
-        legend (bool, default: True): whether the legend should be plotted.
+        legend (`bool`, default `True`): Whether the legend should be plotted.
 
-        legend_loc (str, default: 'best'): the location of the legend.
+        legend_loc (`str`, default `best`): the location of the legend.
 
             * 'best': Automatically choose the option below with the least overlap.
             * 'upper left', 'upper right', 'lower left', 'lower right': place the legend at the corresponding corner of the axes/figure.
@@ -73,17 +73,16 @@ def flow_duration(
             * 'center': place the legend at the center of the axes/figure.
             * The location can also be a 2-tuple giving the coordinates of the lower-left corner of the legend in axes coordinates.
 
-        title (str, default: ''): text to use as a figure title. If no text
+        title (`str`, default ''): Text to use as a figure title. If no text
             is provided, no title will be created (default).
 
     Returns:
-        fig (matplotlib.figure.Figure):
-            a matplotlib figure. This will plot immediately in a Jupyter
-            notebook if the command '%matplotlib inline' was previously issued.
-            The figure may also be altered after it is returned.
-
-        ax (matplotlib.axes.Axes):
-            a matplotlib chart. This may be altered after it is returned.
+        fig, ax (`matplotlib.figure.Figure`, `matplotlib.axes.Axes`):
+            Returns a tuple that includes a matplotlib 'figure' and 'axes'. The figure
+            is a container with all of the drawing inside of it; the axes are an array
+            of matplotlib charts. Together, they will plot immediately in a Jupyter
+            notebook if the command `%matplotlib inline` was previously issued.
+            The figure and axes may be altered after they are returned.
 
     """
     rank = Qdf.rank(ascending=False, pct=True)
@@ -134,6 +133,7 @@ def cycleplot(
 
     Args:
         Qseries (series): a Pandas series of discharge values.
+
             * Values should be arranged in columns
             * Should use a dateTimeIndex
 
@@ -167,9 +167,9 @@ def cycleplot(
 
         y_label (str): The label for the y axis.
 
-        legend (bool, default: True): whether the legend should be plotted.
+        legend (bool): default True. Whether the legend should be plotted.
 
-        legend_loc (str, default: 'best'): the location of the legend.
+        legend_loc (str): default is 'best'. The location of the legend.
 
             * 'best': Automatically choose the option below with the least overlap.
             * 'upper left', 'upper right', 'lower left', 'lower right': place the legend at the corresponding corner of the axes/figure.
@@ -177,21 +177,20 @@ def cycleplot(
             * 'center': place the legend at the center of the axes/figure.
             * The location can also be a 2-tuple giving the coordinates of the lower-left corner of the legend in axes coordinates.
 
-        title (str, default: ''): text to use as a figure title. If no text
+        title (str): default is ''. Text to use as a figure title. If no text
             is provided, no title will be created (default).
 
     Returns:
-        fig (matplotlib.figure.Figure):
-            a matplotlib figure. This will plot immediately in a Jupyter
-            notebook if the command '%matplotlib inline' was previously issued.
-            The figure may also be altered after it is returned.
+        fig, ax (matplotlib.figure.Figure, matplotlib.axes.Axes):
+            Returns a tuple that includes a matplotlib 'figure' and 'axes'. The figure
+            is a container with all of the drawing inside of it; the axes are an array
+            of matplotlib charts. Together, they will plot immediately in a Jupyter
+            notebook if the command `%matplotlib inline` was previously issued.
+            The figure and axes may be altered after they are returned.
 
-        ax (matplotlib.axes.Axes):
-            an array of matplotlib charts. This may be altered after it is returned.
-
-    Notes:
-        inspired by: https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
-        Jake VanderPlas. 2016. Python Data Science Handbook. O'Reilly Media, Inc.'
+    Note:
+        inspired by https://jakevdp.github.io/PythonDataScienceHandbook/03.11-working-with-time-series.html
+        Jake VanderPlas. 2016. Python Data Science Handbook. O'Reilly Media, Inc.
     """
     # is Qseries a series of discharge? if not, raise error.
     # or, select the discharge...
@@ -286,7 +285,7 @@ def cycleplot(
         # Break the time series into 2 groups to compare day versus night.
         # TODO: This assumes the index hour is in local time, but it is in UTC time
         compareby = np.where(
-            (Qseries.index.hour >= 6) & (DF.index.hour < 19), "Day", "Night"
+            (Qseries.index.hour >= 6) & (Qseries.index.hour < 19), "Day", "Night"
         )
         sub_titles = ["Day", "Night"]
     else:

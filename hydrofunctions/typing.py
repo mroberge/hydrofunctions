@@ -8,7 +8,7 @@ Why 'pre-check' user imputs, instead of using standard
 python duck typing? These functions are meant to enhance an interactive
 session for the user, and will check a user's parameters
 before requesting data from an online resource. Otherwise, the server will
-return a 404 code and the user will have no idea why. This tries to raise
+return a 404 code and the user will have no idea why. Hydrofunctions tries to raise
 an exception (usually a TypeError) before a request is made, so that the user
 can fix their request. It also tries to provide a helpful error message to an
 interactive session user.
@@ -26,6 +26,8 @@ import re
 
 
 def check_parameter_string(candidate, param):
+    """Checks that a parameter is a string or a list of strings.
+    """
     parameters = {
         "site": "NWIS station id(s) should be a string or list of strings,"
         + "often in the form of an eight digit number enclosed in quotes.",
@@ -103,7 +105,7 @@ def check_NWIS_bBox(input):
 
 
 def check_NWIS_service(input):
-    """Checks that the service is valid: either iv or dv"""
+    """Checks that the service is valid: either 'iv' or 'dv'"""
     if input is None:
         return None
     if input == "iv" or input == "dv":

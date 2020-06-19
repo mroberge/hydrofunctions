@@ -35,13 +35,14 @@ def select_data(nwis_df):
 
     Args:
         nwis_df:
-            A pandas dataframe created by extract_nwis_df.
+            A pandas dataframe created by ``extract_nwis_df``.
 
     Returns:
         an array of Boolean values corresponding to the columns in the
         original dataframe.
 
     Example:
+
         >>> my_dataframe[:, select_data(my_dataframe)]
 
         returns a dataframe with only the data columns; the qualifier columns
@@ -134,14 +135,14 @@ def get_nwis(
     Args:
         site (str or list of strings):
             a valid site is '01585200' or ['01585200', '01646502']. site
-            should be None if stateCd or countyCd are not None.
+            should be `None` if stateCd or countyCd are not `None`.
 
         service (str):
             can either be 'iv' or 'dv' for instantaneous or daily data.
-            'dv'(default): daily values. Mean value for an entire day.
-            'iv': instantaneous value measured at this time. Also known
-            as 'Real-time data'. Can be measured as often as every
-            five minutes by the USGS. 15 minutes is more typical.
+                - 'dv'(default): daily values. Mean value for an entire day.
+                - 'iv': instantaneous value measured at this time. Also known\
+                    as 'Real-time data'. Can be measured as often as every\
+                    five minutes by the USGS. 15 minutes is more typical.
 
         start_date (str):
            should take on the form yyyy-mm-dd
@@ -150,10 +151,10 @@ def get_nwis(
             should take on the form yyyy-mm-dd
 
         stateCd (str):
-            a valid two-letter state postal abbreviation. Default is None.
+            a valid two-letter state postal abbreviation. Default is `None`.
 
         countyCd (str or list of strings):
-            a valid county abbreviation. Default is None.
+            a valid county abbreviation. Default is `None`.
 
         bBox (str, list, or tuple):
             a set of coordinates that defines a bounding box.
@@ -165,20 +166,18 @@ def get_nwis(
                 * Example: "-83.000000,36.500000,-81.000000,38.500000"
 
         parameterCd (str or list of strings):
-            NWIS parameter code. Usually a five digit code. Default is 'all'.
-            A valid code can also be given as a list: parameterCd=['00060','00065']
-
-            * if value of 'all' is submitted, then NWIS will return every \
-            parameter collected at this site. (default option)
-            * stage: '00065'
-            * discharge: '00060'
-            * not all sites collect all parameters!
-            * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
+            NWIS parameter code. Usually a five digit code. Default is 'all'.\
+            A valid code can also be given as a list: ``parameterCd=['00060','00065']``
+                * if value of 'all' is submitted, then NWIS will return every \
+                    parameter collected at this site. (default option)
+                * stage: '00065'
+                * discharge: '00060'
+                * not all sites collect all parameters!
+                * See https://nwis.waterdata.usgs.gov/usa/nwis/pmcodes for full list
 
         period (str):
-            NWIS period code. Default is None.
-                * Format is "PxxD", where xx is the number of days before \
-                today, with a maximum of 999 days accepted.
+            NWIS period code. Default is `None`.
+                * Format is "PxxD", where xx is the number of days before today.
                 * Either use start_date or period, but not both.
 
     Returns:
@@ -186,13 +185,13 @@ def get_nwis(
             even if the NWIS returns a status_code that indicates a problem.
 
             * response.url: the url we used to request data
-            * response.status_code: '200' when okay; see <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
             * response.json: the content translated as json
             * response.status_code: the internet status code
                 - '200': is a good request
                 - non-200 codes will be reported as a warning.
                 - '400': is a 'Bad Request'-- the parameters did not make sense
-            * response.ok: "True" when we get a '200' status_code
+                - see <https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html> for more codes and meaning.
+            * response.ok: `True` when we get a '200' status_code
 
     Raises:
         ConnectionError: due to connection problems like refused connection
@@ -200,7 +199,7 @@ def get_nwis(
 
         SyntaxWarning: when NWIS returns a response code that is not 200.
 
-    Example::
+    **Example:**
 
         >>> import hydrofunctions as hf
         >>> response = hf.get_nwis('01585200', 'dv', '2012-06-01', '2012-07-01')
@@ -308,11 +307,11 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
 
     Args:
         nwis_dict (dict):
-            the json returned in a response object as produced by get_nwis().json().
+            the json returned in a response object as produced by ``get_nwis().json()``.
 
         key (str):
-            a valid NWIS response property key. Default is None. The index is \
-            returned if key is None. Valid keys are:
+            a valid NWIS response property key. Default is `None`. The index is \
+            returned if key is `None`. Valid keys are:
                 * None
                 * name - constructed name "provider:site:parameterCd:statistic"
                 * siteName
@@ -335,10 +334,11 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
         a list with the data for the passed key string.
 
     Raises:
-        HydroNoDataError  when the request is valid, but NWIS has no data for
+        HydroNoDataError
+            when the request is valid, but NWIS has no data for \
             the parameters provided in the request.
 
-        ValueError when the key is not available in
+        ValueError when the key is not available.
     """
     # nwis_dict = response_obj.json()
 
@@ -420,11 +420,13 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         a pandas dataframe.
 
     Raises:
-        HydroNoDataError  when the request is valid, but NWIS has no data for
+        HydroNoDataError
+            when the request is valid, but NWIS has no data for
             the parameters provided in the request.
 
-        HydroUserWarning  when one dataset is sampled at a lower frequency than
-        another dataset in the same request.
+        HydroUserWarning
+            when one dataset is sampled at a lower frequency than
+            another dataset in the same request.
     """
     if type(nwis_dict) is not dict:
         nwis_dict = nwis_dict.json()
@@ -613,17 +615,19 @@ def nwis_custom_status_codes(response):
         response: a response object as returned by get_nwis().
 
     Returns:
-        None: if response.status_code == 200
-        response.status_code: for all other status codes.
+        * `None`
+            if response.status_code == 200
+        * `response.status_code`
+            for all other status codes.
 
     Raises:
         SyntaxWarning: when a non-200 status code is returned.
             https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
     Note:
-        To raise an exception, call `response.raise_for_status()`
-        This will raise requests.exceptions.HTTPError with a helpful message
-        or it will return None for status code 200.
+        To raise an exception, call ``response.raise_for_status()``
+        This will raise `requests.exceptions.HTTPError` with a helpful message
+        or it will return `None` for status code 200.
         From: http://docs.python-requests.org/en/master/user/quickstart/#response-status-codes
 
         NWIS status_code messages come from:

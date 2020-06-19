@@ -28,7 +28,8 @@ def draw_map(width=700, height=400, url="http://hydrocloud.org"):
     Returns:
         HTML display object.
 
-    Example:
+    **Example:**
+
         >>> import hydrofunctions as hf
         >>> hf.draw_map()
 
