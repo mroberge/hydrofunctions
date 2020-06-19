@@ -13,7 +13,6 @@ import re
 import json
 import warnings
 from . import hydrofunctions as hf
-from . import helpers
 
 
 class Station(object):
