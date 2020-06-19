@@ -60,7 +60,7 @@ History
 * Improved the build scripts for TravisCI (mcr)
 * Updated to support Python 3.7
 
-0.2.0 (2020-06-18)
+0.2.0 (2020-06-19 Juneteenth)
 ----------------------
 
 * NWIS has a simpler interface and improved functionality:
