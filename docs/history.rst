@@ -61,7 +61,7 @@ History
 * Updated to support Python 3.7
 
 0.2.0 (2020-06-19 Juneteenth)
-----------------------
+-----------------------------
 
 * NWIS has a simpler interface and improved functionality:
     - No need to use .get_data(); data is fetched automatically.
