@@ -43,7 +43,7 @@ Features
 * Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
 * **Massive** `Users Guide`_ **that makes Hydrology AND Data Science easy!**
 
-⇨ Still in active development! Let me know what features you want!
+Still in active development! Let me know what features you want!
 
 Read the `Users Guide`_ for more details.
 
