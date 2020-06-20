@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 import re
 
-with open("README.rst") as readme_file:
+with open("pypi_readme.rst") as readme_file:
     readme = readme_file.read()
 
 with open("docs/history.rst") as history_file:
@@ -23,7 +23,7 @@ def relative2absolute(input, old, new):
 
 relative = r"_static"
 stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static"
-readme = relative2absolute(readme, relative, stem)
+# readme = relative2absolute(readme, relative, stem)
 
 requirements = [
     "matplotlib",
@@ -47,7 +47,7 @@ setup(
     name="hydrofunctions",
     version="0.2.0",
     description="A suite of convenience functions for exploring water data in a Jupyter Notebook.",
-    long_description=readme + "\n\n" + history,
+    long_description=readme,  # + "\n\n" + history,
     long_description_content_type="text/x-rst",
     author="Martin Roberge",
     author_email="mroberge@towson.edu",
