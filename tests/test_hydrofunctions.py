@@ -24,6 +24,8 @@ import numpy as np
 import pyarrow as pa
 import json
 
+print("Pyarrow version: ", pa.__version__)
+
 import hydrofunctions as hf
 from .fixtures import (
     fakeResponse,
