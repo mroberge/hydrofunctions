@@ -28,10 +28,10 @@ stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_stati
 requirements = [
     "matplotlib",
     "numpy>=1.16.0",
-    "pandas",
+    "panda==1.0.5",
     "requests",
     "IPython",
-    "pyarrow==0.16.0",
+    "pyarrow==0.17.1",
     "ipykernel",
     "nbsphinx",
 ]
@@ -45,7 +45,7 @@ test_requirements = [
 
 setup(
     name="hydrofunctions",
-    version="0.2.0",
+    version="0.2.1dev",
     description="A suite of convenience functions for exploring water data in a Jupyter Notebook.",
     long_description=readme,  # + "\n\n" + history,
     long_description_content_type="text/x-rst",
