@@ -28,7 +28,7 @@ stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_stati
 requirements = [
     "matplotlib",
     "numpy>=1.16.0",
-    "panda==1.0.5",
+    "pandas==1.0.5",
     "requests",
     "IPython",
     "pyarrow==0.17.1",
