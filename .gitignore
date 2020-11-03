@@ -58,6 +58,7 @@ docs/_build/
 # PyBuilder
 target/
 .spyderproject
+.spyproject
  
 # PyCharm
 .idea/
