@@ -47,9 +47,10 @@ View the first five rows of a dataframe that only contains the discharge data::
 Because the .df() method returns a dataframe, you have access to all of the
 methods associated with Pandas, including .plot(), .describe(), and .info() !
 
-List all of the different attributes and methods with dir()::
+Learn more about hydrofunctions and the NWIS object with help()::
 
-    >>> dir(response)
+    >>> help(hf)
+    >>> help(hf.NWIS)
 
 Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
