@@ -162,6 +162,8 @@ class NWIS(Station):
                     + self.meta[site_id]["timeSeries"][param]["variableFreq"]
                     + "  "
                     + self.meta[site_id]["timeSeries"][param]["variableDescription"]
+                    + " "
+                    + self.meta[site_id]["timeSeries"][param]["methodDescription"]
                     + "\n"
                 )
         repr_string += "Start: " + str(self.start) + "\n" + "End:   " + str(self.end)
