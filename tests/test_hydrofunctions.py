@@ -31,6 +31,7 @@ from .fixtures import (
     fakeResponse,
     daily_dupe,
     daily_dupe_altered,
+    multi_meth,
     tzfail,
     JSON15min2day,
     two_sites_two_params_iv,
@@ -298,13 +299,25 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         # estimated data, and forgets to discard the old data?
         actualDF = hf.extract_nwis_df(daily_dupe_altered, interpolate=False)
 
+    def test_hf_extract_nwis_multiple_methods_one_param(self):
+        actual_df, actual_meta = hf.extract_nwis_df(multi_meth, interpolate=False)
+        actual_len, actual_width = actual_df.shape
+        # Only one parameter, but if the json is processed properly, each
+        # method will be given a column and a qualifier column.
+        expected_width = 4
+        self.assertEqual(
+            actual_width, 
+            expected_width,
+            "Extract_nwis should have parsed two methods into separate columns."
+        )
+
     def test_hf_get_nwis_property(self):
         sites = None
         bBox = (-105.430, 39.655, -104, 39.863)
         # TODO: test should be the json for a multiple site request.
         names = hf.get_nwis_property(JSON15min2day, key="name")
         self.assertIs(type(names), list, msg="Did not return a list")
-
+        
 
 class TestHydrofunctions(unittest.TestCase):
     @mock.patch("requests.get")
