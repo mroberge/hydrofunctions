@@ -78,7 +78,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
         # TODO: test that data is organized correctly
 
-    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
+    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_cols(self):
         actual_df, actual_dict = hf.extract_nwis_df(
             two_sites_two_params_iv, interpolate=False
         )
