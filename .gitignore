@@ -65,6 +65,7 @@ target/
 
 # VS Code
 .vscode/
+hydrofunctions.code-workspace
 
 # Jupyter
 .ipynb_checkpoints/

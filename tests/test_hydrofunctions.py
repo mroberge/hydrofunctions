@@ -16,6 +16,7 @@ from __future__ import (
 from unittest import mock
 import unittest
 import warnings
+import os
 
 from pandas.testing import assert_frame_equal
 
@@ -51,7 +52,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         how does it encode mult params & mult sites?
         Does it raise HydroNoDataError if nothing returned?
 
-        """
+    """
 
     def test_hf_extract_nwis_df_accepts_response_obj(self):
         fake_response = fakeResponse()
@@ -68,7 +69,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         )
         self.assertIsInstance(actual_dict, dict, msg="Did not return a dict.")
 
-    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
+    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_meta_dict(self):
         actual_df, actual_dict = hf.extract_nwis_df(
             two_sites_two_params_iv, interpolate=False
         )
@@ -76,7 +77,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             type(actual_df), pd.core.frame.DataFrame, msg="Did not return a df"
         )
         self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
-        # TODO: test that data is organized correctly
+        # TODO: test that metadata is organized correctly
 
     def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
         actual_df, actual_dict = hf.extract_nwis_df(
@@ -607,6 +608,7 @@ class TestHydrofunctions(unittest.TestCase):
         actual_df, actual_meta = hf.read_parquet(filename)
         assert_frame_equal(expected_df, actual_df)
         self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
+        os.remove("test_filename_delete_me")
 
     @mock.patch("pyarrow.parquet.read_table")
     def test_hf_read_parquet(self, mock_read):

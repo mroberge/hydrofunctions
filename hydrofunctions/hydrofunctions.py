@@ -702,4 +702,4 @@ def save_parquet(filename, dataframe, hf_meta):
     hf_string = json.dumps(hf_meta).encode()
     meta_dict[b"hydrofunctions_meta"] = hf_string
     table = table.replace_schema_metadata(meta_dict)
-    pq.write_table(table, filename, compression='gzip')
+    pq.write_table(table, filename, compression="gzip")
