@@ -620,6 +620,11 @@ class TestHydrofunctions(unittest.TestCase):
         hf.save_parquet(filename, expected_df, expected_meta)
         actual_df, actual_meta = hf.read_parquet(filename)
         os.remove("test_filename_delete_me")
+        self.assertEqual(
+            expected_df.index.freq,
+            actual_df.index.freq,
+            "The saved dataframe does not have its index frequency set correctly.",
+        )
         assert_frame_equal(expected_df, actual_df)
         self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
 

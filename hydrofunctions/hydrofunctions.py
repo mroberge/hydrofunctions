@@ -701,6 +701,7 @@ def nwis_custom_status_codes(response):
 def read_parquet(filename):
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()
+    dataframe.index.freq = calc_freq(dataframe.index)
     meta_dict = pa_table.schema.metadata
     if b"hydrofunctions_meta" in meta_dict:
         meta_string = meta_dict[b"hydrofunctions_meta"].decode()
