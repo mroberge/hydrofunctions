@@ -16,6 +16,8 @@ from .fixtures_data import (
 
 from .fixtures_daily_dupe import daily_dupe, daily_dupe_altered
 
+from .fixtures_multiple_methods import multi_meth
+
 from .fixtures_tzfail import tzfail
 
 from .fixtures_recent_only import recent_only

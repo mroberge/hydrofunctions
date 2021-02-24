@@ -924,6 +924,7 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<Day>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
+                        "methodDescription": ""
                     }
                 },
             }
@@ -931,7 +932,7 @@ class TestNWISmethods(unittest.TestCase):
         mock_start = "expected start"
         mock_end = "expected end"
         test_nwis = TestingNWIS(meta=mock_meta, start=mock_start, end=mock_end)
-        expected_repr = "USGS:01541200: WB Susquehanna River near Curwensville, PA\n    00060: <Day>  Discharge, cubic feet per second\nStart: expected start\nEnd:   expected end"
+        expected_repr = "USGS:01541200: WB Susquehanna River near Curwensville, PA\n    00060: <Day>  Discharge, cubic feet per second \nStart: expected start\nEnd:   expected end"
         self.assertEqual(repr(test_nwis), expected_repr)
 
     def test_NWIS_repr_multisite_multi_param_returns_repr(self):
@@ -949,11 +950,13 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
+                        "methodDescription": "",
                     },
                     "00065": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft",
                         "variableDescription": "Gage height, feet",
+                        "methodDescription": "",
                     },
                 },
             },
@@ -969,26 +972,31 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "deg C",
                         "variableDescription": "Temperature, water, degrees Celsius",
+                        "methodDescription": "",
                     },
                     "00060": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
+                        "methodDescription": "",
                     },
                     "00065": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft",
                         "variableDescription": "Gage height, feet",
+                        "methodDescription": "",
                     },
                     "00095": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "uS/cm @25C",
                         "variableDescription": "Specific conductance, water, unfiltered, microsiemens per centimeter at 25 degrees Celsius",
+                        "methodDescription": "",
                     },
                     "00400": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "std units",
                         "variableDescription": "pH, water, unfiltered, field, standard units",
+                        "methodDescription": "",
                     },
                 },
             },
@@ -997,14 +1005,14 @@ class TestNWISmethods(unittest.TestCase):
         mock_end = "expected end"
         test_nwis = TestingNWIS(meta=mock_meta, start=mock_start, end=mock_end)
         expected_repr = """USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
-    00060: <5 * Minutes>  Discharge, cubic feet per second
-    00065: <5 * Minutes>  Gage height, feet
+    00060: <5 * Minutes>  Discharge, cubic feet per second 
+    00065: <5 * Minutes>  Gage height, feet 
 USGS:01585219: HERRING RUN AT SINCLAIR LANE AT BALTIMORE, MD
-    00010: <5 * Minutes>  Temperature, water, degrees Celsius
-    00060: <5 * Minutes>  Discharge, cubic feet per second
-    00065: <5 * Minutes>  Gage height, feet
-    00095: <5 * Minutes>  Specific conductance, water, unfiltered, microsiemens per centimeter at 25 degrees Celsius
-    00400: <5 * Minutes>  pH, water, unfiltered, field, standard units
+    00010: <5 * Minutes>  Temperature, water, degrees Celsius 
+    00060: <5 * Minutes>  Discharge, cubic feet per second 
+    00065: <5 * Minutes>  Gage height, feet 
+    00095: <5 * Minutes>  Specific conductance, water, unfiltered, microsiemens per centimeter at 25 degrees Celsius 
+    00400: <5 * Minutes>  pH, water, unfiltered, field, standard units 
 Start: expected start
 End:   expected end"""
         self.assertEqual(repr(test_nwis), expected_repr)

@@ -461,92 +461,106 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     freqs = []
     meta = {}
     for series in ts:
-        series_name = series["name"]
-        temp_name = series_name.split(":")
-        agency = str(temp_name[0])
-        site_id = agency + ":" + str(temp_name[1])
-        parameter_cd = str(temp_name[2])
-        stat = str(temp_name[3])
+        full_series_name = series["name"]
+        name_list = full_series_name.split(":")
+        agency = str(name_list[0])
+        site_id = agency + ":" + str(name_list[1])
+        parameter_cd = str(name_list[2])
+        stat = str(name_list[3])
         siteName = series["sourceInfo"]["siteName"]
         siteLatLongSrs = series["sourceInfo"]["geoLocation"]["geogLocation"]
         noDataValues = series["variable"]["noDataValue"]
         variableDescription = series["variable"]["variableDescription"]
         unit = series["variable"]["unit"]["unitCode"]
-        data = series["values"][0]["value"]
-        if data == []:
-            # This parameter has no data. Skip to next series.
-            continue
-        if len(data) == 1:
-            # This parameter only contains the most recent reading.
-            # See Issue #49
-            pass
-        qualifiers = series_name + "_qualifiers"
-        DF = pd.DataFrame(data=data)
-        DF.index = pd.to_datetime(DF.pop("dateTime"), utc=True)
-        DF["value"] = DF["value"].astype(float)
-        DF = DF.replace(to_replace=noDataValues, value=np.nan)
-        DF["qualifiers"] = DF["qualifiers"].apply(lambda x: ",".join(x))
-        DF.rename(
-            columns={"qualifiers": qualifiers, "value": series_name}, inplace=True
-        )
-        DF.sort_index(inplace=True)
-        local_start = DF.index.min()
-        local_end = DF.index.max()
-        starts.append(local_start)
-        ends.append(local_end)
-        local_freq = calc_freq(DF.index)
-        freqs.append(local_freq)
-        if not DF.index.is_unique:
-            print(
-                "Series index for "
-                + series_name
-                + " is not unique. Attempting to drop identical rows."
+        values = series["values"]
+        for method in values:
+            data = method["value"]
+            # This line assumes only one method per parameter. See issue #77.
+            # data = series["values"][0]["value"]
+            if data == []:
+                # This parameter has no data. Skip to next series.
+                continue
+            if len(data) == 1:
+                # This parameter only contains the most recent reading.
+                # See Issue #49
+                pass
+            method_description = method['method'][0]['methodDescription']
+            method_id = str(method['method'][0]['methodID'])
+            # use method_mod as a modifier for altering parameter names.
+            method_mod = '-' + method_id
+            if len(values) == 1:
+                # If there is only one method, don't bother recording method #.
+                method_mod = ''
+            series_name = site_id + ':' + parameter_cd + method_mod + ':' + stat
+            qualifiers_name = series_name + "_qualifiers"
+            DF = pd.DataFrame(data=data)
+            DF.index = pd.to_datetime(DF.pop("dateTime"), utc=True)
+            DF["value"] = DF["value"].astype(float)
+            DF = DF.replace(to_replace=noDataValues, value=np.nan)
+            DF["qualifiers"] = DF["qualifiers"].apply(lambda x: ",".join(x))
+            DF.rename(
+                columns={"qualifiers": qualifiers_name, "value": series_name}, inplace=True
             )
-            DF = DF.drop_duplicates(keep="first")
+            DF.sort_index(inplace=True)
+            local_start = DF.index.min()
+            local_end = DF.index.max()
+            starts.append(local_start)
+            ends.append(local_end)
+            local_freq = calc_freq(DF.index)
+            freqs.append(local_freq)
             if not DF.index.is_unique:
                 print(
                     "Series index for "
                     + series_name
-                    + " is STILL not unique. Dropping first rows with duplicated date."
+                    + " is not unique. Attempting to drop identical rows."
                 )
-                DF = DF[~DF.index.duplicated(keep="first")]
-        if local_freq > to_offset("0min"):
-            local_clean_index = pd.date_range(
-                start=local_start, end=local_end, freq=local_freq, tz="UTC"
-            )
-            # if len(local_clean_index) != len(DF):
-            # This condition happens quite frequently with missing data.
-            # print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
-            DF = DF.reindex(index=local_clean_index, copy=True)
-        else:
-            # The dataframe DF must contain only the most recent data.
-            pass
-        qual_cols = DF.columns.str.contains("_qualifiers")
-        # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
-        # Instead, create a temporary dataframe, fillna, then copy back into original.
-        DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
-        DF.loc[:, qual_cols] = DFquals
-
-        if local_freq > pd.Timedelta(to_offset("0min")):
-            variableFreq_str = str(to_offset(local_freq))
-        else:
-            variableFreq_str = str(to_offset("0min"))
-        parameter_info = {
-            "variableFreq": variableFreq_str,
-            "variableUnit": unit,
-            "variableDescription": variableDescription,
-        }
-        site_info = {
-            "siteName": siteName,
-            "siteLatLongSrs": siteLatLongSrs,
-            "timeSeries": {},
-        }
-        # if site is not in meta keys, add it.
-        if site_id not in meta:
-            meta[site_id] = site_info
-        # Add the variable info to the site dict.
-        meta[site_id]["timeSeries"][parameter_cd] = parameter_info
-        collection.append(DF)
+                DF = DF.drop_duplicates(keep="first")
+                if not DF.index.is_unique:
+                    print(
+                        "Series index for "
+                        + series_name
+                        + " is STILL not unique. Dropping first rows with duplicated date."
+                    )
+                    DF = DF[~DF.index.duplicated(keep="first")]
+            if local_freq > to_offset("0min"):
+                local_clean_index = pd.date_range(
+                    start=local_start, end=local_end, freq=local_freq, tz="UTC"
+                )
+                # if len(local_clean_index) != len(DF):
+                # This condition happens quite frequently with missing data.
+                # print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
+                DF = DF.reindex(index=local_clean_index, copy=True)
+            else:
+                # The dataframe DF must contain only the most recent data.
+                pass
+            qual_cols = DF.columns.str.contains("_qualifiers")
+            # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
+            # Instead, create a temporary dataframe, fillna, then copy back into original.
+            DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
+            DF.loc[:, qual_cols] = DFquals
+    
+            if local_freq > pd.Timedelta(to_offset("0min")):
+                variableFreq_str = str(to_offset(local_freq))
+            else:
+                variableFreq_str = str(to_offset("0min"))
+            parameter_info = {
+                "variableFreq": variableFreq_str,
+                "variableUnit": unit,
+                "variableDescription": variableDescription,
+                "methodID": method_id,
+                "methodDescription": method_description
+            }
+            site_info = {
+                "siteName": siteName,
+                "siteLatLongSrs": siteLatLongSrs,
+                "timeSeries": {},
+            }
+            # if site is not in meta keys, add it.
+            if site_id not in meta:
+                meta[site_id] = site_info
+            # Add the variable info to the site dict.
+            meta[site_id]["timeSeries"][parameter_cd + method_mod] = parameter_info
+            collection.append(DF)
 
     if len(collection) < 1:
         # It seems like this condition should not occur. The NWIS trims the
