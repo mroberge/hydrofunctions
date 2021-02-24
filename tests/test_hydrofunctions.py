@@ -600,15 +600,15 @@ class TestHydrofunctions(unittest.TestCase):
             "select_data should return an array of which columns contain the data, not the qualifiers.",
         )
 
-    def test_integration_test_save_read_parquet(self):
+    def test_hf_save_read_parquet_integration(self):
         # This test has side effects: it will create a file.
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
         filename = "test_filename_delete_me"
         hf.save_parquet(filename, expected_df, expected_meta)
         actual_df, actual_meta = hf.read_parquet(filename)
+        os.remove("test_filename_delete_me")
         assert_frame_equal(expected_df, actual_df)
         self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
-        os.remove("test_filename_delete_me")
 
     @mock.patch("pyarrow.parquet.read_table")
     def test_hf_read_parquet(self, mock_read):
