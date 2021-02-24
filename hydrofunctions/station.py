@@ -16,8 +16,7 @@ from . import hydrofunctions as hf
 
 
 class Station(object):
-    """A class for organizing stream gauge data for a single request.
-    """
+    """A class for organizing stream gauge data for a single request."""
 
     station_dict = {}
 

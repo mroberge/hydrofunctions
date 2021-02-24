@@ -215,7 +215,12 @@ def site_file(site):
 
     print("Retrieving the site file for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
-    header, outputDF, columns, dtype, = read_rdb(response.text)
+    (
+        header,
+        outputDF,
+        columns,
+        dtype,
+    ) = read_rdb(response.text)
     output_obj = hydroRDB(header, outputDF, columns, dtype)
 
     return output_obj
@@ -255,7 +260,12 @@ def data_catalog(site):
 
     print("Retrieving the site file for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
-    header, outputDF, columns, dtype, = read_rdb(response.text)
+    (
+        header,
+        outputDF,
+        columns,
+        dtype,
+    ) = read_rdb(response.text)
     output_obj = hydroRDB(header, outputDF, columns, dtype)
 
     return output_obj
@@ -328,7 +338,12 @@ def field_meas(site):
     # of the columns. However, it is still a good idea to replace for the gage
     # depth and discharge values, since these variables get used in plotting
     # functions.
-    header, outputDF, columns, dtype, = read_rdb(response.text)
+    (
+        header,
+        outputDF,
+        columns,
+        dtype,
+    ) = read_rdb(response.text)
     outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
 
     # An attempt to use the tz_cd column to make measurement_dt timezone aware.

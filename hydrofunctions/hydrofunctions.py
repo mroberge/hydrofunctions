@@ -484,14 +484,14 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                 # This parameter only contains the most recent reading.
                 # See Issue #49
                 pass
-            method_description = method['method'][0]['methodDescription']
-            method_id = str(method['method'][0]['methodID'])
+            method_description = method["method"][0]["methodDescription"]
+            method_id = str(method["method"][0]["methodID"])
             # use method_mod as a modifier for altering parameter names.
-            method_mod = '-' + method_id
+            method_mod = "-" + method_id
             if len(values) == 1:
                 # If there is only one method, don't bother recording method #.
-                method_mod = ''
-            series_name = site_id + ':' + parameter_cd + method_mod + ':' + stat
+                method_mod = ""
+            series_name = site_id + ":" + parameter_cd + method_mod + ":" + stat
             qualifiers_name = series_name + "_qualifiers"
             DF = pd.DataFrame(data=data)
             DF.index = pd.to_datetime(DF.pop("dateTime"), utc=True)
@@ -499,7 +499,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
             DF = DF.replace(to_replace=noDataValues, value=np.nan)
             DF["qualifiers"] = DF["qualifiers"].apply(lambda x: ",".join(x))
             DF.rename(
-                columns={"qualifiers": qualifiers_name, "value": series_name}, inplace=True
+                columns={"qualifiers": qualifiers_name, "value": series_name},
+                inplace=True,
             )
             DF.sort_index(inplace=True)
             local_start = DF.index.min()
@@ -538,7 +539,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
             # Instead, create a temporary dataframe, fillna, then copy back into original.
             DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
             DF.loc[:, qual_cols] = DFquals
-    
+
             if local_freq > pd.Timedelta(to_offset("0min")):
                 variableFreq_str = str(to_offset(local_freq))
             else:
@@ -548,7 +549,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                 "variableUnit": unit,
                 "variableDescription": variableDescription,
                 "methodID": method_id,
-                "methodDescription": method_description
+                "methodDescription": method_description,
             }
             site_info = {
                 "siteName": siteName,
@@ -699,6 +700,19 @@ def nwis_custom_status_codes(response):
 
 
 def read_parquet(filename):
+    """Read a hydrofunctions parquet file.
+
+    This function will read a parquet file that was saved by
+    hydrofunctions.save_parquet() and return a dataframe and a metadata dictionary.
+
+    Args:
+        filename (str): A string with the filename and extension.
+
+    Returns:
+        dataframe (pd.DataFrame): a pandas dataframe.
+        meta (dict): a dictionary with the metadata for the NWIS data request, if it
+        exists.
+    """
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()
     dataframe.index.freq = calc_freq(dataframe.index)
@@ -712,6 +726,20 @@ def read_parquet(filename):
 
 
 def save_parquet(filename, dataframe, hf_meta):
+        """Save a hydrofunctions parquet file.
+
+    This function will save a dataframe and a dictionary into the parquet format.
+    Parquet files are a compact, easy to process format that work well with Pandas and
+    large datasets. This function will accompany the dataframe with a dictionary of NWIS
+    metadata that is produced by the hydrofunctions.extract_nwis_df() function. This 
+    file can then be read by the hydrofunctions.read_parquet() function.
+
+    Args:
+        filename (str): A string with the filename and extension.
+        dataframe (pd.DataFrame): a pandas dataframe.
+        hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it
+        exists.
+    """
     table = pa.Table.from_pandas(dataframe, preserve_index=True)
     meta_dict = table.schema.metadata
     hf_string = json.dumps(hf_meta).encode()

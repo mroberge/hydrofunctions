@@ -26,8 +26,7 @@ import re
 
 
 def check_parameter_string(candidate, param):
-    """Checks that a parameter is a string or a list of strings.
-    """
+    """Checks that a parameter is a string or a list of strings."""
     parameters = {
         "site": "NWIS station id(s) should be a string or list of strings,"
         + "often in the form of an eight digit number enclosed in quotes.",
@@ -72,8 +71,7 @@ def check_parameter_string(candidate, param):
 
 
 def check_NWIS_bBox(input):
-    """Checks that the USGS bBox is valid.
-    """
+    """Checks that the USGS bBox is valid."""
     msg = (
         "NWIS bBox should be a string, list of strings, or tuple "
         + "containing the longitude and latitude of the lower left corner "
@@ -119,8 +117,7 @@ def check_NWIS_service(input):
 
 
 def check_datestr(input):
-    """Checks that the start_date or end_date parameter is in yyyy-mm-dd format.
-    """
+    """Checks that the start_date or end_date parameter is in yyyy-mm-dd format."""
     # Use a regular expression to ensure in form of yyyy-mm-dd
     if input is None:
         return None

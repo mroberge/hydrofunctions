@@ -307,9 +307,9 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         # method will be given a column and a qualifier column.
         expected_width = 4
         self.assertEqual(
-            actual_width, 
+            actual_width,
             expected_width,
-            "Extract_nwis should have parsed two methods into separate columns."
+            "Extract_nwis should have parsed two methods into separate columns.",
         )
 
     def test_hf_get_nwis_property(self):
@@ -318,7 +318,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         # TODO: test should be the json for a multiple site request.
         names = hf.get_nwis_property(JSON15min2day, key="name")
         self.assertIs(type(names), list, msg="Did not return a list")
-        
+
 
 class TestHydrofunctions(unittest.TestCase):
     @mock.patch("requests.get")

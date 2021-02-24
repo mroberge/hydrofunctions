@@ -40,9 +40,8 @@ import warnings
 
 
 class HydroException(Exception):
-    """
-        This is the base class for all exceptions created for the
-        HydroFunctions package. This class is not meant to be raised.
+    """This is the base class for all exceptions created for the
+    HydroFunctions package. This class is not meant to be raised.
     """
 
     pass
@@ -79,12 +78,12 @@ class HydroNoDataError(HydroException):
 class HydroEncodeError(HydroException):
     """Raised when an error occurs while encoding or decoding an argument.
 
-        **Example**::
+    **Example**::
 
-            try:
-                # bunch of code from your package
-            except HydroException:
-                # blanked condition to handle all errors from your package
+        try:
+            # bunch of code from your package
+        except HydroException:
+            # blanked condition to handle all errors from your package
     """
 
     pass
