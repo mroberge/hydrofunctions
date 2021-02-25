@@ -726,12 +726,12 @@ def read_parquet(filename):
 
 
 def save_parquet(filename, dataframe, hf_meta):
-        """Save a hydrofunctions parquet file.
+    """Save a hydrofunctions parquet file.
 
     This function will save a dataframe and a dictionary into the parquet format.
     Parquet files are a compact, easy to process format that work well with Pandas and
     large datasets. This function will accompany the dataframe with a dictionary of NWIS
-    metadata that is produced by the hydrofunctions.extract_nwis_df() function. This 
+    metadata that is produced by the hydrofunctions.extract_nwis_df() function. This
     file can then be read by the hydrofunctions.read_parquet() function.
 
     Args:
