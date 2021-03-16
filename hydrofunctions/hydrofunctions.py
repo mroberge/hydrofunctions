@@ -719,7 +719,7 @@ def read_parquet(filename):
     meta_dict = pa_table.schema.metadata
     if b"hydrofunctions_meta" in meta_dict:
         meta_string = meta_dict[b"hydrofunctions_meta"].decode()
-        meta = json.loads(meta_string, encoding="utf-8")
+        meta = json.loads(meta_string)
     else:
         meta = None
     return dataframe, meta
