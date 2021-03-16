@@ -138,7 +138,7 @@ class NWIS(Station):
             except json.JSONDecodeError as err:
                 self.ok = False
                 print(f"JSON decoding error. URL: {self.response.url}")
-                raise json.JSONDecodeError(err)
+                raise err
 
         # Can I get rid of this, and only keep metadata in the meta dict?
         if self.ok:
