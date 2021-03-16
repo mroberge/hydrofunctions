@@ -740,6 +740,9 @@ def save_parquet(filename, dataframe, hf_meta):
         hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it
         exists.
     """
+    if (len(filename.split('.'))==1):
+        filename = filename + '.gz.parquet'
+
     table = pa.Table.from_pandas(dataframe, preserve_index=True)
     meta_dict = table.schema.metadata
     hf_string = json.dumps(hf_meta).encode()
