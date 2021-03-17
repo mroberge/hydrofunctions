@@ -25,7 +25,6 @@ class Station(object):
         self.site = site
         # One option is to make it so that you can pass in a get_data function
         # during the creation of an instance.
-        self.get_data = None
 
 
 class NWIS(Station):
