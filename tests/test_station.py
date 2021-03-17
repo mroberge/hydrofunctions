@@ -214,7 +214,7 @@ class TestNWISinit(unittest.TestCase):
 
     @mock.patch("hydrofunctions.hydrofunctions.read_parquet")
     def test_NWIS_init_filename_calls_read_parquet(self, mock_read):
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         expected_meta = "expected meta"
         expected_df = pd.DataFrame(
             np.random.randn(5, 1),
@@ -266,7 +266,7 @@ class TestNWISinit(unittest.TestCase):
         mock_extract_nwis_df.return_value = (mock_df, mock_meta)
 
         # mock_save
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         mock_save.return_value = "expected self"
 
         # Create an NWIS with a filename, but the filename doesn't exist.

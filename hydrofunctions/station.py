@@ -105,7 +105,9 @@ class NWIS(Station):
     ):
 
         self.ok = False
-        if file is not None:
+        if file:
+            if (len(file.split(".")) == 1):
+                file = file + ".json.gz"
             try:
                 self._dataframe, self.meta = hf.read_parquet(file)
                 self.ok = True
