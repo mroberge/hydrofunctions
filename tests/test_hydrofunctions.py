@@ -616,10 +616,10 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_save_read_parquet_integration(self):
         # This test has side effects: it will create a file.
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
-        filename = "test_filename_delete_me.test"
+        filename = "test_filename_delete_me.parquet"
         hf.save_parquet(filename, expected_df, expected_meta)
         actual_df, actual_meta = hf.read_parquet(filename)
-        os.remove("test_filename_delete_me.test")
+        os.remove("test_filename_delete_me.parquet")
         self.assertEqual(
             expected_df.index.freq,
             actual_df.index.freq,
@@ -637,14 +637,14 @@ class TestHydrofunctions(unittest.TestCase):
         meta_dict[b"hydrofunctions_meta"] = meta_string
         expected_table = expected_table.replace_schema_metadata(meta_dict)
         mock_read.return_value = expected_table
-        actual_df, actual_meta = hf.read_parquet("fake_filename")
+        actual_df, actual_meta = hf.read_parquet("fake_filename.parquet")
 
         assert_frame_equal(expected_df, actual_df)
         self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
 
     @mock.patch("pyarrow.parquet.write_table")
     def test_hf_save_parquet(self, mock_write):
-        filename = "expected_filename.test"
+        filename = "expected_filename.parquet"
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
         hf.save_parquet(filename, expected_df, expected_meta)
 

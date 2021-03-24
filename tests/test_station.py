@@ -1019,7 +1019,7 @@ End:   expected end"""
 
     @mock.patch("hydrofunctions.hydrofunctions.save_parquet")
     def test_NWIS_save_calls_save_parquet(self, mock_save):
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         expected_meta = "expected meta"
         expected_df = "expected df"
         mock_start = "expected start"
@@ -1032,7 +1032,7 @@ End:   expected end"""
 
     @mock.patch("hydrofunctions.hydrofunctions.read_parquet")
     def test_NWIS_read_calls_read_parquet(self, mock_read):
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         expected_meta = "expected meta"
         expected_df = "expected df"
         mock_start = "expected start"
