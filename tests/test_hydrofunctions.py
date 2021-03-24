@@ -653,18 +653,18 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_read_json_gz(self, mock_json, mock_gzip):
         expected = two_sites_two_params_iv
         mock_json.return_value = expected
-        actual = hf.read_json_gzip("filename")
-        mock_gzip.assert_called_with("filename", "rb")
+        actual = hf.read_json_gzip("filename.json.gz")
+        mock_gzip.assert_called_with("filename.json.gz", "rb")
         self.assertEqual(actual, expected)
 
     @mock.patch("gzip.open")
     @mock.patch("json.dump")
     def test_hf_save_json_gz(self, mock_json, mock_gzip):
         expected = two_sites_two_params_iv
-        expected_filename = "save.fake"
+        expected_filename = "save.json.gz"
         hf.save_json_gzip(expected_filename, expected)
         mock_gzip.assert_called_with(expected_filename, "wt", encoding="ascii")
-        #mock_json.assert_called_with(expected)
+        mock_json.assert_called()
 
 
 if __name__ == "__main__":
