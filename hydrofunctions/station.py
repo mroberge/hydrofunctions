@@ -283,7 +283,21 @@ class NWIS(Station):
             file (str):
                 the filename to save to.
         """
-        hf.save_parquet(file, self._dataframe, self.meta)
+        extension = file.split(".")[-1]
+        if (extension == "parquet"):
+            hf.save_parquet(file, self._dataframe, self.meta)
+        elif (extension == "gz"):
+            try:
+                hf.save_json_gzip(file, self.json)
+            except AttributeError as err:
+                print("Hydrofunctions can only save NWIS objects using gzip if the NWIS"
+                " object still has its original WaterML JSON. You might be able to fix "
+                "this problem if you call NWIS using the 'file' parameter so that the"
+                "JSON is saved immediately after the request is made."
+                )
+                raise err
+        else:
+            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
         return self
 
     def read(self, file):
@@ -294,5 +308,11 @@ class NWIS(Station):
             file (str):
                 the filename to read from.
         """
-        self._dataframe, self.meta = hf.read_parquet(file)
+        extension = file.split(".")[-1]
+        if (extension == "parquet"):
+            self._dataframe, self.meta = hf.read_parquet(file)
+        elif (extension == "gz"):
+            self._dataframe, self.meta = hf.extract_nwis_df(hf.read_json_gzip(file))
+        else:
+            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
         return self
