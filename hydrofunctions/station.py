@@ -25,7 +25,6 @@ class Station(object):
         self.site = site
         # One option is to make it so that you can pass in a get_data function
         # during the creation of an instance.
-        self.get_data = None
 
 
 class NWIS(Station):
@@ -106,9 +105,11 @@ class NWIS(Station):
     ):
 
         self.ok = False
-        if file is not None:
+        if file:
+            if (len(file.split(".")) == 1):
+                file = file + ".json.gz"
             try:
-                self._dataframe, self.meta = hf.read_parquet(file)
+                self.read(file)
                 self.ok = True
                 print("Reading data from", file)
 
@@ -138,7 +139,7 @@ class NWIS(Station):
             except json.JSONDecodeError as err:
                 self.ok = False
                 print(f"JSON decoding error. URL: {self.response.url}")
-                raise json.JSONDecodeError(err)
+                raise err
 
         # Can I get rid of this, and only keep metadata in the meta dict?
         if self.ok:
@@ -282,7 +283,21 @@ class NWIS(Station):
             file (str):
                 the filename to save to.
         """
-        hf.save_parquet(file, self._dataframe, self.meta)
+        extension = file.split(".")[-1]
+        if (extension == "parquet"):
+            hf.save_parquet(file, self._dataframe, self.meta)
+        elif (extension == "gz"):
+            try:
+                hf.save_json_gzip(file, self.json)
+            except AttributeError as err:
+                print("Hydrofunctions can only save NWIS objects using gzip if the NWIS"
+                " object still has its original WaterML JSON. You might be able to fix "
+                "this problem if you call NWIS using the 'file' parameter so that the"
+                "JSON is saved immediately after the request is made."
+                )
+                raise err
+        else:
+            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
         return self
 
     def read(self, file):
@@ -293,5 +308,11 @@ class NWIS(Station):
             file (str):
                 the filename to read from.
         """
-        self._dataframe, self.meta = hf.read_parquet(file)
+        extension = file.split(".")[-1]
+        if (extension == "parquet"):
+            self._dataframe, self.meta = hf.read_parquet(file)
+        elif (extension == "gz"):
+            self._dataframe, self.meta = hf.extract_nwis_df(hf.read_json_gzip(file))
+        else:
+            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
         return self

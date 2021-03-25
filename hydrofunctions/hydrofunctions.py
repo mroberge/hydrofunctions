@@ -11,6 +11,7 @@ import requests
 import numpy as np
 import pandas as pd
 import json
+import gzip
 import pyarrow as pa
 import pyarrow.parquet as pq
 from pandas.tseries.frequencies import to_offset
@@ -719,7 +720,7 @@ def read_parquet(filename):
     meta_dict = pa_table.schema.metadata
     if b"hydrofunctions_meta" in meta_dict:
         meta_string = meta_dict[b"hydrofunctions_meta"].decode()
-        meta = json.loads(meta_string, encoding="utf-8")
+        meta = json.loads(meta_string)
     else:
         meta = None
     return dataframe, meta
@@ -740,9 +741,49 @@ def save_parquet(filename, dataframe, hf_meta):
         hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it
         exists.
     """
+    if (len(filename.split('.'))==1):
+        filename = filename + '.gz.parquet'
+
     table = pa.Table.from_pandas(dataframe, preserve_index=True)
     meta_dict = table.schema.metadata
     hf_string = json.dumps(hf_meta).encode()
     meta_dict[b"hydrofunctions_meta"] = hf_string
     table = table.replace_schema_metadata(meta_dict)
     pq.write_table(table, filename, compression="gzip")
+
+
+def read_json_gzip(filename):
+    """Read a gzipped JSON file into a Python dictionary
+
+    Reads JSON files that have been zipped and returns a Python dictionary.
+    Usually the files should have an extension *.json.gz
+    Hydrofunctions uses this function to store the original JSON format WaterML
+    response from the USGS NWIS.
+
+    Args:
+        filename (str): A string with the filename and extension.
+
+    Returns:
+        a dictionary of the file contents.
+    """
+    with gzip.open(filename, 'rb') as zip_file:
+        zip_dict = json.loads(zip_file.read())
+        return zip_dict
+
+
+def save_json_gzip(filename, json_dict):
+    """Save a Python dictionary as a gzipped JSON file.
+
+    This save function is especially designed to compress and save the original
+    JSON response from the USGS NWIS. If no file extension is specified, then a
+    *.json.gz extension will be provided.
+
+    Args:
+        filename (str): A string with the filename and extension.
+        json_dict (dict): A dictionary representing the json content.
+    """
+    if (len(filename.split('.'))==1):
+        filename = filename + 'json.gz'
+
+    with gzip.open(filename, 'wt', encoding="ascii") as zip_file:
+       json.dump(json_dict, zip_file)

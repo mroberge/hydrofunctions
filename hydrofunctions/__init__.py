@@ -78,6 +78,8 @@ from .hydrofunctions import (
     calc_freq,
     read_parquet,
     save_parquet,
+    read_json_gzip,
+    save_json_gzip,
 )
 from .station import Station, NWIS
 from .typing import (

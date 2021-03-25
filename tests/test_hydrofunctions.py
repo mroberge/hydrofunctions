@@ -616,10 +616,10 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_save_read_parquet_integration(self):
         # This test has side effects: it will create a file.
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
-        filename = "test_filename_delete_me"
+        filename = "test_filename_delete_me.parquet"
         hf.save_parquet(filename, expected_df, expected_meta)
         actual_df, actual_meta = hf.read_parquet(filename)
-        os.remove("test_filename_delete_me")
+        os.remove("test_filename_delete_me.parquet")
         self.assertEqual(
             expected_df.index.freq,
             actual_df.index.freq,
@@ -637,17 +637,34 @@ class TestHydrofunctions(unittest.TestCase):
         meta_dict[b"hydrofunctions_meta"] = meta_string
         expected_table = expected_table.replace_schema_metadata(meta_dict)
         mock_read.return_value = expected_table
-        actual_df, actual_meta = hf.read_parquet("fake_filename")
+        actual_df, actual_meta = hf.read_parquet("fake_filename.parquet")
 
         assert_frame_equal(expected_df, actual_df)
         self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
 
     @mock.patch("pyarrow.parquet.write_table")
     def test_hf_save_parquet(self, mock_write):
-        filename = "expected_filename"
+        filename = "expected_filename.parquet"
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
         hf.save_parquet(filename, expected_df, expected_meta)
-        pass
+
+    @mock.patch("gzip.open")
+    @mock.patch("json.loads")
+    def test_hf_read_json_gz(self, mock_json, mock_gzip):
+        expected = two_sites_two_params_iv
+        mock_json.return_value = expected
+        actual = hf.read_json_gzip("filename.json.gz")
+        mock_gzip.assert_called_with("filename.json.gz", "rb")
+        self.assertEqual(actual, expected)
+
+    @mock.patch("gzip.open")
+    @mock.patch("json.dump")
+    def test_hf_save_json_gz(self, mock_json, mock_gzip):
+        expected = two_sites_two_params_iv
+        expected_filename = "save.json.gz"
+        hf.save_json_gzip(expected_filename, expected)
+        mock_gzip.assert_called_with(expected_filename, "wt", encoding="ascii")
+        mock_json.assert_called()
 
 
 if __name__ == "__main__":
