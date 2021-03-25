@@ -410,10 +410,11 @@ def peaks(site):
     header, outputDF, columns, dtype = read_rdb(response.text)
     try:
         outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
-        outputDF.set_index("peak_dt", inplace=True)
     except ValueError as err:
-        print(f"Unable to parse date. reason: '{str(err)}'.  As a result of this"
-            "problem, the dataframe will not use the date as the index."   )
+        print(f"Unable to parse the peak_dt field as a date. reason: '{str(err)}'.")
+
+    # peak_date might be a string, or it might be a datetime. Both work as an index
+    outputDF.set_index("peak_dt", inplace=True)
     output_obj = hydroRDB(header, outputDF, columns, dtype)
     return output_obj
 
