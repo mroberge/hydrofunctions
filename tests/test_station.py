@@ -1030,6 +1030,27 @@ End:   expected end"""
         test_nwis.save(expected_filename)
         mock_save.assert_called_once_with(expected_filename, expected_df, expected_meta)
 
+    @mock.patch("hydrofunctions.hydrofunctions.save_json_gzip")
+    def test_NWIS_save_calls_save_gz(self, mock_save):
+        expected_filename = "expected_filename.gz"
+        expected_json = "expected json"
+        test_nwis = TestingNWIS()
+        test_nwis.json = expected_json
+        test_nwis.save(expected_filename)
+        mock_save.assert_called_once_with(expected_filename, expected_json)
+
+    def test_NWIS_save_gz_raises_error_if_no_json(self):
+        expected_filename = "expected_filename.gz"
+        test_nwis = TestingNWIS()
+        with self.assertRaises(AttributeError):
+            test_nwis.save(expected_filename)
+
+    def test_NWIS_save_gz_raises_error_if_unrecognized_file_extension(self):
+        expected_filename = "expected_filename.weird"
+        test_nwis = TestingNWIS()
+        with self.assertRaises(OSError):
+            test_nwis.save(expected_filename)
+
     @mock.patch("hydrofunctions.hydrofunctions.read_parquet")
     def test_NWIS_read_calls_read_parquet(self, mock_read):
         expected_filename = "expected_filename.parquet"
@@ -1051,6 +1072,23 @@ End:   expected end"""
             test_nwis.meta,
             "The metadata were not retrieved by NWIS.read().",
         )
+
+    @mock.patch("hydrofunctions.hydrofunctions.read_json_gzip")
+    def test_NWIS_read_calls_read_json_gz(self, mock_read):
+        expected_filename = "expected_filename.json.gz"
+        expected_json = recent_only
+        mock_read.return_value = expected_json
+        expected_meta = {'USGS:01541200': {'siteName': 'WB Susquehanna River near Curwensville, PA', 'siteLatLongSrs': {'srs': 'EPSG:4326', 'latitude': 40.9614471, 'longitude': -78.5191906}, 'timeSeries': {'00010': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'deg C', 'variableDescription': 'Temperature, water, degrees Celsius', 'methodID': '118850', 'methodDescription': ''}, '00060': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'ft3/s', 'variableDescription': 'Discharge, cubic feet per second', 'methodID': '118849', 'methodDescription': ''}}}}
+        test_nwis = TestingNWIS()
+        test_nwis.read(expected_filename)
+        mock_read.assert_called_once_with(expected_filename)
+        actual_meta = test_nwis.meta
+        self.assertEqual(
+            actual_meta,
+            expected_meta,
+            f"The read function did not parse the json.gz file correctly. It returned"
+            f"type {type(actual_meta)} when it was expected to return type {type(expected_meta)}."
+            )
 
 
 """
