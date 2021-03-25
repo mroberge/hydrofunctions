@@ -109,7 +109,7 @@ class NWIS(Station):
             if (len(file.split(".")) == 1):
                 file = file + ".json.gz"
             try:
-                self._dataframe, self.meta = hf.read_parquet(file)
+                self.read(file)
                 self.ok = True
                 print("Reading data from", file)
 
