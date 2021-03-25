@@ -397,10 +397,12 @@ def peaks(site):
     print("Retrieving annual peak discharges for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
     header, outputDF, columns, dtype = read_rdb(response.text)
-    outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
-
-    outputDF.set_index("peak_dt", inplace=True)
-
+    try:
+        outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
+        outputDF.set_index("peak_dt", inplace=True)
+    except ValueError as err:
+        print(f"Unable to parse date. reason: '{str(err)}'.  As a result of this"
+            "problem, the dataframe will not use the date as the index."   )
     output_obj = hydroRDB(header, outputDF, columns, dtype)
     return output_obj
 
