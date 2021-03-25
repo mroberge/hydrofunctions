@@ -369,11 +369,12 @@ def peaks(site):
     Returns:
         a hydroRDB object or tuple consisting of the header and a table. The header
         is a multi-line string of metadata supplied by the USGS with the data series.
-        The table is a dataframe containing the annual peak discharge series.
+        The table is a dataframe containing the annual peak discharge series. You can
+        use these data to conduct a flood frequency analysis.
 
     **Example:**
 
-        >>> test = data_catalog('01542500')
+        >>> test = hf.peaks('01542500')
         >>> test
         hydroRDB(header=<a mulit-line string of the header>,
                  table=<a Pandas dataframe>)
