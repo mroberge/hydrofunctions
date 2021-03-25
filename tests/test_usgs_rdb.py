@@ -461,6 +461,18 @@ class TestReadRdb(unittest.TestCase):
             expected_url, headers=expected_headers, params=expected_params
         )
 
+    @mock.patch("requests.get")
+    def test_peaks_handles_parsing_error(self, mock_get):
+        site_id = "06813500" # This site returns data with a malformed date.
+        expected_status_code = 200
+        expected_text = parsing_error_fixture
+        expected = fakeResponse(code=expected_status_code, text=expected_text)
+        mock_get.return_value = expected
+
+        # This will cause a parsing error that must be dealt with.
+        actual = hf.peaks(site_id)
+
+
 
 class Test_hydroRDB(unittest.TestCase):
     """Test the hydroRDB class.
