@@ -87,7 +87,15 @@ class NWIS(Station):
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
 
+        file (str):
+            A filename for acting as a cache for the data request. Accepts file
+            extensions of '*.json.gz' (default) and '*.parquet'. If this parameter is
+            included, the NWIS object will first attempt to read its data from the file.
+            If the file does not exist, it will use the other parameters to obtain the
+            data and will then save to the provided filename.
 
+            Zipped JSON files will save the original WaterML JSON provided by the NWIS.
+            Parquet files will save the dataframe and the metadata for the NWIS object.
     """
 
     def __init__(
@@ -302,7 +310,7 @@ class NWIS(Station):
 
     def read(self, file):
         """
-        Read a dataframe and metadata from a parquet file.
+        Read from a zipped WaterML file '*.json.gz' or from a parquet file.
 
         Args:
             file (str):
