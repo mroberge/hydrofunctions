@@ -165,7 +165,17 @@ def read_rdb(text):
             header=None,
             names=columns,
             dtype={"site_no": str, "parameter_cd": str},
+            # When converted like this, poorly-formed dates will be saved as strings
+            parse_dates=True,
+            #If dates are converted like this, then poorly formed dates will stop the process
+            #converters={"peak_dt": pd.to_datetime},
         )
+        # Another approach would be to convert date columns later, and catch errors
+        #try:
+        #   outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
+        #except ValueError as err:
+        #   print(f"Unable to parse date. reason: '{str(err)}'.")
+
     except:
         print(
             "There appears to be an error processing the file that the USGS "
@@ -176,6 +186,7 @@ def read_rdb(text):
         raise
     # outputDF.outputDF.filter(like='_cd').columns
     # TODO: code columns ('*._cd') should be interpreted as strings.
+    # TODO: date columns ('*_dt') should be converted to dates.
 
     return header, outputDF, columns, dtypes
 
