@@ -23,6 +23,7 @@ from .fixtures import (
     field_fixture,
     rating_fixture,
     peaks_fixture,
+    parsing_error_fixture,
 )
 
 

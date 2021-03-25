@@ -26,6 +26,7 @@ from .fixtures_usgs_rdb import (
     field_fixture,
     rating_fixture,
     peaks_fixture,
+    parsing_error_fixture,
 )
 
 
