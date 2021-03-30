@@ -710,9 +710,8 @@ def read_parquet(filename):
         filename (str): A string with the filename and extension.
 
     Returns:
-        dataframe (pd.DataFrame): a pandas dataframe.
-        meta (dict): a dictionary with the metadata for the NWIS data request, if it
-        exists.
+        * dataframe (pd.DataFrame): a pandas dataframe.
+        * meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
     """
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()
@@ -738,8 +737,7 @@ def save_parquet(filename, dataframe, hf_meta):
     Args:
         filename (str): A string with the filename and extension.
         dataframe (pd.DataFrame): a pandas dataframe.
-        hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it
-        exists.
+        hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
     """
     if (len(filename.split('.'))==1):
         filename = filename + '.gz.parquet'
@@ -753,10 +751,10 @@ def save_parquet(filename, dataframe, hf_meta):
 
 
 def read_json_gzip(filename):
-    """Read a gzipped JSON file into a Python dictionary
+    """Read a gzipped JSON file into a Python dictionary.
 
     Reads JSON files that have been zipped and returns a Python dictionary.
-    Usually the files should have an extension *.json.gz
+    Usually the files should have an extension .json.gz
     Hydrofunctions uses this function to store the original JSON format WaterML
     response from the USGS NWIS.
 
@@ -776,7 +774,7 @@ def save_json_gzip(filename, json_dict):
 
     This save function is especially designed to compress and save the original
     JSON response from the USGS NWIS. If no file extension is specified, then a
-    *.json.gz extension will be provided.
+    .json.gz extension will be provided.
 
     Args:
         filename (str): A string with the filename and extension.

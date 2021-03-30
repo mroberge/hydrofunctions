@@ -124,6 +124,7 @@ def read_rdb(text):
             A long string containing the contents of a rdb file. A common way
             to obtain these would be from the .text property of a requests
             response, as in the example usage below.
+
     Returns:
         header (multi-line string):
             Every commented line at the top of the rdb file is marked with a
@@ -435,7 +436,7 @@ def rating_curve(site):
 
     **Example:**
 
-        >>> test = data_catalog('01542500')
+        >>> test = rating_curve('01542500')
         >>> test
         hydroRDB(header=<a mulit-line string of the header>,
                  table=<a Pandas dataframe>)
@@ -489,9 +490,12 @@ def stats(site, statReportType="daily", **kwargs):
             The gage ID number for the site, or a series of gage IDs separated
             by commas, like this: '01546500,01548000'.
 
-        statReportType ('annual'|'monthly'|'daily'):
+        statReportType ('daily'|'monthly'|'annual'):
             There are three different types of report that you can request.
-            - 'daily' (default): this
+
+            - 'daily' (default): calculate statistics for each of 365 days.
+            - 'monthly': calculate statistics for each of the twelve months.
+            - 'annual': calculate annual statistics for each year since the start of the record.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a table. The header
@@ -500,7 +504,8 @@ def stats(site, statReportType="daily", **kwargs):
         site.
 
     Raises:
-        HTTPError when a non-200 http status code is returned.
+        HTTPError
+            when a non-200 http status code is returned.
 
     **Example:**
 
