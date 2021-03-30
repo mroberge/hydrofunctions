@@ -27,6 +27,8 @@ class hydroRDB:
         dtypes (str):
             A string from the rdb file that gives the data type and length of
             each column.
+        rdb (str):
+            The complete original text of the rdb file.
 
     **Properties:**
         **header** (str):
@@ -39,6 +41,8 @@ class hydroRDB:
         **dtypes** (str):
             A string from the rdb file that gives the data type and length of
             each column.
+        **rdb** (str):
+            The original, unparsed rdb file as returned by the USGS.
 
         You can also access the header and the dataframe as a named tuple::
 
@@ -52,11 +56,12 @@ class hydroRDB:
         - You can read more about the RDB format here: https://pubs.usgs.gov/of/2003/ofr03123/6.4rdb_format.pdf
     """
 
-    def __init__(self, header, table, columns, dtypes):
+    def __init__(self, header, table, columns, dtypes, rdb_str):
         self.header = header
         self.table = table
         self.columns = columns
         self.dtypes = dtypes
+        self.rdb = rdb_str
 
     def __iter__(self):
         return iter((self.header, self.table))
@@ -233,7 +238,7 @@ def site_file(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
 
     return output_obj
 
@@ -278,7 +283,7 @@ def data_catalog(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
 
     return output_obj
 
@@ -366,7 +371,7 @@ def field_meas(site):
 
     outputDF.set_index("measurement_dt", inplace=True)
 
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
 
     return output_obj
 
@@ -416,7 +421,7 @@ def peaks(site):
 
     # peak_date might be a string, or it might be a datetime. Both work as an index
     outputDF.set_index("peak_dt", inplace=True)
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
     return output_obj
 
 
@@ -478,7 +483,7 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
     return output_obj
 
 
@@ -580,5 +585,5 @@ def stats(site, statReportType="daily", **kwargs):
 
     header, outputDF, columns, dtype = read_rdb(response.text)
 
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
     return output_obj

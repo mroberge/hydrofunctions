@@ -488,7 +488,8 @@ class Test_hydroRDB(unittest.TestCase):
         table = "expected table"
         columns = "expected columns"
         dtypes = "expected dtypes"
-        actual = hf.hydroRDB(header, table, columns, dtypes)
+        rdb = "expected rdb file"
+        actual = hf.hydroRDB(header, table, columns, dtypes, rdb)
         self.assertIsInstance(actual, hf.hydroRDB)
 
     def test_hydroRDB_has_properties_and_methods(self):
@@ -496,12 +497,14 @@ class Test_hydroRDB(unittest.TestCase):
         table = "expected table"
         columns = "expected columns"
         dtypes = "expected dtypes"
-        actual = hf.hydroRDB(header, table, columns, dtypes)
+        rdb = "expected rdb file"
+        actual = hf.hydroRDB(header, table, columns, dtypes, rdb)
         self.assertIsInstance(actual, hf.hydroRDB)
         self.assertEqual(actual.header, header)
         self.assertEqual(actual.table, table)
         self.assertEqual(actual.columns, columns)
         self.assertEqual(actual.dtypes, dtypes)
+        self.assertEqual(actual.rdb, rdb)
         actual_repr = actual.__repr__()
         # actual._repr_html_() requires that table is a dataframe with a _repr_html_()
         # actual_html_repr = actual._repr_html_()
