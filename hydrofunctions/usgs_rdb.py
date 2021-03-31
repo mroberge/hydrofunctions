@@ -361,7 +361,11 @@ def field_meas(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
+
+    try:
+        outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
+    except ValueError as err:
+        print(f"Unable to parse the measurement_dt field as a date. reason: '{str(err)}'.")
 
     # An attempt to use the tz_cd column to make measurement_dt timezone aware.
     # outputDF.tz_cd.replace({np.nan: 'UTC'}, inplace=True)
@@ -370,9 +374,7 @@ def field_meas(site):
     # outputDF['datetime'] = outputDF[['measurement_dt', 'tz_cd']].apply(lambda x: f(*x), axis=1)
 
     outputDF.set_index("measurement_dt", inplace=True)
-
     output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
-
     return output_obj
 
 
