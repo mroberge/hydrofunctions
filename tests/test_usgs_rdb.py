@@ -508,3 +508,15 @@ class Test_hydroRDB(unittest.TestCase):
         actual_repr = actual.__repr__()
         # actual._repr_html_() requires that table is a dataframe with a _repr_html_()
         # actual_html_repr = actual._repr_html_()
+
+    def test_hydroRDB_can_return_tuple(self):
+        header = "expected header"
+        table = pd.DataFrame({"A":[1,2], "B":[3,4]})
+        columns = "expected columns"
+        dtypes = "expected dtypes"
+        rdb = "expected rdb file"
+        actual = hf.hydroRDB(header, table, columns, dtypes, rdb)
+        self.assertIsInstance(actual, hf.hydroRDB)
+        head, table = actual
+        self.assertIsInstance(head, str)
+        self.assertIsInstance(table, pd.DataFrame)
