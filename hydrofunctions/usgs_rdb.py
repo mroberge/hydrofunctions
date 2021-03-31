@@ -27,6 +27,8 @@ class hydroRDB:
         dtypes (str):
             A string from the rdb file that gives the data type and length of
             each column.
+        rdb (str):
+            The complete original text of the rdb file.
 
     **Properties:**
         **header** (str):
@@ -39,6 +41,8 @@ class hydroRDB:
         **dtypes** (str):
             A string from the rdb file that gives the data type and length of
             each column.
+        **rdb** (str):
+            The original, unparsed rdb file as returned by the USGS.
 
         You can also access the header and the dataframe as a named tuple::
 
@@ -52,11 +56,12 @@ class hydroRDB:
         - You can read more about the RDB format here: https://pubs.usgs.gov/of/2003/ofr03123/6.4rdb_format.pdf
     """
 
-    def __init__(self, header, table, columns, dtypes):
+    def __init__(self, header, table, columns, dtypes, rdb_str):
         self.header = header
         self.table = table
         self.columns = columns
         self.dtypes = dtypes
+        self.rdb = rdb_str
 
     def __iter__(self):
         return iter((self.header, self.table))
@@ -124,6 +129,7 @@ def read_rdb(text):
             A long string containing the contents of a rdb file. A common way
             to obtain these would be from the .text property of a requests
             response, as in the example usage below.
+
     Returns:
         header (multi-line string):
             Every commented line at the top of the rdb file is marked with a
@@ -165,7 +171,17 @@ def read_rdb(text):
             header=None,
             names=columns,
             dtype={"site_no": str, "parameter_cd": str},
+            # When converted like this, poorly-formed dates will be saved as strings
+            parse_dates=True,
+            #If dates are converted like this, then poorly formed dates will stop the process
+            #converters={"peak_dt": pd.to_datetime},
         )
+        # Another approach would be to convert date columns later, and catch errors
+        #try:
+        #   outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
+        #except ValueError as err:
+        #   print(f"Unable to parse date. reason: '{str(err)}'.")
+
     except:
         print(
             "There appears to be an error processing the file that the USGS "
@@ -176,6 +192,7 @@ def read_rdb(text):
         raise
     # outputDF.outputDF.filter(like='_cd').columns
     # TODO: code columns ('*._cd') should be interpreted as strings.
+    # TODO: date columns ('*_dt') should be converted to dates.
 
     return header, outputDF, columns, dtypes
 
@@ -221,7 +238,7 @@ def site_file(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
 
     return output_obj
 
@@ -266,7 +283,7 @@ def data_catalog(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
 
     return output_obj
 
@@ -344,7 +361,11 @@ def field_meas(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
+
+    try:
+        outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
+    except ValueError as err:
+        print(f"Unable to parse the measurement_dt field as a date. reason: '{str(err)}'.")
 
     # An attempt to use the tz_cd column to make measurement_dt timezone aware.
     # outputDF.tz_cd.replace({np.nan: 'UTC'}, inplace=True)
@@ -353,9 +374,7 @@ def field_meas(site):
     # outputDF['datetime'] = outputDF[['measurement_dt', 'tz_cd']].apply(lambda x: f(*x), axis=1)
 
     outputDF.set_index("measurement_dt", inplace=True)
-
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
-
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
     return output_obj
 
 
@@ -369,11 +388,12 @@ def peaks(site):
     Returns:
         a hydroRDB object or tuple consisting of the header and a table. The header
         is a multi-line string of metadata supplied by the USGS with the data series.
-        The table is a dataframe containing the annual peak discharge series.
+        The table is a dataframe containing the annual peak discharge series. You can
+        use these data to conduct a flood frequency analysis.
 
     **Example:**
 
-        >>> test = data_catalog('01542500')
+        >>> test = hf.peaks('01542500')
         >>> test
         hydroRDB(header=<a mulit-line string of the header>,
                  table=<a Pandas dataframe>)
@@ -396,11 +416,14 @@ def peaks(site):
     print("Retrieving annual peak discharges for site #", site, " from ", url)
     response = get_usgs_RDB_service(url, headers)
     header, outputDF, columns, dtype = read_rdb(response.text)
-    outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
+    try:
+        outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
+    except ValueError as err:
+        print(f"Unable to parse the peak_dt field as a date. reason: '{str(err)}'.")
 
+    # peak_date might be a string, or it might be a datetime. Both work as an index
     outputDF.set_index("peak_dt", inplace=True)
-
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
     return output_obj
 
 
@@ -420,7 +443,7 @@ def rating_curve(site):
 
     **Example:**
 
-        >>> test = data_catalog('01542500')
+        >>> test = rating_curve('01542500')
         >>> test
         hydroRDB(header=<a mulit-line string of the header>,
                  table=<a Pandas dataframe>)
@@ -462,7 +485,7 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
     return output_obj
 
 
@@ -474,9 +497,12 @@ def stats(site, statReportType="daily", **kwargs):
             The gage ID number for the site, or a series of gage IDs separated
             by commas, like this: '01546500,01548000'.
 
-        statReportType ('annual'|'monthly'|'daily'):
+        statReportType ('daily'|'monthly'|'annual'):
             There are three different types of report that you can request.
-            - 'daily' (default): this
+
+            - 'daily' (default): calculate statistics for each of 365 days.
+            - 'monthly': calculate statistics for each of the twelve months.
+            - 'annual': calculate annual statistics for each year since the start of the record.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a table. The header
@@ -485,7 +511,8 @@ def stats(site, statReportType="daily", **kwargs):
         site.
 
     Raises:
-        HTTPError when a non-200 http status code is returned.
+        HTTPError
+            when a non-200 http status code is returned.
 
     **Example:**
 
@@ -560,5 +587,5 @@ def stats(site, statReportType="daily", **kwargs):
 
     header, outputDF, columns, dtype = read_rdb(response.text)
 
-    output_obj = hydroRDB(header, outputDF, columns, dtype)
+    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
     return output_obj
