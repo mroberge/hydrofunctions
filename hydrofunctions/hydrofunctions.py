@@ -524,7 +524,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                         + " is STILL not unique. Dropping first rows with duplicated date."
                     )
                     DF = DF[~DF.index.duplicated(keep="first")]
-            if local_freq > to_offset("0min"):
+            if local_freq > pd.Timedelta(to_offset("0min")):
                 local_clean_index = pd.date_range(
                     start=local_start, end=local_end, freq=local_freq, tz="UTC"
                 )
