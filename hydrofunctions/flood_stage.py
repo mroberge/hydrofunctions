@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 import requests
 
 ResponseFormat = "json" # json, xml
@@ -8,15 +6,14 @@ ResponseFormat = "json" # json, xml
 url = "https://waterwatch.usgs.gov/webservices/floodstage"
 
 
-def get_flood_stages(res_fmt: str = ResponseFormat) -> Dict:
+def get_flood_stages(res_fmt: str = ResponseFormat):
     """Retrieves flood stages for all stations."""
     res = requests.get(url, params={"format": res_fmt})
     if res.ok:
         stages = res.json()
         return {site['site_no']: {k: v for k, v in site.items() if k != 'site_no'} for site in stages['sites']}
 
-
-def get_flood_stage(sites: List[str]) -> Dict[str, Dict]:
+def get_flood_stage(stages, sites):
     """
     Retrieves flood stages for a list of station numbers.
     Args:
@@ -25,7 +22,6 @@ def get_flood_stage(sites: List[str]) -> Dict[str, Dict]:
     Returns: Dictionary of station numbers and their flood stages. If no flood stage for a station None is returned.
 
     """
-    stages = get_flood_stages()
     stations_stages = {}
     for site in sites:
         try:
