@@ -34,7 +34,6 @@ requirements = [
     "pyarrow==0.17.1",
     "ipykernel",
     "nbsphinx",
-    "typing"
 ]
 
 test_requirements = [
