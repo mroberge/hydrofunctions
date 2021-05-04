@@ -1,6 +1,6 @@
 import requests
 
-ResponseFormat = "json" # json, xml
+ResponseFormat = "json"  # json, xml
 
 # OLD web service dating to 2016; discontinued for new one?
 url = "https://waterwatch.usgs.gov/webservices/floodstage"
@@ -11,7 +11,11 @@ def get_flood_stages(res_fmt: str = ResponseFormat):
     res = requests.get(url, params={"format": res_fmt})
     if res.ok:
         stages = res.json()
-        return {site['site_no']: {k: v for k, v in site.items() if k != 'site_no'} for site in stages['sites']}
+        return {
+            site["site_no"]: {k: v for k, v in site.items() if k != "site_no"}
+            for site in stages["sites"]
+        }
+
 
 def get_flood_stage(stages, sites):
     """
@@ -30,4 +34,3 @@ def get_flood_stage(stages, sites):
         except KeyError:
             stations_stages[site] = None
     return stations_stages
-
