@@ -17,6 +17,7 @@ def get_flood_stage(stages, sites):
     """
     Retrieves flood stages for a list of station numbers.
     Args:
+        stages: Dict of station flood stages
         sites: List of strings of site numbers.
 
     Returns: Dictionary of station numbers and their flood stages. If no flood stage for a station None is returned.
@@ -29,3 +30,4 @@ def get_flood_stage(stages, sites):
         except KeyError:
             stations_stages[site] = None
     return stations_stages
+
