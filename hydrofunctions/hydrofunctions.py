@@ -584,8 +584,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     zero = to_offset("0min")
     freqs2 = list(filter(lambda x: x > zero, freqs))
     if len(freqs2) > 0:
-        freqmin = min(freqs)
-        freqmax = max(freqs)
+        freqmin = min(freqs2)
+        freqmax = max(freqs2)
         if freqmin != freqmax:
             warnings.warn(
                 "One or more datasets in this request is going to be "
