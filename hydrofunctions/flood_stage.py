@@ -6,7 +6,7 @@ ResponseFormat = "json"  # json, xml
 url = "https://waterwatch.usgs.gov/webservices/floodstage"
 
 
-def get_flood_stages(res_fmt: str = ResponseFormat):
+def get_flood_stages(format: str = "json"):
     """Retrieves flood stages for all stations."""
     res = requests.get(url, params={"format": res_fmt})
     if res.ok:
