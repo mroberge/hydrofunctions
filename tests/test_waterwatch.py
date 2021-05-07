@@ -3,7 +3,7 @@ from unittest import mock
 from .fixtures import (
     fakeResponse,
 )
-from hydrofunctions.flood_stage import get_flood_stage
+from hydrofunctions.waterwatch import get_flood_stage
 
 
 class TestFloodStage(unittest.TestCase):
