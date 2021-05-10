@@ -26,7 +26,7 @@ def __get_flood_stages(site_number: str = None):
         }
 
 
-def _get_flood_stage(all_flood_stages, sites_numbers=None):
+def filter_flood_stages(all_flood_stages, sites_numbers=None):
     """Filters flood states of specific station numbers"""
     stations_stages = {}
     for site_nb in sites_numbers:
@@ -57,7 +57,7 @@ def get_flood_stage(sites_numbers=None, output_format=None):
     all_stages = __get_flood_stages()
 
     if sites_numbers:
-        stations_stages = _get_flood_stage(all_stages, sites_numbers)
+        stations_stages = filter_flood_stages(all_stages, sites_numbers)
     else:
         stations_stages = all_stages
 

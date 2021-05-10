@@ -10,7 +10,7 @@ class TestFloodStage(unittest.TestCase):
         stages = {"07144100": {"action_stage": "20"}}
         expected = {"07144100": {"action_stage": "20"}, "07144101": None}
         stations = ["07144100", "07144101"]
-        self.assertDictEqual(ww._get_flood_stage(stages, stations), expected)
+        self.assertDictEqual(ww.filter_flood_stages(stages, stations), expected)
 
     @mock.patch("hydrofunctions.waterwatch.__get_flood_stages")
     def test_waterwatch_get_stage(self, mock_get_fs):
