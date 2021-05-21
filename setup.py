@@ -5,6 +5,7 @@ from setuptools import setup, find_packages
 import re
 
 with open("pypi_readme.rst") as readme_file:
+    # with open("README.rst") as readme_file:
     readme = readme_file.read()
 
 with open("docs/history.rst") as history_file:
@@ -12,7 +13,7 @@ with open("docs/history.rst") as history_file:
 
 
 def relative2absolute(input, old, new):
-    """ Replaces every instance of rel_key in input with absolute_stem.
+    """Replaces every instance of rel_key in input with absolute_stem.
     Use this to change relative links to absolute links in pypi.
     """
     pattern = old
@@ -28,19 +29,18 @@ stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_stati
 requirements = [
     "matplotlib",
     "numpy>=1.16.0",
-    "pandas==1.0.5",
+    "pandas",
     "requests",
     "IPython",
-    "pyarrow==0.17.1",
-    "ipykernel",
-    "nbsphinx",
+    "pyarrow",
 ]
 
 test_requirements = [
     # Use coverage to run coverage tests locally.
     # Do not list codecov here. It is only listed in .travis.yml because
     # we only run codecov during Travis CI builds.
-    "coverage"
+    "tox",
+    "coverage",
 ]
 
 setup(
@@ -73,6 +73,7 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering :: Hydrology",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering :: Visualization",
