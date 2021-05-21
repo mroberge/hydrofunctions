@@ -125,7 +125,7 @@ class NWIS(Station):
                 # File does not exist yet, we'll make it later.
                 pass
 
-        if self.ok == False:
+        if not self.ok:
             self.response = hf.get_nwis(
                 site,
                 service,
