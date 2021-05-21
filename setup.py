@@ -11,6 +11,8 @@ with open("pypi_readme.rst") as readme_file:
 with open("docs/history.rst") as history_file:
     history = history_file.read()
 
+with open("requirements.txt") as requirements_file:
+    requirements = requirements_file.read()
 
 def relative2absolute(input, old, new):
     """Replaces every instance of rel_key in input with absolute_stem.
@@ -21,19 +23,9 @@ def relative2absolute(input, old, new):
     output = p.sub(new, input)
     return output
 
-
 relative = r"_static"
 stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static"
 # readme = relative2absolute(readme, relative, stem)
-
-requirements = [
-    "matplotlib",
-    "numpy>=1.16.0",
-    "pandas",
-    "requests",
-    "IPython",
-    "pyarrow",
-]
 
 test_requirements = [
     # Use coverage to run coverage tests locally.
