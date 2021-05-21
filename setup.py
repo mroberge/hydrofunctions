@@ -14,6 +14,7 @@ with open("docs/history.rst") as history_file:
 with open("requirements.txt") as requirements_file:
     requirements = requirements_file.read()
 
+
 def relative2absolute(input, old, new):
     """Replaces every instance of rel_key in input with absolute_stem.
     Use this to change relative links to absolute links in pypi.
@@ -23,17 +24,10 @@ def relative2absolute(input, old, new):
     output = p.sub(new, input)
     return output
 
+
 relative = r"_static"
 stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static"
 # readme = relative2absolute(readme, relative, stem)
-
-test_requirements = [
-    # Use coverage to run coverage tests locally.
-    # Do not list codecov here. It is only listed in .travis.yml because
-    # we only run codecov during Travis CI builds.
-    "tox",
-    "coverage",
-]
 
 setup(
     name="hydrofunctions",
@@ -72,5 +66,4 @@ setup(
         "Topic :: Utilities",
     ],
     test_suite="tests",
-    tests_require=test_requirements,
 )
