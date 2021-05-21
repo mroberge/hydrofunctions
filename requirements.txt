@@ -1,7 +1,0 @@
-# See https://caremad.io/posts/2013/07/setup-vs-requirement/
-# This takes all of the dependencies listed in setup.py install-requires,
-# and gets them from pypi.
-
---index-url https://pypi.python.org/simple/
-
--e .
