@@ -710,8 +710,8 @@ def read_parquet(filename):
         filename (str): A string with the filename and extension.
 
     Returns:
-        * dataframe (pd.DataFrame): a pandas dataframe.
-        * meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
+        dataframe (pd.DataFrame): a pandas dataframe.
+        meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
     """
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()
@@ -739,8 +739,8 @@ def save_parquet(filename, dataframe, hf_meta):
         dataframe (pd.DataFrame): a pandas dataframe.
         hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
     """
-    if (len(filename.split('.'))==1):
-        filename = filename + '.gz.parquet'
+    if len(filename.split(".")) == 1:
+        filename = filename + ".gz.parquet"
 
     table = pa.Table.from_pandas(dataframe, preserve_index=True)
     meta_dict = table.schema.metadata
@@ -764,7 +764,7 @@ def read_json_gzip(filename):
     Returns:
         a dictionary of the file contents.
     """
-    with gzip.open(filename, 'rb') as zip_file:
+    with gzip.open(filename, "rb") as zip_file:
         zip_dict = json.loads(zip_file.read())
         return zip_dict
 
@@ -780,8 +780,8 @@ def save_json_gzip(filename, json_dict):
         filename (str): A string with the filename and extension.
         json_dict (dict): A dictionary representing the json content.
     """
-    if (len(filename.split('.'))==1):
-        filename = filename + 'json.gz'
+    if len(filename.split(".")) == 1:
+        filename = filename + "json.gz"
 
-    with gzip.open(filename, 'wt', encoding="ascii") as zip_file:
-       json.dump(json_dict, zip_file)
+    with gzip.open(filename, "wt", encoding="ascii") as zip_file:
+        json.dump(json_dict, zip_file)
