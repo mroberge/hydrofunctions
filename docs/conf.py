@@ -178,7 +178,6 @@ html_theme_options = {
     "github_type": "watch",
     "github_count": True,
     "github_banner": True,
-    "travis_button": True,
     "fixed_sidebar": False,
     "sidebar_width": "230px",
     "show_related": True,
