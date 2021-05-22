@@ -89,4 +89,9 @@ History
 * hf.data_catalog(site) retrieves history of data collected at site.
 * Dropped Python 3.4 & 3.5 support, added 3.8.
 
+0.2.1 (2021-05-xx)
+------------------
 
+* Moved from TravisCI to Github Actions.
+* Added Python 3.9 support.
+* 
