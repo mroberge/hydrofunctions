@@ -6,8 +6,8 @@ HydroFunctions
         :target: https://pypi.python.org/pypi/hydrofunctions
         :alt: Visit Hydrofunctions on PyPI
 
-.. image:: https://img.shields.io/travis/mroberge/hydrofunctions.svg
-        :target: https://travis-ci.org/mroberge/hydrofunctions
+.. image:: https://github.com/mroberge/hydrofunctions/actions/workflows/test.yaml/badge.svg
+        :target: https://github.com/mroberge/hydrofunctions/actions/workflows/test.yaml
         :alt: Unit Testing Status
 
 .. image:: https://codecov.io/gh/mroberge/hydrofunctions/branch/master/graph/badge.svg
