@@ -710,8 +710,8 @@ def read_parquet(filename):
         filename (str): A string with the filename and extension.
 
     Returns:
-        * dataframe (pd.DataFrame): a pandas dataframe.
-        * meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
+        dataframe (pd.DataFrame): a pandas dataframe.
+        meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
     """
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()

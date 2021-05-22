@@ -155,10 +155,10 @@ def read_rdb(text):
                 headerlines.append(line)
             elif count == 0:
                 columns = line.split()
-                count = count + 1
+                count += 1
             elif count == 1:
                 dtypes = line.split()
-                count = count + 1
+                count += 1
             else:
                 datalines.append(line)
         data = "\n".join(datalines)
@@ -173,13 +173,13 @@ def read_rdb(text):
             dtype={"site_no": str, "parameter_cd": str},
             # When converted like this, poorly-formed dates will be saved as strings
             parse_dates=True,
-            #If dates are converted like this, then poorly formed dates will stop the process
-            #converters={"peak_dt": pd.to_datetime},
+            # If dates are converted like this, then poorly formed dates will stop the process
+            # converters={"peak_dt": pd.to_datetime},
         )
         # Another approach would be to convert date columns later, and catch errors
-        #try:
+        # try:
         #   outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
-        #except ValueError as err:
+        # except ValueError as err:
         #   print(f"Unable to parse date. reason: '{str(err)}'.")
 
     except:
@@ -238,9 +238,7 @@ def site_file(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
-
-    return output_obj
+    return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
 def data_catalog(site):
@@ -275,7 +273,7 @@ def data_catalog(site):
     )
     headers = {"Accept-encoding": "gzip"}
 
-    print("Retrieving the site file for site #", site, " from ", url)
+    print(f"Retrieving the site file for site #{site} from {url}")
     response = get_usgs_RDB_service(url, headers)
     (
         header,
@@ -283,9 +281,7 @@ def data_catalog(site):
         columns,
         dtype,
     ) = read_rdb(response.text)
-    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
-
-    return output_obj
+    return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
 def field_meas(site):
@@ -365,7 +361,9 @@ def field_meas(site):
     try:
         outputDF.measurement_dt = pd.to_datetime(outputDF.measurement_dt)
     except ValueError as err:
-        print(f"Unable to parse the measurement_dt field as a date. reason: '{str(err)}'.")
+        print(
+            f"Unable to parse the measurement_dt field as a date. reason: '{str(err)}'."
+        )
 
     # An attempt to use the tz_cd column to make measurement_dt timezone aware.
     # outputDF.tz_cd.replace({np.nan: 'UTC'}, inplace=True)
@@ -374,8 +372,7 @@ def field_meas(site):
     # outputDF['datetime'] = outputDF[['measurement_dt', 'tz_cd']].apply(lambda x: f(*x), axis=1)
 
     outputDF.set_index("measurement_dt", inplace=True)
-    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
-    return output_obj
+    return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
 def peaks(site):
@@ -423,8 +420,7 @@ def peaks(site):
 
     # peak_date might be a string, or it might be a datetime. Both work as an index
     outputDF.set_index("peak_dt", inplace=True)
-    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
-    return output_obj
+    return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
 def rating_curve(site):
@@ -485,8 +481,7 @@ def rating_curve(site):
                      skiprows=2
                      )
     """
-    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
-    return output_obj
+    return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
 def stats(site, statReportType="daily", **kwargs):
@@ -587,5 +582,4 @@ def stats(site, statReportType="daily", **kwargs):
 
     header, outputDF, columns, dtype = read_rdb(response.text)
 
-    output_obj = hydroRDB(header, outputDF, columns, dtype, response.text)
-    return output_obj
+    return hydroRDB(header, outputDF, columns, dtype, response.text)

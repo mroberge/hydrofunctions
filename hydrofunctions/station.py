@@ -114,7 +114,7 @@ class NWIS(Station):
 
         self.ok = False
         if file:
-            if (len(file.split(".")) == 1):
+            if len(file.split(".")) == 1:
                 file = file + ".json.gz"
             try:
                 self.read(file)
@@ -197,9 +197,9 @@ class NWIS(Station):
 
             str 'stage': Gauge height columns ('00065') will be returned.
 
-            int any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
+            str any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
 
-            int any eight to twelve digit number: any matching stations will be returned.
+            str any eight to twelve digit number: any matching stations will be returned.
         """
         all_cols = self._dataframe.columns != ""  # all true
         no_cols = ~all_cols  # all false
@@ -292,20 +292,23 @@ class NWIS(Station):
                 the filename to save to.
         """
         extension = file.split(".")[-1]
-        if (extension == "parquet"):
+        if extension == "parquet":
             hf.save_parquet(file, self._dataframe, self.meta)
-        elif (extension == "gz"):
+        elif extension == "gz":
             try:
                 hf.save_json_gzip(file, self.json)
             except AttributeError as err:
-                print("Hydrofunctions can only save NWIS objects using gzip if the NWIS"
-                " object still has its original WaterML JSON. You might be able to fix "
-                "this problem if you call NWIS using the 'file' parameter so that the"
-                "JSON is saved immediately after the request is made."
+                print(
+                    "Hydrofunctions can only save NWIS objects using gzip if the NWIS"
+                    " object still has its original WaterML JSON. You might be able "
+                    "to fix this problem if you call NWIS using the 'file' parameter "
+                    "so that the JSON is saved immediately after the request is made."
                 )
                 raise err
         else:
-            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
+            raise OSError(
+                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+            )
         return self
 
     def read(self, file):
@@ -317,10 +320,12 @@ class NWIS(Station):
                 the filename to read from.
         """
         extension = file.split(".")[-1]
-        if (extension == "parquet"):
+        if extension == "parquet":
             self._dataframe, self.meta = hf.read_parquet(file)
-        elif (extension == "gz"):
+        elif extension == "gz":
             self._dataframe, self.meta = hf.extract_nwis_df(hf.read_json_gzip(file))
         else:
-            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
+            raise OSError(
+                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+            )
         return self
