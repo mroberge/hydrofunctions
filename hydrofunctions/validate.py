@@ -1,6 +1,6 @@
 """
-hydrofunctions.typing
-~~~~~~~~~~~~~~~~~~~~~
+hydrofunctions.validate
+~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains functions for testing that user input is valid.
 
@@ -61,11 +61,11 @@ def check_parameter_string(candidate, param):
         return None
     elif isinstance(candidate, str) and candidate:
         return candidate
-    elif (isinstance(candidate, list) or isinstance(candidate, tuple)) and candidate:
+    elif isinstance(candidate, (list, tuple)) and candidate:
         for s in candidate:
             if not isinstance(s, str):
                 raise TypeError(msg + "   bad element: {}".format(s))
-        return ",".join([str(s) for s in candidate])
+        return ",".join(str(s) for s in candidate)
     else:
         raise TypeError(msg)
 
@@ -106,7 +106,7 @@ def check_NWIS_service(input):
     """Checks that the service is valid: either 'iv' or 'dv'"""
     if input is None:
         return None
-    if input == "iv" or input == "dv":
+    if input in ["iv", "dv"]:
         return input
     else:
         raise TypeError(

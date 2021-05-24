@@ -82,7 +82,7 @@ from .hydrofunctions import (
     save_json_gzip,
 )
 from .station import Station, NWIS
-from .typing import (
+from .validate import (
     check_parameter_string,
     check_datestr,
     check_NWIS_service,
