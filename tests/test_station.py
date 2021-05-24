@@ -12,7 +12,7 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 import numpy as np
 
-from hydrofunctions import station, typing
+from hydrofunctions import station, validate
 from .fixtures import (
     fakeResponse,
     recent_only,
@@ -1091,7 +1091,7 @@ End:   expected end"""
 
 
 """
-    @mock.patch("hydrofunctions.typing.check_parameter_string")
+    @mock.patch("hydrofunctions.validate.check_parameter_string")
     def test_NWIS_init_calls_check_parameter_string(self, mock_cps):
 
     def test_NWIS_start_defaults_to_None(self):
@@ -1169,7 +1169,7 @@ End:   expected end"""
         start = "2017-01-01"
         end = "2017-12-31"
         cnty = ['51059', '51061']
-        cnty = typing.check_parameter_string(cnty, 'county')
+        cnty = validate.check_parameter_string(cnty, 'county')
         service2 = 'dv'
 
         expected_url = 'https://waterservices.usgs.gov/nwis/dv/?'

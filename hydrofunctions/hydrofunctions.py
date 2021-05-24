@@ -21,7 +21,7 @@ import logging
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
 import warnings
-from . import typing
+from . import validate
 from . import helpers
 
 logging.basicConfig(
@@ -233,7 +233,7 @@ def get_nwis(
     http://waterservices.usgs.gov/rest/IV-Service.html
     """
 
-    service = typing.check_NWIS_service(service)
+    service = validate.check_NWIS_service(service)
 
     if parameterCd == "all":
         parameterCd = None
@@ -244,11 +244,11 @@ def get_nwis(
         # specify version of nwis json. Based on WaterML1.1
         # json,1.1 works; json%2C works; json1.1 DOES NOT WORK
         "format": "json,1.1",
-        "sites": typing.check_parameter_string(site, "site"),
+        "sites": validate.check_parameter_string(site, "site"),
         "stateCd": stateCd,
-        "countyCd": typing.check_parameter_string(countyCd, "county"),
-        "bBox": typing.check_NWIS_bBox(bBox),
-        "parameterCd": typing.check_parameter_string(parameterCd, "parameterCd"),
+        "countyCd": validate.check_parameter_string(countyCd, "county"),
+        "bBox": validate.check_NWIS_bBox(bBox),
+        "parameterCd": validate.check_parameter_string(parameterCd, "parameterCd"),
         "period": period,
         "startDT": start_date,
         "endDT": end_date,
