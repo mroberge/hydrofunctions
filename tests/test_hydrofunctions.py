@@ -460,6 +460,34 @@ class TestHydrofunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             hf.get_nwis("01541000", start_date="2014-01-01", period="P1D")
 
+    @mock.patch("requests.get")
+    @mock.patch("builtins.print")
+    def test_hf_get_nwis_verbose_True(self, mock_print, mock_get):
+        # testing a print function from https://realpython.com/lessons/mocking-print-unit-tests/
+        expected = fakeResponse()
+        expected.status_code = 200
+        expected.reason = "any text"
+        expected.url = "expected url"
+        mock_get.return_value = expected
+        expected_text = "Requested data from"
+
+        actual = hf.get_nwis("01582500", period="P2D", verbose=True)
+
+        mock_print.assert_called_with(expected_text, expected.url)
+
+    @mock.patch("requests.get")
+    @mock.patch("builtins.print")
+    def test_hf_get_nwis_verbose_False(self, mock_print, mock_get):
+        # testing a print function from https://realpython.com/lessons/mocking-print-unit-tests/
+        expected = fakeResponse()
+        expected.status_code = 200
+        expected.reason = "any text"
+        mock_get.return_value = expected
+
+        actual = hf.get_nwis("01582500", period="P2D", verbose=False)
+
+        mock_print.assert_not_called()
+
     def test_hf_nwis_custom_status_codes_returns_None_for_200(self):
         fake = fakeResponse()
         fake.status_code = 200
