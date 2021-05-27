@@ -117,6 +117,7 @@ class TestNWISinit(unittest.TestCase):
         default_stateCd = None
         default_countyCd = None
         default_bBox = None
+        default_verbose = True
 
         mock_get_nwis_property.return_value = "expected"
         mock_get_nwis.return_value = fakeResponse()
@@ -133,6 +134,7 @@ class TestNWISinit(unittest.TestCase):
             stateCd=default_stateCd,
             countyCd=default_countyCd,
             bBox=default_bBox,
+            verbose=default_verbose,
         )
         self.assertTrue(mock_get_nwis_property)
 
@@ -160,6 +162,7 @@ class TestNWISinit(unittest.TestCase):
             stateCd=None,
             countyCd=None,
             bBox=None,
+            verbose=True,
         )
         self.assertTrue(mock_get_nwis_property)
 

@@ -96,6 +96,9 @@ class NWIS(Station):
 
             Zipped JSON files will save the original WaterML JSON provided by the NWIS.
             Parquet files will save the dataframe and the metadata for the NWIS object.
+
+        verbose (bool):
+            Print output for actions such as making data requests. Default is True.
     """
 
     def __init__(
@@ -110,6 +113,7 @@ class NWIS(Station):
         parameterCd="all",
         period=None,
         file=None,
+        verbose=True,
     ):
 
         self.ok = False
@@ -119,7 +123,8 @@ class NWIS(Station):
             try:
                 self.read(file)
                 self.ok = True
-                print("Reading data from", file)
+                if verbose:
+                    print("Reading data from", file)
 
             except OSError as err:
                 # File does not exist yet, we'll make it later.
@@ -136,6 +141,7 @@ class NWIS(Station):
                 bBox=bBox,
                 parameterCd=parameterCd,
                 period=period,
+                verbose=verbose,
             )
             try:
                 self.json = self.response.json()
@@ -143,7 +149,8 @@ class NWIS(Station):
                 self.ok = self.response.ok
                 if file is not None:
                     self.save(file)
-                    print("Saving data to", file)
+                    if verbose:
+                        print("Saving data to", file)
             except json.JSONDecodeError as err:
                 self.ok = False
                 print(f"JSON decoding error. URL: {self.response.url}")

@@ -130,6 +130,7 @@ def get_nwis(
     bBox=None,
     parameterCd="all",
     period=None,
+    verbose=True,
 ):
     """Request stream gauge data from the USGS NWIS.
 
@@ -180,6 +181,10 @@ def get_nwis(
             NWIS period code. Default is `None`.
                 * Format is "PxxD", where xx is the number of days before today.
                 * Either use start_date or period, but not both.
+        
+        verbose (bool):
+            Use print statements if True (default); set to False if this function will 
+            be used in other software and you don't want print statements.
 
     Returns:
         a response object. This function will always return the response,
@@ -284,7 +289,8 @@ def get_nwis(
     url = "https://waterservices.usgs.gov/nwis/"
     url = url + service + "/?"
     response = requests.get(url, params=values, headers=header)
-    print("Requested data from", response.url)
+    if verbose:
+        print("Requested data from", response.url)
     # requests will raise a 'ConnectionError' if the connection is refused
     # or if we are disconnected from the internet.
 
