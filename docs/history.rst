@@ -94,4 +94,8 @@ History
 
 * Moved from TravisCI to Github Actions.
 * Added Python 3.9 support.
-* 
+* Created a verbose mode that is on by default.
+* save & read NWIS data in json.gzip files
+* Added ability to read multiple instrument methods at the same times
+* bugfix: divide by zero error when you request data from many sites
+* bugfix: save_parquet
