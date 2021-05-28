@@ -31,7 +31,7 @@ stem = r"https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_stati
 
 setup(
     name="hydrofunctions",
-    version="0.2.1rc1",
+    version="0.2.1",
     description="A suite of convenience functions for exploring water data in a Jupyter Notebook.",
     long_description=readme,  # + "\n\n" + history,
     long_description_content_type="text/x-rst",
