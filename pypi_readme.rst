@@ -52,20 +52,27 @@ Basic Usage
 -----------
 
 First, import hydrofunctions into your project and enable automatic chart
-display::
+display:
+
+.. code-block:: python
 
     >>> import hydrofunctions as hf
     >>> %matplotlib inline
+..
 
 Create NWIS data object to hold our request and the data we will retrieve.
 We will request the daily values ('dv') for site '0158520' for the past
-55 days::
+55 days:
+
+.. code-block:: python
 
     >>> herring = hf.NWIS('01585200', 'dv', period='P55D')
     Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01585200&period=P55D
+..
 
+Find out what data we received:
 
-Find out what data we received::
+.. code-block:: python
 
     >>> herring
     USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
@@ -73,14 +80,18 @@ Find out what data we received::
         00065: <5 * Minutes>  Gage height, feet
     Start: 2019-05-25 01:05:00+00:00
     End:   2019-07-19 19:05:00+00:00
+..
 
 This tells us the name of our site, and gives a list of the parameters that we
 have. For each parameter it lists how frequently the data were collected, and
 it show the common name of the parameter and its units.
 
-Create a dataframe from our data, and list the first five items::
+Create a dataframe from our data, and list the first five items:
+
+.. code-block:: python
 
     >>> herring.df().head()
+..
 
 *--a table with our data appears--*
 
@@ -98,9 +109,12 @@ Create a dataframe from our data, and list the first five items::
     |   2019-05-25 01:25:00+00:00  |                1.57       |
     +------------------------------+---------------------------+
 
-Plot the data using built-in methods from Pandas and mathplotlib::
+Plot the data using built-in methods from Pandas and mathplotlib:
+
+.. code-block:: python
 
     >>> herring.df().plot()
+..
 
 *--a stream hydrograph appears--*
 
@@ -116,20 +130,10 @@ command line:
 .. code-block:: console
 
     $ pip install hydrofunctions
-
+..
 
 Hydrofunctions depends upon Pandas and numerous other scientific packages
 for Python. `Anaconda <https://docs.anaconda.com/anaconda/install/>`_
 is an easy, safe, open-source method for downloading everything and avoiding
 conflicts with other versions of Python that might be running on your
 computer.
-
-
-Other Projects You Should See
------------------------------
-
-`WellApplication <https://github.com/inkenbrandt/WellApplication>`_ a Python package that provides functions for working with dataloggers and USGS well data.
-
-MIT License
-
-Copyright (c) 2016, Martin Roberge and contributors
