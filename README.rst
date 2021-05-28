@@ -125,7 +125,10 @@ Plot the data using built-in methods from Pandas and mathplotlib:
 .. image:: _static/HerringHydrograph.png
    :alt: a stream hydrograph for Herring Run
 
-Learn more:  <https://hydrofunctions.readthedocs.io/en/latest>`_
+Learn more:  
+
+* `Users Guide`_
+
 
 Easy Installation
 -----------------
