@@ -108,3 +108,7 @@ from .usgs_rdb import (
     stats,
     hydroRDB,
 )
+from .waterwatch import (
+    filter_flood_stages,
+    get_flood_stage,
+)
