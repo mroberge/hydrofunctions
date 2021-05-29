@@ -22,7 +22,7 @@ HydroFunctions
         :target: https://github.com/mroberge/hydrofunctions/blob/master/LICENSE
         :alt: MIT license
 
-A suite of convenience functions for exploring water data in Python.
+a suite of convenience functions for exploring water data in Python.
 
 Features
 --------
@@ -41,61 +41,57 @@ Features
 * Retrieve USGS rating curves, peak discharges, field notes, and site files for gauging stations
 * Retrieve USGS daily, monthly, and annual statistics for gauging stations
 * Saves data in compact, easy-to-use parquet files instead of requesting the same dataset repeatedly
-* **Massive** `Users Guide`_ **that makes Hydrology AND Data Science easy!**
+* **Massive Users Guide that makes Hydrology AND Data Science easy!**
 
 Still in active development! Let me know what features you want!
 
-Read the `Users Guide`_ for more details.
+Read the `Users Guide <https://hydrofunctions.readthedocs.io/en/master>`_ for more details.
 
 
 Basic Usage
 -----------
 
-First, import hydrofunctions into your project. If you plan to work with Jupyter
-notebooks, then go ahead and enable automatic chart display:
+First, import hydrofunctions into your project and enable automatic chart
+display:
 
-.. code-block:: ipython
+.. code-block:: python
 
-    In  [1]: import hydrofunctions as hf
-             %matplotlib inline
+    >>> import hydrofunctions as hf
+    >>> %matplotlib inline
+..
 
-Create an NWIS data object to hold our request and the data we will retrieve.
-We will request the instantaneous values ('iv') for site '01585200' for the
-past 55 days:
+Create NWIS data object to hold our request and the data we will retrieve.
+We will request the daily values ('dv') for site '0158520' for the past
+55 days:
 
-.. code-block:: ipython
+.. code-block:: python
 
-    In  [2]: herring = hf.NWIS('01585200', 'iv', period='P55D')
+    >>> herring = hf.NWIS('01585200', 'dv', period='P55D')
     Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01585200&period=P55D
-
-Check that the request went smoothly:
-
-.. code-block:: ipython
-
-    In  [3]: herring.ok
-    Out [3]: True
+..
 
 Find out what data we received:
 
-.. code-block:: ipython
+.. code-block:: python
 
-    In  [4]: herring
-    Out [4]: USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
-                 00060: <5 * Minutes>  Discharge, cubic feet per second
-                 00065: <5 * Minutes>  Gage height, feet
-             Start: 2019-05-25 01:05:00+00:00
-             End:   2019-07-19 19:05:00+00:00
+    >>> herring
+    USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
+        00060: <5 * Minutes>  Discharge, cubic feet per second
+        00065: <5 * Minutes>  Gage height, feet
+    Start: 2019-05-25 01:05:00+00:00
+    End:   2019-07-19 19:05:00+00:00
+..
 
 This tells us the name of our site, and gives a list of the parameters that we
 have. For each parameter it lists how frequently the data were collected, and
 it show the common name of the parameter and its units.
 
-Create a dataframe using only our discharge data, and list the first five items:
+Create a dataframe from our data, and list the first five items:
 
-.. code-block:: ipython
+.. code-block:: python
 
-    In  [5]: herring.df('discharge').head()
-    Out [5]:
+    >>> herring.df().head()
+..
 
 *--a table with our data appears--*
 
@@ -115,20 +111,15 @@ Create a dataframe using only our discharge data, and list the first five items:
 
 Plot the data using built-in methods from Pandas and mathplotlib:
 
-.. code-block:: ipython
+.. code-block:: python
 
-    In  [6]: herring.df('q').plot()
-    Out [6]:
+    >>> herring.df().plot()
+..
 
 *--a stream hydrograph appears--*
 
-.. image:: _static/HerringHydrograph.png
-   :alt: a stream hydrograph for Herring Run
-
-Learn more:  
-
-* `Users Guide`_
-
+.. image:: https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static/HerringHydrograph.png
+        :alt: a stream hydrograph for Herring Run
 
 Easy Installation
 -----------------
@@ -139,17 +130,10 @@ command line:
 .. code-block:: console
 
     $ pip install hydrofunctions
-
+..
 
 Hydrofunctions depends upon Pandas and numerous other scientific packages
-for Python. `Anaconda <https://www.anaconda.com/products/individual>`_
+for Python. `Anaconda <https://docs.anaconda.com/anaconda/install/>`_
 is an easy, safe, open-source method for downloading everything and avoiding
 conflicts with other versions of Python that might be running on your
 computer.
-
-Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/installation.html>`_
-in the Users Guide to learn how to install
-Anaconda, or if you have problems using the Easy Installation method above.
-
-
-.. _`Users Guide`:  https://hydrofunctions.readthedocs.io/en/latest

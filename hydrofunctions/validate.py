@@ -1,6 +1,6 @@
 """
-hydrofunctions.typing
-~~~~~~~~~~~~~~~~~~~~~
+hydrofunctions.validate
+~~~~~~~~~~~~~~~~~~~~~~~
 
 This module contains functions for testing that user input is valid.
 
@@ -26,8 +26,7 @@ import re
 
 
 def check_parameter_string(candidate, param):
-    """Checks that a parameter is a string or a list of strings.
-    """
+    """Checks that a parameter is a string or a list of strings."""
     parameters = {
         "site": "NWIS station id(s) should be a string or list of strings,"
         + "often in the form of an eight digit number enclosed in quotes.",
@@ -62,18 +61,17 @@ def check_parameter_string(candidate, param):
         return None
     elif isinstance(candidate, str) and candidate:
         return candidate
-    elif (isinstance(candidate, list) or isinstance(candidate, tuple)) and candidate:
+    elif isinstance(candidate, (list, tuple)) and candidate:
         for s in candidate:
             if not isinstance(s, str):
                 raise TypeError(msg + "   bad element: {}".format(s))
-        return ",".join([str(s) for s in candidate])
+        return ",".join(str(s) for s in candidate)
     else:
         raise TypeError(msg)
 
 
 def check_NWIS_bBox(input):
-    """Checks that the USGS bBox is valid.
-    """
+    """Checks that the USGS bBox is valid."""
     msg = (
         "NWIS bBox should be a string, list of strings, or tuple "
         + "containing the longitude and latitude of the lower left corner "
@@ -108,7 +106,7 @@ def check_NWIS_service(input):
     """Checks that the service is valid: either 'iv' or 'dv'"""
     if input is None:
         return None
-    if input == "iv" or input == "dv":
+    if input in ["iv", "dv"]:
         return input
     else:
         raise TypeError(
@@ -119,8 +117,7 @@ def check_NWIS_service(input):
 
 
 def check_datestr(input):
-    """Checks that the start_date or end_date parameter is in yyyy-mm-dd format.
-    """
+    """Checks that the start_date or end_date parameter is in yyyy-mm-dd format."""
     # Use a regular expression to ensure in form of yyyy-mm-dd
     if input is None:
         return None

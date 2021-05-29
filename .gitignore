@@ -58,7 +58,14 @@ docs/_build/
 # PyBuilder
 target/
 .spyderproject
+.spyproject
  
 # PyCharm
 .idea/
+
+# VS Code
+.vscode/
+hydrofunctions.code-workspace
+
+# Jupyter
 .ipynb_checkpoints/

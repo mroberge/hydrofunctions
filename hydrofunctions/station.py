@@ -16,8 +16,7 @@ from . import hydrofunctions as hf
 
 
 class Station(object):
-    """A class for organizing stream gauge data for a single request.
-    """
+    """A class for organizing stream gauge data for a single request."""
 
     station_dict = {}
 
@@ -26,7 +25,6 @@ class Station(object):
         self.site = site
         # One option is to make it so that you can pass in a get_data function
         # during the creation of an instance.
-        self.get_data = None
 
 
 class NWIS(Station):
@@ -89,7 +87,18 @@ class NWIS(Station):
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
 
+        file (str):
+            A filename for acting as a cache for the data request. Accepts file
+            extensions of '*.json.gz' (default) and '*.parquet'. If this parameter is
+            included, the NWIS object will first attempt to read its data from the file.
+            If the file does not exist, it will use the other parameters to obtain the
+            data and will then save to the provided filename.
 
+            Zipped JSON files will save the original WaterML JSON provided by the NWIS.
+            Parquet files will save the dataframe and the metadata for the NWIS object.
+
+        verbose (bool):
+            Print output for actions such as making data requests. Default is True.
     """
 
     def __init__(
@@ -104,20 +113,24 @@ class NWIS(Station):
         parameterCd="all",
         period=None,
         file=None,
+        verbose=True,
     ):
 
         self.ok = False
-        if file is not None:
+        if file:
+            if len(file.split(".")) == 1:
+                file = file + ".json.gz"
             try:
-                self._dataframe, self.meta = hf.read_parquet(file)
+                self.read(file)
                 self.ok = True
-                print("Reading data from", file)
+                if verbose:
+                    print("Reading data from", file)
 
             except OSError as err:
                 # File does not exist yet, we'll make it later.
                 pass
 
-        if self.ok == False:
+        if not self.ok:
             self.response = hf.get_nwis(
                 site,
                 service,
@@ -128,6 +141,7 @@ class NWIS(Station):
                 bBox=bBox,
                 parameterCd=parameterCd,
                 period=period,
+                verbose=verbose,
             )
             try:
                 self.json = self.response.json()
@@ -135,11 +149,12 @@ class NWIS(Station):
                 self.ok = self.response.ok
                 if file is not None:
                     self.save(file)
-                    print("Saving data to", file)
+                    if verbose:
+                        print("Saving data to", file)
             except json.JSONDecodeError as err:
                 self.ok = False
                 print(f"JSON decoding error. URL: {self.response.url}")
-                raise json.JSONDecodeError(err)
+                raise err
 
         # Can I get rid of this, and only keep metadata in the meta dict?
         if self.ok:
@@ -162,6 +177,8 @@ class NWIS(Station):
                     + self.meta[site_id]["timeSeries"][param]["variableFreq"]
                     + "  "
                     + self.meta[site_id]["timeSeries"][param]["variableDescription"]
+                    + " "
+                    + self.meta[site_id]["timeSeries"][param]["methodDescription"]
                     + "\n"
                 )
         repr_string += "Start: " + str(self.start) + "\n" + "End:   " + str(self.end)
@@ -187,9 +204,9 @@ class NWIS(Station):
 
             str 'stage': Gauge height columns ('00065') will be returned.
 
-            int any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
+            str any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
 
-            int any eight to twelve digit number: any matching stations will be returned.
+            str any eight to twelve digit number: any matching stations will be returned.
         """
         all_cols = self._dataframe.columns != ""  # all true
         no_cols = ~all_cols  # all false
@@ -281,16 +298,41 @@ class NWIS(Station):
             file (str):
                 the filename to save to.
         """
-        hf.save_parquet(file, self._dataframe, self.meta)
+        extension = file.split(".")[-1]
+        if extension == "parquet":
+            hf.save_parquet(file, self._dataframe, self.meta)
+        elif extension == "gz":
+            try:
+                hf.save_json_gzip(file, self.json)
+            except AttributeError as err:
+                print(
+                    "Hydrofunctions can only save NWIS objects using gzip if the NWIS"
+                    " object still has its original WaterML JSON. You might be able "
+                    "to fix this problem if you call NWIS using the 'file' parameter "
+                    "so that the JSON is saved immediately after the request is made."
+                )
+                raise err
+        else:
+            raise OSError(
+                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+            )
         return self
 
     def read(self, file):
         """
-        Read a dataframe and metadata from a parquet file.
+        Read from a zipped WaterML file '*.json.gz' or from a parquet file.
 
         Args:
             file (str):
                 the filename to read from.
         """
-        self._dataframe, self.meta = hf.read_parquet(file)
+        extension = file.split(".")[-1]
+        if extension == "parquet":
+            self._dataframe, self.meta = hf.read_parquet(file)
+        elif extension == "gz":
+            self._dataframe, self.meta = hf.extract_nwis_df(hf.read_json_gzip(file))
+        else:
+            raise OSError(
+                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+            )
         return self

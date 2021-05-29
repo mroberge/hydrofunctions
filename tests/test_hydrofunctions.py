@@ -16,6 +16,7 @@ from __future__ import (
 from unittest import mock
 import unittest
 import warnings
+import os
 
 from pandas.testing import assert_frame_equal
 
@@ -24,11 +25,14 @@ import numpy as np
 import pyarrow as pa
 import json
 
+print("Pyarrow version: ", pa.__version__)
+
 import hydrofunctions as hf
 from .fixtures import (
     fakeResponse,
     daily_dupe,
     daily_dupe_altered,
+    multi_meth,
     tzfail,
     JSON15min2day,
     two_sites_two_params_iv,
@@ -49,7 +53,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         how does it encode mult params & mult sites?
         Does it raise HydroNoDataError if nothing returned?
 
-        """
+    """
 
     def test_hf_extract_nwis_df_accepts_response_obj(self):
         fake_response = fakeResponse()
@@ -66,7 +70,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         )
         self.assertIsInstance(actual_dict, dict, msg="Did not return a dict.")
 
-    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
+    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_meta_dict(self):
         actual_df, actual_dict = hf.extract_nwis_df(
             two_sites_two_params_iv, interpolate=False
         )
@@ -74,9 +78,9 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             type(actual_df), pd.core.frame.DataFrame, msg="Did not return a df"
         )
         self.assertIs(type(actual_dict), dict, msg="Did not return a dict.")
-        # TODO: test that data is organized correctly
+        # TODO: test that metadata is organized correctly
 
-    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_return_df(self):
+    def test_hf_extract_nwis_df_parse_two_sites_two_params_iv_cols(self):
         actual_df, actual_dict = hf.extract_nwis_df(
             two_sites_two_params_iv, interpolate=False
         )
@@ -296,6 +300,18 @@ class TestHydrofunctionsParsing(unittest.TestCase):
         # estimated data, and forgets to discard the old data?
         actualDF = hf.extract_nwis_df(daily_dupe_altered, interpolate=False)
 
+    def test_hf_extract_nwis_multiple_methods_one_param(self):
+        actual_df, actual_meta = hf.extract_nwis_df(multi_meth, interpolate=False)
+        actual_len, actual_width = actual_df.shape
+        # Only one parameter, but if the json is processed properly, each
+        # method will be given a column and a qualifier column.
+        expected_width = 4
+        self.assertEqual(
+            actual_width,
+            expected_width,
+            "Extract_nwis should have parsed two methods into separate columns.",
+        )
+
     def test_hf_get_nwis_property(self):
         sites = None
         bBox = (-105.430, 39.655, -104, 39.863)
@@ -443,6 +459,34 @@ class TestHydrofunctions(unittest.TestCase):
     def test_hf_get_nwis_raises_ValueError_start_and_period(self):
         with self.assertRaises(ValueError):
             hf.get_nwis("01541000", start_date="2014-01-01", period="P1D")
+
+    @mock.patch("requests.get")
+    @mock.patch("builtins.print")
+    def test_hf_get_nwis_verbose_True(self, mock_print, mock_get):
+        # testing a print function from https://realpython.com/lessons/mocking-print-unit-tests/
+        expected = fakeResponse()
+        expected.status_code = 200
+        expected.reason = "any text"
+        expected.url = "expected url"
+        mock_get.return_value = expected
+        expected_text = "Requested data from"
+
+        actual = hf.get_nwis("01582500", period="P2D", verbose=True)
+
+        mock_print.assert_called_with(expected_text, expected.url)
+
+    @mock.patch("requests.get")
+    @mock.patch("builtins.print")
+    def test_hf_get_nwis_verbose_False(self, mock_print, mock_get):
+        # testing a print function from https://realpython.com/lessons/mocking-print-unit-tests/
+        expected = fakeResponse()
+        expected.status_code = 200
+        expected.reason = "any text"
+        mock_get.return_value = expected
+
+        actual = hf.get_nwis("01582500", period="P2D", verbose=False)
+
+        mock_print.assert_not_called()
 
     def test_hf_nwis_custom_status_codes_returns_None_for_200(self):
         fake = fakeResponse()
@@ -597,12 +641,18 @@ class TestHydrofunctions(unittest.TestCase):
             "select_data should return an array of which columns contain the data, not the qualifiers.",
         )
 
-    def integration_test_save_read_parquet(self):
+    def test_hf_save_read_parquet_integration(self):
         # This test has side effects: it will create a file.
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
-        filename = "test_filename_delete_me"
+        filename = "test_filename_delete_me.parquet"
         hf.save_parquet(filename, expected_df, expected_meta)
         actual_df, actual_meta = hf.read_parquet(filename)
+        os.remove("test_filename_delete_me.parquet")
+        self.assertEqual(
+            expected_df.index.freq,
+            actual_df.index.freq,
+            "The saved dataframe does not have its index frequency set correctly.",
+        )
         assert_frame_equal(expected_df, actual_df)
         self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
 
@@ -615,17 +665,34 @@ class TestHydrofunctions(unittest.TestCase):
         meta_dict[b"hydrofunctions_meta"] = meta_string
         expected_table = expected_table.replace_schema_metadata(meta_dict)
         mock_read.return_value = expected_table
-        actual_df, actual_meta = hf.read_parquet("fake_filename")
+        actual_df, actual_meta = hf.read_parquet("fake_filename.parquet")
 
         assert_frame_equal(expected_df, actual_df)
         self.assertEqual(expected_meta, actual_meta, "The metadata dict has changed.")
 
     @mock.patch("pyarrow.parquet.write_table")
     def test_hf_save_parquet(self, mock_write):
-        filename = "expected_filename"
+        filename = "expected_filename.parquet"
         expected_df, expected_meta = hf.extract_nwis_df(two_sites_two_params_iv)
         hf.save_parquet(filename, expected_df, expected_meta)
-        pass
+
+    @mock.patch("gzip.open")
+    @mock.patch("json.loads")
+    def test_hf_read_json_gz(self, mock_json, mock_gzip):
+        expected = two_sites_two_params_iv
+        mock_json.return_value = expected
+        actual = hf.read_json_gzip("filename.json.gz")
+        mock_gzip.assert_called_with("filename.json.gz", "rb")
+        self.assertEqual(actual, expected)
+
+    @mock.patch("gzip.open")
+    @mock.patch("json.dump")
+    def test_hf_save_json_gz(self, mock_json, mock_gzip):
+        expected = two_sites_two_params_iv
+        expected_filename = "save.json.gz"
+        hf.save_json_gzip(expected_filename, expected)
+        mock_gzip.assert_called_with(expected_filename, "wt", encoding="ascii")
+        mock_json.assert_called()
 
 
 if __name__ == "__main__":

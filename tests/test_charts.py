@@ -8,6 +8,7 @@ from __future__ import absolute_import, print_function, division, unicode_litera
 import unittest
 import matplotlib
 import pandas as pd
+print("Pandas version ", pd.__version__)
 
 from hydrofunctions import charts
 import hydrofunctions as hf

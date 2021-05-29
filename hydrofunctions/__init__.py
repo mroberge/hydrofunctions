@@ -47,9 +47,10 @@ View the first five rows of a dataframe that only contains the discharge data::
 Because the .df() method returns a dataframe, you have access to all of the
 methods associated with Pandas, including .plot(), .describe(), and .info() !
 
-List all of the different attributes and methods with dir()::
+Learn more about hydrofunctions and the NWIS object with help()::
 
-    >>> dir(response)
+    >>> help(hf)
+    >>> help(hf.NWIS)
 
 Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
@@ -57,7 +58,7 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 from __future__ import absolute_import, print_function
 
 __title__ = "hydrofunctions"
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "Martin Roberge"
 __email__ = "mroberge@towson.edu"
 __license__ = "MIT"
@@ -77,9 +78,11 @@ from .hydrofunctions import (
     calc_freq,
     read_parquet,
     save_parquet,
+    read_json_gzip,
+    save_json_gzip,
 )
 from .station import Station, NWIS
-from .typing import (
+from .validate import (
     check_parameter_string,
     check_datestr,
     check_NWIS_service,
@@ -104,4 +107,8 @@ from .usgs_rdb import (
     peaks,
     stats,
     hydroRDB,
+)
+from .waterwatch import (
+    filter_flood_stages,
+    get_flood_stage,
 )

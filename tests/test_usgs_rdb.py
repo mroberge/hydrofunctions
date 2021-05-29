@@ -23,6 +23,7 @@ from .fixtures import (
     field_fixture,
     rating_fixture,
     peaks_fixture,
+    parsing_error_fixture,
 )
 
 
@@ -460,14 +461,24 @@ class TestReadRdb(unittest.TestCase):
             expected_url, headers=expected_headers, params=expected_params
         )
 
+    @mock.patch("requests.get")
+    def test_peaks_handles_parsing_error(self, mock_get):
+        site_id = "06813500"  # This site returns data with a malformed date.
+        expected_status_code = 200
+        expected_text = parsing_error_fixture
+        expected = fakeResponse(code=expected_status_code, text=expected_text)
+        mock_get.return_value = expected
+
+        # This will cause a parsing error that must be dealt with.
+        actual = hf.peaks(site_id)
+
 
 class Test_hydroRDB(unittest.TestCase):
     """Test the hydroRDB class.
 
-            - Do the RDB functions (peaks, stats, rating_curve, field_meas) return
-        hydroRDB object?
-        - Does the hydroRDB have a proper repr?
-        - Does the hydroRDB have a working __iter__ function?
+    - Do the RDB functions (peaks, stats, rating_curve, field_meas) return a hydroRDB object?
+    - Does the hydroRDB have a proper repr?
+    - Does the hydroRDB have a working __iter__ function?
     """
 
     def test_hydroRDB_is_obj(self):
@@ -475,7 +486,8 @@ class Test_hydroRDB(unittest.TestCase):
         table = "expected table"
         columns = "expected columns"
         dtypes = "expected dtypes"
-        actual = hf.hydroRDB(header, table, columns, dtypes)
+        rdb = "expected rdb file"
+        actual = hf.hydroRDB(header, table, columns, dtypes, rdb)
         self.assertIsInstance(actual, hf.hydroRDB)
 
     def test_hydroRDB_has_properties_and_methods(self):
@@ -483,12 +495,26 @@ class Test_hydroRDB(unittest.TestCase):
         table = "expected table"
         columns = "expected columns"
         dtypes = "expected dtypes"
-        actual = hf.hydroRDB(header, table, columns, dtypes)
+        rdb = "expected rdb file"
+        actual = hf.hydroRDB(header, table, columns, dtypes, rdb)
         self.assertIsInstance(actual, hf.hydroRDB)
         self.assertEqual(actual.header, header)
         self.assertEqual(actual.table, table)
         self.assertEqual(actual.columns, columns)
         self.assertEqual(actual.dtypes, dtypes)
+        self.assertEqual(actual.rdb, rdb)
         actual_repr = actual.__repr__()
         # actual._repr_html_() requires that table is a dataframe with a _repr_html_()
         # actual_html_repr = actual._repr_html_()
+
+    def test_hydroRDB_can_return_tuple(self):
+        header = "expected header"
+        table = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
+        columns = "expected columns"
+        dtypes = "expected dtypes"
+        rdb = "expected rdb file"
+        actual = hf.hydroRDB(header, table, columns, dtypes, rdb)
+        self.assertIsInstance(actual, hf.hydroRDB)
+        head, table = actual
+        self.assertIsInstance(head, str)
+        self.assertIsInstance(table, pd.DataFrame)

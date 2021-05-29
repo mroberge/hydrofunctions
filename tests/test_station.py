@@ -12,18 +12,18 @@ import pandas as pd
 from pandas.testing import assert_frame_equal
 import numpy as np
 
-from hydrofunctions import station, typing
+from hydrofunctions import station, validate
 from .fixtures import (
     fakeResponse,
     recent_only,
 )
 
 
-class TestingNWIS(station.NWIS):
+class MockNWIS(station.NWIS):
     """
     This subclass of NWIS is for testing all of the NWIS methods except
     __init__, which we will replace. All of the other methods get inherited
-    verbatim, so we can test them using TestingNWIS instead of NWIS.
+    verbatim, so we can test them using MockNWIS instead of NWIS.
     """
 
     def __init__(
@@ -81,8 +81,7 @@ class TestStation(unittest.TestCase):
         self.assertEqual(
             len(actual),
             2,
-            "The dict length is not equal to the \
-                                            number of instances",
+            "The dict length is not equal to the number of instances",
         )
 
     def test_station_dict_returns_instance(self):
@@ -118,6 +117,7 @@ class TestNWISinit(unittest.TestCase):
         default_stateCd = None
         default_countyCd = None
         default_bBox = None
+        default_verbose = True
 
         mock_get_nwis_property.return_value = "expected"
         mock_get_nwis.return_value = fakeResponse()
@@ -134,6 +134,7 @@ class TestNWISinit(unittest.TestCase):
             stateCd=default_stateCd,
             countyCd=default_countyCd,
             bBox=default_bBox,
+            verbose=default_verbose,
         )
         self.assertTrue(mock_get_nwis_property)
 
@@ -161,6 +162,7 @@ class TestNWISinit(unittest.TestCase):
             stateCd=None,
             countyCd=None,
             bBox=None,
+            verbose=True,
         )
         self.assertTrue(mock_get_nwis_property)
 
@@ -214,7 +216,7 @@ class TestNWISinit(unittest.TestCase):
 
     @mock.patch("hydrofunctions.hydrofunctions.read_parquet")
     def test_NWIS_init_filename_calls_read_parquet(self, mock_read):
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         expected_meta = "expected meta"
         expected_df = pd.DataFrame(
             np.random.randn(5, 1),
@@ -266,7 +268,7 @@ class TestNWISinit(unittest.TestCase):
         mock_extract_nwis_df.return_value = (mock_df, mock_meta)
 
         # mock_save
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         mock_save.return_value = "expected self"
 
         # Create an NWIS with a filename, but the filename doesn't exist.
@@ -304,8 +306,8 @@ class TestNWISmethods(unittest.TestCase):
     many different things.
 
     To test any method other than __init__, we will use the following strategy:
-        - create a sub-class of NWIS called TestingNWIS.
-        - TestingNWIS has a different __init__ method that allows you to pass
+        - create a sub-class of NWIS called MockNWIS.
+        - MockNWIS has a different __init__ method that allows you to pass
             in a dataframe and any other initial parameter
         - all other methods gets inherited from NWIS, so we can test them.
 """
@@ -326,7 +328,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=expected_cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df()
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -350,7 +352,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("all")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -382,7 +384,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("data")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -410,7 +412,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("discharge")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -438,7 +440,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("q")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -466,7 +468,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("stage")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -499,7 +501,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("flags")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -530,7 +532,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("flags", "q")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -561,7 +563,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("stage", "flags")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -587,7 +589,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
 
         with self.assertRaises(
             ValueError,
@@ -614,7 +616,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("00065")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -645,7 +647,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("00065", "flags")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -671,7 +673,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
 
         with self.assertRaises(
             ValueError,
@@ -696,7 +698,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
 
         with self.assertRaises(
             ValueError,
@@ -721,7 +723,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
 
         with self.assertRaises(
             ValueError,
@@ -748,7 +750,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("01541200")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -779,7 +781,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("01541200", "flags")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -805,7 +807,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
 
         with self.assertRaises(
             ValueError,
@@ -837,7 +839,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("01541200", "01541303")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -870,7 +872,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("00060", "00065")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -901,7 +903,7 @@ class TestNWISmethods(unittest.TestCase):
             ["test", 5, "test", 5, "test", 5, "test", 5],
         ]
         test_df = pd.DataFrame(data=data, columns=cols)
-        test_nwis = TestingNWIS(dataframe=test_df)
+        test_nwis = MockNWIS(dataframe=test_df)
         actual_df = test_nwis.df("flags", "data", "discharge", "01541200")
         actual_cols = actual_df.columns.tolist()
         self.assertListEqual(
@@ -924,14 +926,15 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<Day>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
+                        "methodDescription": ""
                     }
                 },
             }
         }
         mock_start = "expected start"
         mock_end = "expected end"
-        test_nwis = TestingNWIS(meta=mock_meta, start=mock_start, end=mock_end)
-        expected_repr = "USGS:01541200: WB Susquehanna River near Curwensville, PA\n    00060: <Day>  Discharge, cubic feet per second\nStart: expected start\nEnd:   expected end"
+        test_nwis = MockNWIS(meta=mock_meta, start=mock_start, end=mock_end)
+        expected_repr = "USGS:01541200: WB Susquehanna River near Curwensville, PA\n    00060: <Day>  Discharge, cubic feet per second \nStart: expected start\nEnd:   expected end"
         self.assertEqual(repr(test_nwis), expected_repr)
 
     def test_NWIS_repr_multisite_multi_param_returns_repr(self):
@@ -949,11 +952,13 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
+                        "methodDescription": "",
                     },
                     "00065": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft",
                         "variableDescription": "Gage height, feet",
+                        "methodDescription": "",
                     },
                 },
             },
@@ -969,68 +974,94 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "deg C",
                         "variableDescription": "Temperature, water, degrees Celsius",
+                        "methodDescription": "",
                     },
                     "00060": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
+                        "methodDescription": "",
                     },
                     "00065": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "ft",
                         "variableDescription": "Gage height, feet",
+                        "methodDescription": "",
                     },
                     "00095": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "uS/cm @25C",
                         "variableDescription": "Specific conductance, water, unfiltered, microsiemens per centimeter at 25 degrees Celsius",
+                        "methodDescription": "",
                     },
                     "00400": {
                         "variableFreq": "<5 * Minutes>",
                         "variableUnit": "std units",
                         "variableDescription": "pH, water, unfiltered, field, standard units",
+                        "methodDescription": "",
                     },
                 },
             },
         }
         mock_start = "expected start"
         mock_end = "expected end"
-        test_nwis = TestingNWIS(meta=mock_meta, start=mock_start, end=mock_end)
+        test_nwis = MockNWIS(meta=mock_meta, start=mock_start, end=mock_end)
         expected_repr = """USGS:01585200: WEST BRANCH HERRING RUN AT IDLEWYLDE, MD
-    00060: <5 * Minutes>  Discharge, cubic feet per second
-    00065: <5 * Minutes>  Gage height, feet
+    00060: <5 * Minutes>  Discharge, cubic feet per second 
+    00065: <5 * Minutes>  Gage height, feet 
 USGS:01585219: HERRING RUN AT SINCLAIR LANE AT BALTIMORE, MD
-    00010: <5 * Minutes>  Temperature, water, degrees Celsius
-    00060: <5 * Minutes>  Discharge, cubic feet per second
-    00065: <5 * Minutes>  Gage height, feet
-    00095: <5 * Minutes>  Specific conductance, water, unfiltered, microsiemens per centimeter at 25 degrees Celsius
-    00400: <5 * Minutes>  pH, water, unfiltered, field, standard units
+    00010: <5 * Minutes>  Temperature, water, degrees Celsius 
+    00060: <5 * Minutes>  Discharge, cubic feet per second 
+    00065: <5 * Minutes>  Gage height, feet 
+    00095: <5 * Minutes>  Specific conductance, water, unfiltered, microsiemens per centimeter at 25 degrees Celsius 
+    00400: <5 * Minutes>  pH, water, unfiltered, field, standard units 
 Start: expected start
 End:   expected end"""
         self.assertEqual(repr(test_nwis), expected_repr)
 
     @mock.patch("hydrofunctions.hydrofunctions.save_parquet")
     def test_NWIS_save_calls_save_parquet(self, mock_save):
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         expected_meta = "expected meta"
         expected_df = "expected df"
         mock_start = "expected start"
         mock_end = "expected end"
-        test_nwis = TestingNWIS(
+        test_nwis = MockNWIS(
             dataframe=expected_df, meta=expected_meta, start=mock_start, end=mock_end
         )
         test_nwis.save(expected_filename)
         mock_save.assert_called_once_with(expected_filename, expected_df, expected_meta)
 
+    @mock.patch("hydrofunctions.hydrofunctions.save_json_gzip")
+    def test_NWIS_save_calls_save_gz(self, mock_save):
+        expected_filename = "expected_filename.gz"
+        expected_json = "expected json"
+        test_nwis = MockNWIS()
+        test_nwis.json = expected_json
+        test_nwis.save(expected_filename)
+        mock_save.assert_called_once_with(expected_filename, expected_json)
+
+    def test_NWIS_save_gz_raises_error_if_no_json(self):
+        expected_filename = "expected_filename.gz"
+        test_nwis = MockNWIS()
+        with self.assertRaises(AttributeError):
+            test_nwis.save(expected_filename)
+
+    def test_NWIS_save_gz_raises_error_if_unrecognized_file_extension(self):
+        expected_filename = "expected_filename.weird"
+        test_nwis = MockNWIS()
+        with self.assertRaises(OSError):
+            test_nwis.save(expected_filename)
+
     @mock.patch("hydrofunctions.hydrofunctions.read_parquet")
     def test_NWIS_read_calls_read_parquet(self, mock_read):
-        expected_filename = "expected_filename"
+        expected_filename = "expected_filename.parquet"
         expected_meta = "expected meta"
         expected_df = "expected df"
         mock_start = "expected start"
         mock_end = "expected end"
         mock_read.return_value = (expected_df, expected_meta)
-        test_nwis = TestingNWIS()
+        test_nwis = MockNWIS()
         test_nwis.read(expected_filename)
         mock_read.assert_called_once_with(expected_filename)
         self.assertEqual(
@@ -1044,9 +1075,26 @@ End:   expected end"""
             "The metadata were not retrieved by NWIS.read().",
         )
 
+    @mock.patch("hydrofunctions.hydrofunctions.read_json_gzip")
+    def test_NWIS_read_calls_read_json_gz(self, mock_read):
+        expected_filename = "expected_filename.json.gz"
+        expected_json = recent_only
+        mock_read.return_value = expected_json
+        expected_meta = {'USGS:01541200': {'siteName': 'WB Susquehanna River near Curwensville, PA', 'siteLatLongSrs': {'srs': 'EPSG:4326', 'latitude': 40.9614471, 'longitude': -78.5191906}, 'timeSeries': {'00010': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'deg C', 'variableDescription': 'Temperature, water, degrees Celsius', 'methodID': '118850', 'methodDescription': ''}, '00060': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'ft3/s', 'variableDescription': 'Discharge, cubic feet per second', 'methodID': '118849', 'methodDescription': ''}}}}
+        test_nwis = MockNWIS()
+        test_nwis.read(expected_filename)
+        mock_read.assert_called_once_with(expected_filename)
+        actual_meta = test_nwis.meta
+        self.assertEqual(
+            actual_meta,
+            expected_meta,
+            f"The read function did not parse the json.gz file correctly. It returned"
+            f"type {type(actual_meta)} when it was expected to return type {type(expected_meta)}."
+            )
+
 
 """
-    @mock.patch("hydrofunctions.typing.check_parameter_string")
+    @mock.patch("hydrofunctions.validate.check_parameter_string")
     def test_NWIS_init_calls_check_parameter_string(self, mock_cps):
 
     def test_NWIS_start_defaults_to_None(self):
@@ -1124,7 +1172,7 @@ End:   expected end"""
         start = "2017-01-01"
         end = "2017-12-31"
         cnty = ['51059', '51061']
-        cnty = typing.check_parameter_string(cnty, 'county')
+        cnty = validate.check_parameter_string(cnty, 'county')
         service2 = 'dv'
 
         expected_url = 'https://waterservices.usgs.gov/nwis/dv/?'

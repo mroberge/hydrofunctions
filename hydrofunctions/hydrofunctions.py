@@ -11,6 +11,7 @@ import requests
 import numpy as np
 import pandas as pd
 import json
+import gzip
 import pyarrow as pa
 import pyarrow.parquet as pq
 from pandas.tseries.frequencies import to_offset
@@ -20,7 +21,7 @@ import logging
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
 import warnings
-from . import typing
+from . import validate
 from . import helpers
 
 logging.basicConfig(
@@ -129,6 +130,7 @@ def get_nwis(
     bBox=None,
     parameterCd="all",
     period=None,
+    verbose=True,
 ):
     """Request stream gauge data from the USGS NWIS.
 
@@ -179,6 +181,10 @@ def get_nwis(
             NWIS period code. Default is `None`.
                 * Format is "PxxD", where xx is the number of days before today.
                 * Either use start_date or period, but not both.
+        
+        verbose (bool):
+            Use print statements if True (default); set to False if this function will 
+            be used in other software and you don't want print statements.
 
     Returns:
         a response object. This function will always return the response,
@@ -232,7 +238,7 @@ def get_nwis(
     http://waterservices.usgs.gov/rest/IV-Service.html
     """
 
-    service = typing.check_NWIS_service(service)
+    service = validate.check_NWIS_service(service)
 
     if parameterCd == "all":
         parameterCd = None
@@ -243,11 +249,11 @@ def get_nwis(
         # specify version of nwis json. Based on WaterML1.1
         # json,1.1 works; json%2C works; json1.1 DOES NOT WORK
         "format": "json,1.1",
-        "sites": typing.check_parameter_string(site, "site"),
+        "sites": validate.check_parameter_string(site, "site"),
         "stateCd": stateCd,
-        "countyCd": typing.check_parameter_string(countyCd, "county"),
-        "bBox": typing.check_NWIS_bBox(bBox),
-        "parameterCd": typing.check_parameter_string(parameterCd, "parameterCd"),
+        "countyCd": validate.check_parameter_string(countyCd, "county"),
+        "bBox": validate.check_NWIS_bBox(bBox),
+        "parameterCd": validate.check_parameter_string(parameterCd, "parameterCd"),
         "period": period,
         "startDT": start_date,
         "endDT": end_date,
@@ -283,7 +289,8 @@ def get_nwis(
     url = "https://waterservices.usgs.gov/nwis/"
     url = url + service + "/?"
     response = requests.get(url, params=values, headers=header)
-    print("Requested data from", response.url)
+    if verbose:
+        print("Requested data from", response.url)
     # requests will raise a 'ConnectionError' if the connection is refused
     # or if we are disconnected from the internet.
 
@@ -461,92 +468,107 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     freqs = []
     meta = {}
     for series in ts:
-        series_name = series["name"]
-        temp_name = series_name.split(":")
-        agency = str(temp_name[0])
-        site_id = agency + ":" + str(temp_name[1])
-        parameter_cd = str(temp_name[2])
-        stat = str(temp_name[3])
+        full_series_name = series["name"]
+        name_list = full_series_name.split(":")
+        agency = str(name_list[0])
+        site_id = agency + ":" + str(name_list[1])
+        parameter_cd = str(name_list[2])
+        stat = str(name_list[3])
         siteName = series["sourceInfo"]["siteName"]
         siteLatLongSrs = series["sourceInfo"]["geoLocation"]["geogLocation"]
         noDataValues = series["variable"]["noDataValue"]
         variableDescription = series["variable"]["variableDescription"]
         unit = series["variable"]["unit"]["unitCode"]
-        data = series["values"][0]["value"]
-        if data == []:
-            # This parameter has no data. Skip to next series.
-            continue
-        if len(data) == 1:
-            # This parameter only contains the most recent reading.
-            # See Issue #49
-            pass
-        qualifiers = series_name + "_qualifiers"
-        DF = pd.DataFrame(data=data)
-        DF.index = pd.to_datetime(DF.pop("dateTime"), utc=True)
-        DF["value"] = DF["value"].astype(float)
-        DF = DF.replace(to_replace=noDataValues, value=np.nan)
-        DF["qualifiers"] = DF["qualifiers"].apply(lambda x: ",".join(x))
-        DF.rename(
-            columns={"qualifiers": qualifiers, "value": series_name}, inplace=True
-        )
-        DF.sort_index(inplace=True)
-        local_start = DF.index.min()
-        local_end = DF.index.max()
-        starts.append(local_start)
-        ends.append(local_end)
-        local_freq = calc_freq(DF.index)
-        freqs.append(local_freq)
-        if not DF.index.is_unique:
-            print(
-                "Series index for "
-                + series_name
-                + " is not unique. Attempting to drop identical rows."
+        values = series["values"]
+        for method in values:
+            data = method["value"]
+            # This line assumes only one method per parameter. See issue #77.
+            # data = series["values"][0]["value"]
+            if data == []:
+                # This parameter has no data. Skip to next series.
+                continue
+            if len(data) == 1:
+                # This parameter only contains the most recent reading.
+                # See Issue #49
+                pass
+            method_description = method["method"][0]["methodDescription"]
+            method_id = str(method["method"][0]["methodID"])
+            # use method_mod as a modifier for altering parameter names.
+            method_mod = "-" + method_id
+            if len(values) == 1:
+                # If there is only one method, don't bother recording method #.
+                method_mod = ""
+            series_name = site_id + ":" + parameter_cd + method_mod + ":" + stat
+            qualifiers_name = series_name + "_qualifiers"
+            DF = pd.DataFrame(data=data)
+            DF.index = pd.to_datetime(DF.pop("dateTime"), utc=True)
+            DF["value"] = DF["value"].astype(float)
+            DF = DF.replace(to_replace=noDataValues, value=np.nan)
+            DF["qualifiers"] = DF["qualifiers"].apply(lambda x: ",".join(x))
+            DF.rename(
+                columns={"qualifiers": qualifiers_name, "value": series_name},
+                inplace=True,
             )
-            DF = DF.drop_duplicates(keep="first")
+            DF.sort_index(inplace=True)
+            local_start = DF.index.min()
+            local_end = DF.index.max()
+            starts.append(local_start)
+            ends.append(local_end)
+            local_freq = calc_freq(DF.index)
+            freqs.append(local_freq)
             if not DF.index.is_unique:
                 print(
                     "Series index for "
                     + series_name
-                    + " is STILL not unique. Dropping first rows with duplicated date."
+                    + " is not unique. Attempting to drop identical rows."
                 )
-                DF = DF[~DF.index.duplicated(keep="first")]
-        if local_freq > to_offset("0min"):
-            local_clean_index = pd.date_range(
-                start=local_start, end=local_end, freq=local_freq, tz="UTC"
-            )
-            # if len(local_clean_index) != len(DF):
-            # This condition happens quite frequently with missing data.
-            # print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
-            DF = DF.reindex(index=local_clean_index, copy=True)
-        else:
-            # The dataframe DF must contain only the most recent data.
-            pass
-        qual_cols = DF.columns.str.contains("_qualifiers")
-        # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
-        # Instead, create a temporary dataframe, fillna, then copy back into original.
-        DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
-        DF.loc[:, qual_cols] = DFquals
+                DF = DF.drop_duplicates(keep="first")
+                if not DF.index.is_unique:
+                    print(
+                        "Series index for "
+                        + series_name
+                        + " is STILL not unique. Dropping first rows with duplicated date."
+                    )
+                    DF = DF[~DF.index.duplicated(keep="first")]
+            if local_freq > to_offset("0min"):
+                local_clean_index = pd.date_range(
+                    start=local_start, end=local_end, freq=local_freq, tz="UTC"
+                )
+                # if len(local_clean_index) != len(DF):
+                # This condition happens quite frequently with missing data.
+                # print(str(series_name) + "-- clean index length: "+ str(len(local_clean_index)) + " Series length: " + str(len(DF)))
+                DF = DF.reindex(index=local_clean_index, copy=True)
+            else:
+                # The dataframe DF must contain only the most recent data.
+                pass
+            qual_cols = DF.columns.str.contains("_qualifiers")
+            # https://stackoverflow.com/questions/21998354/pandas-wont-fillna-inplace
+            # Instead, create a temporary dataframe, fillna, then copy back into original.
+            DFquals = DF.loc[:, qual_cols].fillna("hf.missing")
+            DF.loc[:, qual_cols] = DFquals
 
-        if local_freq > pd.Timedelta(to_offset("0min")):
-            variableFreq_str = str(to_offset(local_freq))
-        else:
-            variableFreq_str = str(to_offset("0min"))
-        parameter_info = {
-            "variableFreq": variableFreq_str,
-            "variableUnit": unit,
-            "variableDescription": variableDescription,
-        }
-        site_info = {
-            "siteName": siteName,
-            "siteLatLongSrs": siteLatLongSrs,
-            "timeSeries": {},
-        }
-        # if site is not in meta keys, add it.
-        if site_id not in meta:
-            meta[site_id] = site_info
-        # Add the variable info to the site dict.
-        meta[site_id]["timeSeries"][parameter_cd] = parameter_info
-        collection.append(DF)
+            if local_freq > pd.Timedelta(to_offset("0min")):
+                variableFreq_str = str(to_offset(local_freq))
+            else:
+                variableFreq_str = str(to_offset("0min"))
+            parameter_info = {
+                "variableFreq": variableFreq_str,
+                "variableUnit": unit,
+                "variableDescription": variableDescription,
+                "methodID": method_id,
+                "methodDescription": method_description,
+            }
+            site_info = {
+                "siteName": siteName,
+                "siteLatLongSrs": siteLatLongSrs,
+                "timeSeries": {},
+            }
+            # if site is not in meta keys, add it.
+            if site_id not in meta:
+                meta[site_id] = site_info
+            # Add the variable info to the site dict.
+            meta[site_id]["timeSeries"][parameter_cd + method_mod] = parameter_info
+            collection.append(DF)
 
     if len(collection) < 1:
         # It seems like this condition should not occur. The NWIS trims the
@@ -568,8 +590,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     zero = to_offset("0min")
     freqs2 = list(filter(lambda x: x > zero, freqs))
     if len(freqs2) > 0:
-        freqmin = min(freqs)
-        freqmax = max(freqs)
+        freqmin = min(freqs2)
+        freqmax = max(freqs2)
         if freqmin != freqmax:
             warnings.warn(
                 "One or more datasets in this request is going to be "
@@ -685,21 +707,87 @@ def nwis_custom_status_codes(response):
 
 
 def read_parquet(filename):
+    """Read a hydrofunctions parquet file.
+
+    This function will read a parquet file that was saved by
+    hydrofunctions.save_parquet() and return a dataframe and a metadata dictionary.
+
+    Args:
+        filename (str): A string with the filename and extension.
+
+    Returns:
+        dataframe (pd.DataFrame): a pandas dataframe.
+        meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
+    """
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()
+    dataframe.index.freq = calc_freq(dataframe.index)
     meta_dict = pa_table.schema.metadata
     if b"hydrofunctions_meta" in meta_dict:
         meta_string = meta_dict[b"hydrofunctions_meta"].decode()
-        meta = json.loads(meta_string, encoding="utf-8")
+        meta = json.loads(meta_string)
     else:
         meta = None
     return dataframe, meta
 
 
 def save_parquet(filename, dataframe, hf_meta):
+    """Save a hydrofunctions parquet file.
+
+    This function will save a dataframe and a dictionary into the parquet format.
+    Parquet files are a compact, easy to process format that work well with Pandas and
+    large datasets. This function will accompany the dataframe with a dictionary of NWIS
+    metadata that is produced by the hydrofunctions.extract_nwis_df() function. This
+    file can then be read by the hydrofunctions.read_parquet() function.
+
+    Args:
+        filename (str): A string with the filename and extension.
+        dataframe (pd.DataFrame): a pandas dataframe.
+        hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
+    """
+    if len(filename.split(".")) == 1:
+        filename = filename + ".gz.parquet"
+
     table = pa.Table.from_pandas(dataframe, preserve_index=True)
     meta_dict = table.schema.metadata
     hf_string = json.dumps(hf_meta).encode()
     meta_dict[b"hydrofunctions_meta"] = hf_string
     table = table.replace_schema_metadata(meta_dict)
-    pq.write_table(table, filename)
+    pq.write_table(table, filename, compression="gzip")
+
+
+def read_json_gzip(filename):
+    """Read a gzipped JSON file into a Python dictionary.
+
+    Reads JSON files that have been zipped and returns a Python dictionary.
+    Usually the files should have an extension .json.gz
+    Hydrofunctions uses this function to store the original JSON format WaterML
+    response from the USGS NWIS.
+
+    Args:
+        filename (str): A string with the filename and extension.
+
+    Returns:
+        a dictionary of the file contents.
+    """
+    with gzip.open(filename, "rb") as zip_file:
+        zip_dict = json.loads(zip_file.read())
+        return zip_dict
+
+
+def save_json_gzip(filename, json_dict):
+    """Save a Python dictionary as a gzipped JSON file.
+
+    This save function is especially designed to compress and save the original
+    JSON response from the USGS NWIS. If no file extension is specified, then a
+    .json.gz extension will be provided.
+
+    Args:
+        filename (str): A string with the filename and extension.
+        json_dict (dict): A dictionary representing the json content.
+    """
+    if len(filename.split(".")) == 1:
+        filename = filename + "json.gz"
+
+    with gzip.open(filename, "wt", encoding="ascii") as zip_file:
+        json.dump(json_dict, zip_file)
