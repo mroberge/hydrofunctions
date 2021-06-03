@@ -103,7 +103,7 @@ autosectionlabel_prefix_document = True
 
 # General information about the project.
 project = "Hydrofunctions"
-copyright = "Copyright 2016-2020, Martin Roberge and Hydrofunctions contributors"
+copyright = "Copyright 2016-2021, Martin Roberge and Hydrofunctions contributors"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
