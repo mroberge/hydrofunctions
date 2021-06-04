@@ -582,8 +582,6 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     endmax = max(ends)
     # Remove all frequencies of zero from freqs list.
     zero = to_offset("0min")
-    freqs2 = list(filter(lambda x: x > zero, freqs))
-    if len(freqs2) > 0:
     freqs_no_zeros = list(filter(lambda x: x > zero, freqs))
     if len(freqs_no_zeros) > 0:
         freqmin = min(freqs)
