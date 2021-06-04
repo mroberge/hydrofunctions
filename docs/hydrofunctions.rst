@@ -50,10 +50,10 @@ hydrofunctions.station module
     :undoc-members:
     :show-inheritance:
 
-hydrofunctions.typing module
-----------------------------
+hydrofunctions.validate module
+------------------------------
 
-.. automodule:: hydrofunctions.typing
+.. automodule:: hydrofunctions.validate
     :members:
     :undoc-members:
     :show-inheritance:
