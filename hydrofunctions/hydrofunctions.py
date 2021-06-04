@@ -288,6 +288,8 @@ def get_nwis(
 
     url = "https://waterservices.usgs.gov/nwis/"
     url = url + service + "/?"
+    if verbose:
+        print(f"Requesting data from {url}...", end="\r")
     response = requests.get(url, params=values, headers=header)
     if verbose:
         print("Requested data from", response.url)
