@@ -21,7 +21,7 @@ import logging
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
 from . import exceptions
 import warnings
-from . import typing
+from . import validate
 from . import helpers
 
 logging.basicConfig(
@@ -130,6 +130,7 @@ def get_nwis(
     bBox=None,
     parameterCd="all",
     period=None,
+    verbose=True,
 ):
     """Request stream gauge data from the USGS NWIS.
 
@@ -180,6 +181,10 @@ def get_nwis(
             NWIS period code. Default is `None`.
                 * Format is "PxxD", where xx is the number of days before today.
                 * Either use start_date or period, but not both.
+        
+        verbose (bool):
+            Use print statements if True (default); set to False if this function will 
+            be used in other software and you don't want print statements.
 
     Returns:
         a response object. This function will always return the response,
@@ -233,7 +238,7 @@ def get_nwis(
     http://waterservices.usgs.gov/rest/IV-Service.html
     """
 
-    service = typing.check_NWIS_service(service)
+    service = validate.check_NWIS_service(service)
 
     if parameterCd == "all":
         parameterCd = None
@@ -244,11 +249,11 @@ def get_nwis(
         # specify version of nwis json. Based on WaterML1.1
         # json,1.1 works; json%2C works; json1.1 DOES NOT WORK
         "format": "json,1.1",
-        "sites": typing.check_parameter_string(site, "site"),
+        "sites": validate.check_parameter_string(site, "site"),
         "stateCd": stateCd,
-        "countyCd": typing.check_parameter_string(countyCd, "county"),
-        "bBox": typing.check_NWIS_bBox(bBox),
-        "parameterCd": typing.check_parameter_string(parameterCd, "parameterCd"),
+        "countyCd": validate.check_parameter_string(countyCd, "county"),
+        "bBox": validate.check_NWIS_bBox(bBox),
+        "parameterCd": validate.check_parameter_string(parameterCd, "parameterCd"),
         "period": period,
         "startDT": start_date,
         "endDT": end_date,
@@ -284,7 +289,8 @@ def get_nwis(
     url = "https://waterservices.usgs.gov/nwis/"
     url = url + service + "/?"
     response = requests.get(url, params=values, headers=header)
-    print("Requested data from", response.url)
+    if verbose:
+        print("Requested data from", response.url)
     # requests will raise a 'ConnectionError' if the connection is refused
     # or if we are disconnected from the internet.
 
@@ -584,8 +590,8 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     zero = pd.Timedelta("0min")
     freqs_no_zeros = list(filter(lambda x: x > zero, freqs))
     if len(freqs_no_zeros) > 0:
-        freqmin = min(freqs)
-        freqmax = max(freqs)
+        freqmin = min(freqs_no_zeros)
+        freqmax = max(freqs_no_zeros)
         if freqmin != freqmax:
             warnings.warn(
                 "One or more datasets in this request is going to be "
@@ -713,8 +719,8 @@ def read_parquet(filename):
         filename (str): A string with the filename and extension.
 
     Returns:
-        * dataframe (pd.DataFrame): a pandas dataframe.
-        * meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
+        dataframe (pd.DataFrame): a pandas dataframe.
+        meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
     """
     pa_table = pq.read_table(filename)
     dataframe = pa_table.to_pandas()
@@ -742,8 +748,8 @@ def save_parquet(filename, dataframe, hf_meta):
         dataframe (pd.DataFrame): a pandas dataframe.
         hf_meta (dict): a dictionary with the metadata for the NWIS data request, if it exists.
     """
-    if (len(filename.split('.'))==1):
-        filename = filename + '.gz.parquet'
+    if len(filename.split(".")) == 1:
+        filename = filename + ".gz.parquet"
 
     table = pa.Table.from_pandas(dataframe, preserve_index=True)
     meta_dict = table.schema.metadata
@@ -767,7 +773,7 @@ def read_json_gzip(filename):
     Returns:
         a dictionary of the file contents.
     """
-    with gzip.open(filename, 'rb') as zip_file:
+    with gzip.open(filename, "rb") as zip_file:
         zip_dict = json.loads(zip_file.read())
         return zip_dict
 
@@ -783,8 +789,8 @@ def save_json_gzip(filename, json_dict):
         filename (str): A string with the filename and extension.
         json_dict (dict): A dictionary representing the json content.
     """
-    if (len(filename.split('.'))==1):
-        filename = filename + 'json.gz'
+    if len(filename.split(".")) == 1:
+        filename = filename + "json.gz"
 
-    with gzip.open(filename, 'wt', encoding="ascii") as zip_file:
-       json.dump(json_dict, zip_file)
+    with gzip.open(filename, "wt", encoding="ascii") as zip_file:
+        json.dump(json_dict, zip_file)

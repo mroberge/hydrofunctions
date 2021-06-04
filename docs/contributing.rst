@@ -25,7 +25,7 @@ Submitting a pull request
 - **Submit your Pull Request early**, while you are just starting to get started! This will:
       - open up a forum in GitHub where people can add comments
       - set up a checklist of things to get done
-      - enables automatic commit testing with TravisCI.
+      - enables automatic unit testing.
       - all your subsequent commits get added to the pull request automatically.
 - Don't apologize for mistakes or not being done yet!
 
@@ -40,7 +40,7 @@ Standards for the ideal pull request
 - Use `Google-style docstrings <https://google.github.io/styleguide/pyguide.html?showone=Comments#Comments>`_
   , described `here <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html>`_.
 - Add tests! Lots of tests! Make sure you test your code!
-- Your code should work for Python 3.6, 3.7, & 3.8. This gets tested in `TravisCI <https://travis-ci.org/mroberge/hydrofunctions/pull_requests>`_
+- Your code should work for Python 3.6, 3.7, 3.8, & 3.9. This gets tested by the `CI <https://github.com/mroberge/hydrofunctions/actions/workflows/test.yaml>`_
 
 
 A detailed guide to contributing new code

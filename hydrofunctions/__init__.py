@@ -58,7 +58,7 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 from __future__ import absolute_import, print_function
 
 __title__ = "hydrofunctions"
-__version__ = "0.2.1rc1"
+__version__ = "0.2.2rc"
 __author__ = "Martin Roberge"
 __email__ = "mroberge@towson.edu"
 __license__ = "MIT"
@@ -82,7 +82,7 @@ from .hydrofunctions import (
     save_json_gzip,
 )
 from .station import Station, NWIS
-from .typing import (
+from .validate import (
     check_parameter_string,
     check_datestr,
     check_NWIS_service,
@@ -107,4 +107,8 @@ from .usgs_rdb import (
     peaks,
     stats,
     hydroRDB,
+)
+from .waterwatch import (
+    filter_flood_stages,
+    get_flood_stage,
 )

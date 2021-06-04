@@ -6,13 +6,13 @@ This module contains charting functions for Hydrofunctions.
 
 -----
 """
+from __future__ import absolute_import, print_function, division, unicode_literals
+import matplotlib
+
 # Recommended that I use this line to avoid errors in TravisCI
 # See https://matplotlib.org/faq/howto_faq.html
 # Basically, matplotlib usually uses an 'X11 connection' by default; Travis CI
 # does not have this configured, so you need to set your backend explicitly.
-from __future__ import absolute_import, print_function, division, unicode_literals
-import matplotlib
-
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
@@ -200,8 +200,8 @@ def cycleplot(
         Qseries = Qseries.loc[:, Qseries.select_dtypes(include="number").columns[0]]
     if not isinstance(Qseries, pd.Series):
         raise ValueError(
-            f"Cycleplot only accepts a single series of data as "
-            " an argument. You supplied a {type(Qseries).}"
+            "Cycleplot only accepts a single series of data as "
+            f" an argument. You supplied a {type(Qseries)}."
         )
 
     if cycle == "annual":

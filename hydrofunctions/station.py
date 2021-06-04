@@ -96,6 +96,9 @@ class NWIS(Station):
 
             Zipped JSON files will save the original WaterML JSON provided by the NWIS.
             Parquet files will save the dataframe and the metadata for the NWIS object.
+
+        verbose (bool):
+            Print output for actions such as making data requests. Default is True.
     """
 
     def __init__(
@@ -110,22 +113,24 @@ class NWIS(Station):
         parameterCd="all",
         period=None,
         file=None,
+        verbose=True,
     ):
 
         self.ok = False
         if file:
-            if (len(file.split(".")) == 1):
+            if len(file.split(".")) == 1:
                 file = file + ".json.gz"
             try:
                 self.read(file)
                 self.ok = True
-                print("Reading data from", file)
+                if verbose:
+                    print("Reading data from", file)
 
             except OSError as err:
                 # File does not exist yet, we'll make it later.
                 pass
 
-        if self.ok == False:
+        if not self.ok:
             self.response = hf.get_nwis(
                 site,
                 service,
@@ -136,6 +141,7 @@ class NWIS(Station):
                 bBox=bBox,
                 parameterCd=parameterCd,
                 period=period,
+                verbose=verbose,
             )
             try:
                 self.json = self.response.json()
@@ -143,7 +149,8 @@ class NWIS(Station):
                 self.ok = self.response.ok
                 if file is not None:
                     self.save(file)
-                    print("Saving data to", file)
+                    if verbose:
+                        print("Saving data to", file)
             except json.JSONDecodeError as err:
                 self.ok = False
                 print(f"JSON decoding error. URL: {self.response.url}")
@@ -197,9 +204,9 @@ class NWIS(Station):
 
             str 'stage': Gauge height columns ('00065') will be returned.
 
-            int any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
+            str any five digit number: any matching parameter columns will be returned. '00065' returns stage, for example.
 
-            int any eight to twelve digit number: any matching stations will be returned.
+            str any eight to twelve digit number: any matching stations will be returned.
         """
         all_cols = self._dataframe.columns != ""  # all true
         no_cols = ~all_cols  # all false
@@ -292,35 +299,41 @@ class NWIS(Station):
                 the filename to save to.
         """
         extension = file.split(".")[-1]
-        if (extension == "parquet"):
+        if extension == "parquet":
             hf.save_parquet(file, self._dataframe, self.meta)
-        elif (extension == "gz"):
+        elif extension == "gz":
             try:
                 hf.save_json_gzip(file, self.json)
             except AttributeError as err:
-                print("Hydrofunctions can only save NWIS objects using gzip if the NWIS"
-                " object still has its original WaterML JSON. You might be able to fix "
-                "this problem if you call NWIS using the 'file' parameter so that the"
-                "JSON is saved immediately after the request is made."
+                print(
+                    "Hydrofunctions can only save NWIS objects using gzip if the NWIS"
+                    " object still has its original WaterML JSON. You might be able "
+                    "to fix this problem if you call NWIS using the 'file' parameter "
+                    "so that the JSON is saved immediately after the request is made."
                 )
                 raise err
         else:
-            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
+            raise OSError(
+                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+            )
         return self
 
     def read(self, file):
         """
-        Read from a zipped WaterML file '*.json.gz' or from a parquet file.
+        Read from a zipped WaterML file '.json.gz' or from a parquet file.
 
         Args:
             file (str):
                 the filename to read from.
         """
         extension = file.split(".")[-1]
-        if (extension == "parquet"):
+        if extension == "parquet":
             self._dataframe, self.meta = hf.read_parquet(file)
-        elif (extension == "gz"):
-            self._dataframe, self.meta = hf.extract_nwis_df(hf.read_json_gzip(file))
+        elif extension == "gz":
+            self.json = hf.read_json_gzip(file)
+            self._dataframe, self.meta = hf.extract_nwis_df(self.json)
         else:
-            raise OSError(f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions.")
+            raise OSError(
+                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+            )
         return self

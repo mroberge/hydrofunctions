@@ -6,8 +6,8 @@ HydroFunctions
         :target: https://pypi.python.org/pypi/hydrofunctions
         :alt: Visit Hydrofunctions on PyPI
 
-.. image:: https://img.shields.io/travis/mroberge/hydrofunctions.svg
-        :target: https://travis-ci.org/mroberge/hydrofunctions
+.. image:: https://github.com/mroberge/hydrofunctions/actions/workflows/test.yaml/badge.svg
+        :target: https://github.com/mroberge/hydrofunctions/actions/workflows/test.yaml
         :alt: Unit Testing Status
 
 .. image:: https://codecov.io/gh/mroberge/hydrofunctions/branch/master/graph/badge.svg
@@ -125,20 +125,10 @@ Plot the data using built-in methods from Pandas and mathplotlib:
 .. image:: _static/HerringHydrograph.png
    :alt: a stream hydrograph for Herring Run
 
-Draw an interactive map in a Jupyter Notebook:
+Learn more:  
 
-.. code-block:: ipython
+* `Users Guide`_
 
-    In  [7]: hf.draw_map()
-    Out [7]:
-
-.. image:: _static/draw_map.jpg
-        :alt: a map in an interactive Jupyter Notebook.
-
-Learn more:
-
-* `More usage <https://hydrofunctions.readthedocs.io/en/latest>`_ tips
-* `Introduction to Hydrofunctions <https://github.com/mroberge/hydrofunctions/blob/master/notebooks/Introduction%20to%20Hydrofunctions.ipynb>`_, a Jupyter Notebook with a quick tutorial.
 
 Easy Installation
 -----------------
@@ -152,7 +142,7 @@ command line:
 
 
 Hydrofunctions depends upon Pandas and numerous other scientific packages
-for Python. `Anaconda <https://www.continuum.io/open-source-core-modern-software>`_
+for Python. `Anaconda <https://www.anaconda.com/products/individual>`_
 is an easy, safe, open-source method for downloading everything and avoiding
 conflicts with other versions of Python that might be running on your
 computer.
@@ -161,21 +151,5 @@ Visit the `Installation Page <https://hydrofunctions.readthedocs.io/en/master/in
 in the Users Guide to learn how to install
 Anaconda, or if you have problems using the Easy Installation method above.
 
-
-Other Projects You Should See
------------------------------
-
-`Hydropy <https://github.com/stijnvanhoey/hydropy>`_, a Python package that builds upon Pandas for enhanced data selection and plotting of hydrology data.
-
-`WellApplication <https://github.com/inkenbrandt/WellApplication>`_ a Python package that provides functions for working with dataloggers and USGS well data.
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-
-MIT License
-
-Copyright (c) 2016, Martin Roberge and contributors
 
 .. _`Users Guide`:  https://hydrofunctions.readthedocs.io/en/latest

@@ -463,7 +463,7 @@ class TestReadRdb(unittest.TestCase):
 
     @mock.patch("requests.get")
     def test_peaks_handles_parsing_error(self, mock_get):
-        site_id = "06813500" # This site returns data with a malformed date.
+        site_id = "06813500"  # This site returns data with a malformed date.
         expected_status_code = 200
         expected_text = parsing_error_fixture
         expected = fakeResponse(code=expected_status_code, text=expected_text)
@@ -473,14 +473,12 @@ class TestReadRdb(unittest.TestCase):
         actual = hf.peaks(site_id)
 
 
-
 class Test_hydroRDB(unittest.TestCase):
     """Test the hydroRDB class.
 
-            - Do the RDB functions (peaks, stats, rating_curve, field_meas) return
-        hydroRDB object?
-        - Does the hydroRDB have a proper repr?
-        - Does the hydroRDB have a working __iter__ function?
+    - Do the RDB functions (peaks, stats, rating_curve, field_meas) return a hydroRDB object?
+    - Does the hydroRDB have a proper repr?
+    - Does the hydroRDB have a working __iter__ function?
     """
 
     def test_hydroRDB_is_obj(self):
@@ -511,7 +509,7 @@ class Test_hydroRDB(unittest.TestCase):
 
     def test_hydroRDB_can_return_tuple(self):
         header = "expected header"
-        table = pd.DataFrame({"A":[1,2], "B":[3,4]})
+        table = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
         columns = "expected columns"
         dtypes = "expected dtypes"
         rdb = "expected rdb file"
