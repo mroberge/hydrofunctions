@@ -320,7 +320,7 @@ class NWIS(Station):
 
     def read(self, file):
         """
-        Read from a zipped WaterML file '*.json.gz' or from a parquet file.
+        Read from a zipped WaterML file '.json.gz' or from a parquet file.
 
         Args:
             file (str):
