@@ -65,3 +65,11 @@ hydrofunctions.usgs_rdb module
     :members:
     :undoc-members:
     :show-inheritance:
+
+hydrofunctions.waterwatch module
+--------------------------------
+
+.. automodule:: hydrofunctions.waterwatch
+    :members:
+    :undoc-members:
+    :show-inheritance:
