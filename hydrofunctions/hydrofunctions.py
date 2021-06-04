@@ -532,7 +532,7 @@ def extract_nwis_df(nwis_dict, interpolate=True):
                         + " is STILL not unique. Dropping first rows with duplicated date."
                     )
                     DF = DF[~DF.index.duplicated(keep="first")]
-            if local_freq > to_offset("0min"):
+            if local_freq > pd.Timedelta(to_offset("0min")):
                 local_clean_index = pd.date_range(
                     start=local_start, end=local_end, freq=local_freq, tz="UTC"
                 )
@@ -589,11 +589,11 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     startmin = min(starts)
     endmax = max(ends)
     # Remove all frequencies of zero from freqs list.
-    zero = to_offset("0min")
-    freqs2 = list(filter(lambda x: x > zero, freqs))
-    if len(freqs2) > 0:
-        freqmin = min(freqs2)
-        freqmax = max(freqs2)
+    zero = pd.Timedelta("0min")
+    freqs_no_zeros = list(filter(lambda x: x > zero, freqs))
+    if len(freqs_no_zeros) > 0:
+        freqmin = min(freqs_no_zeros)
+        freqmax = max(freqs_no_zeros)
         if freqmin != freqmax:
             warnings.warn(
                 "One or more datasets in this request is going to be "
@@ -618,6 +618,9 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     else:
         # If datasets only contain most recent data, then
         # don't set an index or a freq. Just concat all of the datasets.
+        # Alternatively, to solve issue #54 (Requests for only the most recent
+        # data should be parsed differently) We could combine the different dataframes
+        # in collection using a different procedure.
         cleanDF = pd.concat(collection, axis=1)
 
     cleanDF.index.name = "datetimeUTC"
