@@ -610,6 +610,9 @@ def extract_nwis_df(nwis_dict, interpolate=True):
     else:
         # If datasets only contain most recent data, then
         # don't set an index or a freq. Just concat all of the datasets.
+        # Alternatively, to solve issue #54 (Requests for only the most recent
+        # data should be parsed differently) We could combine the different dataframes
+        # in collection using a different procedure.
         cleanDF = pd.concat(collection, axis=1)
 
     cleanDF.index.name = "datetimeUTC"
