@@ -8,6 +8,8 @@ This module contains charting functions for Hydrofunctions.
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
 import matplotlib
+import probscale
+import seaborn as sns
 
 # Recommended that I use this line to avoid errors in TravisCI
 # See https://matplotlib.org/faq/howto_faq.html

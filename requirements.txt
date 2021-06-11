@@ -4,3 +4,5 @@ pandas
 requests
 IPython
 pyarrow
+seaborn
+probscale
