@@ -269,6 +269,12 @@ class NWIS(Station):
                     )
         if not sites.any():  # If no sites are selected, select them all.
             sites = all_cols
+        if not params.any() and args:
+            raise ValueError(
+                "The parameter '{param}' is not contained in this dataset.".format(
+                    param=''.join(args)
+                )
+            )
         if not params.any():  # If no params are selected, select them all.
             params = all_cols
         if (
@@ -330,8 +336,7 @@ class NWIS(Station):
         if extension == "parquet":
             self._dataframe, self.meta = hf.read_parquet(file)
         elif extension == "gz":
-            self.json = hf.read_json_gzip(file)
-            self._dataframe, self.meta = hf.extract_nwis_df(self.json)
+            self._dataframe, self.meta = hf.extract_nwis_df(hf.read_json_gzip(file))
         else:
             raise OSError(
                 f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
