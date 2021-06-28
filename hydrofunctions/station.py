@@ -336,7 +336,8 @@ class NWIS(Station):
         if extension == "parquet":
             self._dataframe, self.meta = hf.read_parquet(file)
         elif extension == "gz":
-            self._dataframe, self.meta = hf.extract_nwis_df(hf.read_json_gzip(file))
+            self.json = hf.read_json_gzip(file)
+            self._dataframe, self.meta = hf.extract_nwis_df(self.json)
         else:
             raise OSError(
                 f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
