@@ -14,6 +14,8 @@ import json
 import warnings
 from . import hydrofunctions as hf
 
+import numpy as np
+
 
 class Station(object):
     """A class for organizing stream gauge data for a single request."""
@@ -236,10 +238,28 @@ class NWIS(Station):
                     meta = all_cols
                     break  # If one param is 'all', ignore the other params and deliver everything.
                 elif item == "discharge":
+                    if not np.any(['00060' in x for x in list(self._dataframe.columns)]):
+                        raise ValueError(
+                            "The parameter '{param}' is not contained in this dataset.".format(
+                                param=item
+                            )
+                        )
                     params = Q_cols | params
                 elif item == "q":
+                    if not np.any(['00060' in x for x in list(self._dataframe.columns)]):
+                        raise ValueError(
+                            "The parameter '{param}' is not contained in this dataset.".format(
+                                param=item
+                            )
+                        )
                     params = Q_cols | params
                 elif item == "stage":
+                    if not np.any(['00065' in x for x in list(self._dataframe.columns)]):
+                        raise ValueError(
+                            "The parameter '{param}' is not contained in this dataset.".format(
+                                param=item
+                            )
+                        )
                     params = stage_cols | params
                 elif item == "data":
                     meta = data_cols | meta
@@ -269,12 +289,6 @@ class NWIS(Station):
                     )
         if not sites.any():  # If no sites are selected, select them all.
             sites = all_cols
-        if not params.any() and args:
-            raise ValueError(
-                "The parameter '{param}' is not contained in this dataset.".format(
-                    param=''.join(args)
-                )
-            )
         if not params.any():  # If no params are selected, select them all.
             params = all_cols
         if (
