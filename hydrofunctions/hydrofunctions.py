@@ -183,8 +183,8 @@ def get_nwis(
                 * Either use start_date or period, but not both.
         
         verbose (bool):
-            Use print statements if True (default); set to False if this function will 
-            be used in other software and you don't want print statements.
+            If True (default); will print confirmation messages with the url before and 
+            after the request is made.
 
     Returns:
         a response object. This function will always return the response,
