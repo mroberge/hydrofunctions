@@ -309,8 +309,7 @@ class TestNWISmethods(unittest.TestCase):
         - create a sub-class of NWIS called MockNWIS.
         - MockNWIS has a different __init__ method that allows you to pass
             in a dataframe and any other initial parameter
-        - all other methods gets inherited from NWIS, so we can test them.
-"""
+        - all other methods gets inherited from NWIS, so we can test them."""
 
     def test_NWIS_df_returns_all_columns(self):
         expected_cols = [
@@ -955,7 +954,7 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<Day>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
-                        "methodDescription": ""
+                        "methodDescription": "",
                     }
                 },
             }
@@ -1109,7 +1108,32 @@ End:   expected end"""
         expected_filename = "expected_filename.json.gz"
         expected_json = recent_only
         mock_read.return_value = expected_json
-        expected_meta = {'USGS:01541200': {'siteName': 'WB Susquehanna River near Curwensville, PA', 'siteLatLongSrs': {'srs': 'EPSG:4326', 'latitude': 40.9614471, 'longitude': -78.5191906}, 'timeSeries': {'00010': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'deg C', 'variableDescription': 'Temperature, water, degrees Celsius', 'methodID': '118850', 'methodDescription': ''}, '00060': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'ft3/s', 'variableDescription': 'Discharge, cubic feet per second', 'methodID': '118849', 'methodDescription': ''}}}}
+        expected_meta = {
+            "USGS:01541200": {
+                "siteName": "WB Susquehanna River near Curwensville, PA",
+                "siteLatLongSrs": {
+                    "srs": "EPSG:4326",
+                    "latitude": 40.9614471,
+                    "longitude": -78.5191906,
+                },
+                "timeSeries": {
+                    "00010": {
+                        "variableFreq": "<0 * Minutes>",
+                        "variableUnit": "deg C",
+                        "variableDescription": "Temperature, water, degrees Celsius",
+                        "methodID": "118850",
+                        "methodDescription": "",
+                    },
+                    "00060": {
+                        "variableFreq": "<0 * Minutes>",
+                        "variableUnit": "ft3/s",
+                        "variableDescription": "Discharge, cubic feet per second",
+                        "methodID": "118849",
+                        "methodDescription": "",
+                    },
+                },
+            }
+        }
         test_nwis = MockNWIS()
         test_nwis.read(expected_filename)
         mock_read.assert_called_once_with(expected_filename)
@@ -1118,8 +1142,8 @@ End:   expected end"""
             actual_meta,
             expected_meta,
             f"The read function did not parse the json.gz file correctly. It returned"
-            f"type {type(actual_meta)} when it was expected to return type {type(expected_meta)}."
-            )
+            f"type {type(actual_meta)} when it was expected to return type {type(expected_meta)}.",
+        )
 
 
 """
