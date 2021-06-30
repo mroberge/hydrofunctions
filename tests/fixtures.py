@@ -12,6 +12,7 @@ from .fixtures_data import (
     diff_freq,
     startDST,
     endDST,
+    daily_lake_level,
 )
 
 from .fixtures_daily_dupe import daily_dupe, daily_dupe_altered
