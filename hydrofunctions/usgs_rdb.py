@@ -107,7 +107,7 @@ def get_usgs_RDB_service(url, headers=None, params=None):
             )
             display.display(display.HTML(response.text))
             raise exceptions.HydroNoDataError(
-                "The USGS did not return a valid RDB file " "for this request."
+                "The USGS did not return a valid RDB file for this request."
             )
     else:
         # response.status_code != 200:
@@ -197,12 +197,15 @@ def read_rdb(text):
     return header, outputDF, columns, dtypes
 
 
-def site_file(site):
+def site_file(site, verbose=True):
     """Load USGS site file into a Pandas dataframe.
 
     Args:
         site (str):
             The gauge ID number for the site.
+        verbose (bool):
+            If True (default), will print confirmation messages with the url before and
+            after the request.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a pandas
@@ -230,23 +233,30 @@ def site_file(site):
     )
     headers = {"Accept-encoding": "gzip"}
 
-    print("Retrieving the site file for site #", site, " from ", url)
+    if verbose:
+        print(f"Retrieving the site file for site #{site} from {url}", end="\r")
     response = get_usgs_RDB_service(url, headers)
+    if verbose:
+        print(f"Retrieved the site file for site #{site} from {url}")
     (
         header,
         outputDF,
         columns,
         dtype,
     ) = read_rdb(response.text)
+
     return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
-def data_catalog(site):
+def data_catalog(site, verbose=True):
     """Load a history of the data collected at a site into a Pandas dataframe.
 
     Args:
         site (str):
             The gauge ID number for the site.
+        verbose (bool):
+            If True (default), will print confirmation messages with the url before and
+            after the request.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a pandas
@@ -273,8 +283,11 @@ def data_catalog(site):
     )
     headers = {"Accept-encoding": "gzip"}
 
-    print(f"Retrieving the site file for site #{site} from {url}")
+    if verbose:
+        print(f"Retrieving the data catalog for site #{site} from {url}", end="\r")
     response = get_usgs_RDB_service(url, headers)
+    if verbose:
+        print(f"Retrieved the data catalog for site #{site} from {url}")
     (
         header,
         outputDF,
@@ -284,12 +297,15 @@ def data_catalog(site):
     return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
-def field_meas(site):
+def field_meas(site, verbose=True):
     """Load USGS field measurements of stream discharge into a Pandas dataframe.
 
     Args:
         site (str):
             The gauge ID number for the site.
+        verbose (bool):
+            If True (default), will print confirmation messages with the url before and
+            after the request.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a pandas
@@ -345,8 +361,13 @@ def field_meas(site):
     )
     headers = {"Accept-encoding": "gzip"}
 
-    print("Retrieving field measurements for site #", site, " from ", url)
+    if verbose:
+        print(
+            f"Retrieving the field measurements for site #{site} from {url}", end="\r"
+        )
     response = get_usgs_RDB_service(url, headers)
+    if verbose:
+        print(f"Retrieved the field measurements for site #{site} from {url}")
     # It may be desireable to keep the original na_values, like 'unkn' for many
     # of the columns. However, it is still a good idea to replace for the gage
     # depth and discharge values, since these variables get used in plotting
@@ -375,12 +396,15 @@ def field_meas(site):
     return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
-def peaks(site):
+def peaks(site, verbose=True):
     """Return a series of annual peak discharges.
 
     Args:
         site(str):
             The gauge ID number for the site.
+        verbose (bool):
+            If True (default), will print confirmation messages with the url before and
+            after the request.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a table. The header
@@ -410,26 +434,35 @@ def peaks(site):
 
     headers = {"Accept-encoding": "gzip"}
 
-    print("Retrieving annual peak discharges for site #", site, " from ", url)
+    if verbose:
+        print(
+            f"Retrieving the annual peak discharges for site #{site} from {url}",
+            end="\r",
+        )
     response = get_usgs_RDB_service(url, headers)
+    if verbose:
+        print(f"Retrieved the annual peak discharges for site #{site} from {url}")
     header, outputDF, columns, dtype = read_rdb(response.text)
     try:
         outputDF.peak_dt = pd.to_datetime(outputDF.peak_dt)
     except ValueError as err:
-        print(f"Unable to parse the peak_dt field as a date. reason: '{str(err)}'.")
+        print(f"Unable to parse the peak_dt field as a date. Reason: '{str(err)}'.")
 
     # peak_date might be a string, or it might be a datetime. Both work as an index
     outputDF.set_index("peak_dt", inplace=True)
     return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
-def rating_curve(site):
+def rating_curve(site, verbose=True):
     """Return the most recent USGS expanded-shift-adjusted rating curve for a
     given stream gage into a dataframe.
 
     Args:
         site (str):
             The gage ID number for the site.
+        verbose (bool):
+            If True (default), will print confirmation messages with the url before and
+            after the request.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a table. The header
@@ -468,8 +501,11 @@ def rating_curve(site):
         + ".exsa.rdb"
     )
     headers = {"Accept-encoding": "gzip"}
-    print("Retrieving rating curve for site #", site, " from ", url)
+    if verbose:
+        print(f"Retrieving the rating curve for site #{site} from {url}", end="\r")
     response = get_usgs_RDB_service(url, headers)
+    if verbose:
+        print(f"Retrieved the rating curve for site #{site} from {url}")
     header, outputDF, columns, dtype = read_rdb(response.text)
     outputDF.columns = ["stage", "shift", "discharge", "stor"]
     """
@@ -484,7 +520,7 @@ def rating_curve(site):
     return hydroRDB(header, outputDF, columns, dtype, response.text)
 
 
-def stats(site, statReportType="daily", **kwargs):
+def stats(site, statReportType="daily", verbose=True, **kwargs):
     """Return statistics from the USGS Stats Service as a dataframe.
 
     Args:
@@ -498,6 +534,9 @@ def stats(site, statReportType="daily", **kwargs):
             - 'daily' (default): calculate statistics for each of 365 days.
             - 'monthly': calculate statistics for each of the twelve months.
             - 'annual': calculate annual statistics for each year since the start of the record.
+        verbose (bool):
+            If True (default), will print confirmation messages with the url before and
+            after the request.
 
     Returns:
         a hydroRDB object or tuple consisting of the header and a table. The header
@@ -575,10 +614,16 @@ def stats(site, statReportType="daily", **kwargs):
     # Overwrite defaults if they are specified.
     params.update(kwargs)
 
+    if verbose:
+        print(
+            f"Retrieving {params['statReportType']} statistics for site #{params['sites']} from {url}",
+            end="\r",
+        )
     response = get_usgs_RDB_service(url, headers, params)
-    print(
-        f"Retrieving {params['statReportType']} statistics for site #{params['sites']} from {response.url}"
-    )
+    if verbose:
+        print(
+            f"Retrieved {params['statReportType']} statistics for site #{site} from {url}"
+        )
 
     header, outputDF, columns, dtype = read_rdb(response.text)
 
