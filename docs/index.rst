@@ -11,6 +11,8 @@ Welcome to the Hydrofunctions |version| Users Guide!
    notebooks/Selecting_Sites
    notebooks/viewing
    graphing
+   notebooks/Site_File
+   notebooks/Data_Catalog
    notebooks/Peak_Discharge
    notebooks/USGS_Statistics_Service
    contributing
