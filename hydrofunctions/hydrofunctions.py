@@ -24,6 +24,9 @@ import warnings
 from . import validate
 from . import helpers
 
+logger = logging.getLogger(__name__)
+
+
 def _start_logging(loglevel="DEBUG"):
     """Create a log file and start logging messages.
 
@@ -113,7 +116,7 @@ def calc_freq(index):
         if len(index) > 3:
             freq = to_offset(abs(index[2] - index[3]))
             method = 4
-            logging.debug(
+            logger.debug(
                 "calc_freq4:"
                 + str(freq)
                 + "= index[2]:"
@@ -136,7 +139,7 @@ def calc_freq(index):
         method = 5
 
     debug_msg = "Calc_freq method:" + str(method) + "freq:" + str(freq)
-    logging.debug(debug_msg)
+    logger.debug(debug_msg)
     return pd.Timedelta(freq)
 
 
