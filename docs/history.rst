@@ -97,6 +97,13 @@ History
 * Created a verbose mode that is on by default.
 * Added the flood stage service from the USGS waterwatch (iem)
 * save & read NWIS data in json.gzip files
-* Added ability to read multiple instrument methods at the same times
+* Added ability to read multiple instrument methods at the same time
 * bugfix: divide by zero error when you request data from many sites
 * bugfix: save_parquet
+
+0.2.2 (2021-11-06)
+------------------
+
+* bugfix: logging off by default.
+* Added hf._start_logging() to create a log & start logging.
+* HydroExceptions will now create a log message when raised.
