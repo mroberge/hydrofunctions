@@ -665,21 +665,13 @@ def nwis_custom_status_codes(response):
         response: a response object as returned by get_nwis().
 
     Returns:
-        * `None`
-            if response.status_code == 200
-        * `response.status_code`
-            for all other status codes.
+        `None` if response.status_code == 200
 
     Raises:
-        SyntaxWarning: when a non-200 status code is returned.
+        HydroNoDataError: when a non-200 status code is returned.
             https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 
     Note:
-        To raise an exception, call ``response.raise_for_status()``
-        This will raise `requests.exceptions.HTTPError` with a helpful message
-        or it will return `None` for status code 200.
-        From: http://docs.python-requests.org/en/master/user/quickstart/#response-status-codes
-
         NWIS status_code messages come from:
             https://waterservices.usgs.gov/docs/portable_code.html
         Additional status code documentation:
@@ -719,19 +711,14 @@ def nwis_custom_status_codes(response):
     }
     if response.status_code == 200:
         return None
-    # All other status codes will raise a warning.
-    else:
-        # Use the status_code as a key, return None if key not in dict
-        msg = (
-            "The NWIS returned a code of {}.\n".format(response.status_code)
-            + nwis_msg.get(str(response.status_code))
-            + "\n\nURL used in this request: {}".format(response.url)
-        )
-
-        # Warnings will not beak the flow. They just print a message.
-        # However, they are often supressed in some applications.
-        warnings.warn(msg, SyntaxWarning)
-        return response.status_code
+    # All other status codes will raise an exception.
+    # Use the status_code as a key, return None if key not in dict
+    msg = (
+        "The NWIS returned a code of {}.\n".format(response.status_code)
+        + nwis_msg.get(str(response.status_code))
+        + "\nURL used in this request: {}".format(response.url)
+    )
+    raise exceptions.HydroNoDataError(msg)
 
 
 def read_parquet(filename):
