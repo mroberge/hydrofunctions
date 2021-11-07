@@ -80,6 +80,7 @@ from .hydrofunctions import (
     save_parquet,
     read_json_gzip,
     save_json_gzip,
+    _start_logging,
 )
 from .station import Station, NWIS
 from .validate import (

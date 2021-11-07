@@ -24,11 +24,31 @@ import warnings
 from . import validate
 from . import helpers
 
-logging.basicConfig(
-    filename="hydrofunctions_testing.log",
-    level=logging.ERROR,
-    format="%(asctime)s:%(levelname)s:%(message)s",
-)
+def _start_logging(loglevel="DEBUG"):
+    """Create a log file and start logging messages.
+
+    Args:
+        loglevel (str):
+            The level of message that should be captured in the log. Valid values
+            are (from lowest to highest):
+            - 'DEBUG': (default) Detailed information, typically of interest only when diagnosing problems.
+            - 'INFO': Confirmation that things are working as expected.
+            - 'WARNING': An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected.
+            - 'ERROR': Due to a more serious problem, the software has not been able to perform some function.
+            - 'CRITICAL': A serious error, indicating that the program itself may be unable to continue running.
+    """
+    # This code is from Vinay Sajip in the Python.org logging tutorial.
+    # https://docs.python.org/3/howto/logging.html
+    numeric_level = getattr(logging, loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError("Invalid log level: %s" % loglevel)
+    format = "%(asctime)s — %(name)s — %(levelname)s — %(funcName)s — %(message)s"
+    logging.basicConfig(
+        filename="hydrofunctions_testing.log",
+        level=numeric_level,
+        format=format,
+    )
+    logging.info(f"Log file started. Line format is: {format}")
 
 
 def select_data(nwis_df):
