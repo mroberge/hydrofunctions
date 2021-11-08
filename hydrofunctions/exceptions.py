@@ -109,9 +109,10 @@ class HydroUserWarning(UserWarning):
 
         **Usage**::
 
+            import hydrofunctions as hf
             import warnings
             ... code
-            warnings.warn('This is my warning message.', HydroUserWarning)
+            warnings.warn('This is my warning message.', hf.HydroUserWarning)
 
         Note:
             Warnings can be hidden or turned off depending on how the user is
