@@ -3,7 +3,7 @@
 fixtures_data.py
 
 This file contains sample output from successful requests by hf.NWIS.json()
-In otherwords, these are not the raw JSON returned by the NWIS, but rather
+In other words, these are not the raw JSON returned by the NWIS, but rather
 the output from calling the .json() method on a Requests object. It actually
 isn't json, but rather a Python dict. You can tell because the true and false
 in the original json have been coverted to True and False for Python.
@@ -14,7 +14,11 @@ The output values included here include:
     - nothing_avail : requested a parameter that doesn't get collected, or filtered sites that collect non-existant param
     - mult_flags : one site, one parameter, three flags: P: provisional, e: estimated, Ice: affected by ice.
     - diff_freq : two sites, several parameters, including pH. The pH are collected every 30 minutes.
+    - startDST : a time series that starts in Standard Time and transitions to Daylight Savings.
+    - endDST : a time series that starts in DST and transitions to Standard Time.
+    - daily_lake_level : a site that does not collect discharge; it only has '62614', or lake-level.
 """
+# XXX: flag for start of JSON15min2day
 
 JSON15min2day = {
     "name": "ns1:timeSeriesResponseType",
@@ -11963,6 +11967,220 @@ endDST = {
                 ],
                 "name": "USGS:01541000:00060:00000",
             }
+        ],
+    },
+    "nil": False,
+    "globalScope": True,
+    "typeSubstituted": False,
+}
+
+# XXX: flag for start of daily_lake_level.
+
+daily_lake_level = {
+    "name": "ns1:timeSeriesResponseType",
+    "declaredType": "org.cuahsi.waterml.TimeSeriesResponseType",
+    "scope": "javax.xml.bind.JAXBElement$GlobalScope",
+    "value": {
+        "queryInfo": {
+            "queryURL": "http://waterservices.usgs.gov/nwis/dv/format=json%2C1.1&sites=05015500&period=P3D",
+            "criteria": {
+                "locationParam": "[ALL:05015500]",
+                "variableParam": "ALL",
+                "parameter": [],
+            },
+            "note": [
+                {"value": "[ALL:05015500]", "title": "filter:sites"},
+                {
+                    "value": "[mode=PERIOD, period=P3D, modifiedSince=null]",
+                    "title": "filter:timeRange",
+                },
+                {"value": "methodIds=[ALL]", "title": "filter:methodId"},
+                {"value": "2021-06-30T15:11:05.238Z", "title": "requestDT"},
+                {"value": "63d87450-d9b5-11eb-8ca0-2cea7f5e5ede", "title": "requestId"},
+                {
+                    "value": "Provisional data are subject to revision. Go to http://waterdata.usgs.gov/nwis/help/?provisional for more information.",
+                    "title": "disclaimer",
+                },
+                {"value": "sdas01", "title": "server"},
+            ],
+        },
+        "timeSeries": [
+            {
+                "sourceInfo": {
+                    "siteName": "Lake Sherburne at Sherburne MT",
+                    "siteCode": [
+                        {"value": "05015500", "network": "NWIS", "agencyCode": "USGS"}
+                    ],
+                    "timeZoneInfo": {
+                        "defaultTimeZone": {
+                            "zoneOffset": "-07:00",
+                            "zoneAbbreviation": "MST",
+                        },
+                        "daylightSavingsTimeZone": {
+                            "zoneOffset": "-06:00",
+                            "zoneAbbreviation": "MDT",
+                        },
+                        "siteUsesDaylightSavingsTime": True,
+                    },
+                    "geoLocation": {
+                        "geogLocation": {
+                            "srs": "EPSG:4326",
+                            "latitude": 48.8280944,
+                            "longitude": -113.5219833,
+                        },
+                        "localSiteXY": [],
+                    },
+                    "note": [],
+                    "siteType": [],
+                    "siteProperty": [
+                        {"value": "ST", "name": "siteTypeCd"},
+                        {"value": "10010002", "name": "hucCd"},
+                        {"value": "30", "name": "stateCd"},
+                        {"value": "30035", "name": "countyCd"},
+                    ],
+                },
+                "variable": {
+                    "variableCode": [
+                        {
+                            "value": "62614",
+                            "network": "NWIS",
+                            "vocabulary": "NWIS:UnitValues",
+                            "variableID": 51413520,
+                            "default": True,
+                        }
+                    ],
+                    "variableName": "Lake or reservoir water surface elevation above NGVD 1929, ft",
+                    "variableDescription": "Lake or reservoir water surface elevation above NGVD 1929, feet",
+                    "valueType": "Derived Value",
+                    "unit": {"unitCode": "ft"},
+                    "options": {
+                        "option": [
+                            {
+                                "value": "Mean",
+                                "name": "Statistic",
+                                "optionCode": "00003",
+                            }
+                        ]
+                    },
+                    "note": [],
+                    "noDataValue": -999999.0,
+                    "variableProperty": [],
+                    "oid": "51413520",
+                },
+                "values": [
+                    {
+                        "value": [],
+                        "qualifier": [],
+                        "qualityControlLevel": [],
+                        "method": [{"methodDescription": "", "methodID": 80621}],
+                        "source": [],
+                        "offset": [],
+                        "sample": [],
+                        "censorCode": [],
+                    }
+                ],
+                "name": "USGS:05015500:62614:00003",
+            },
+            {
+                "sourceInfo": {
+                    "siteName": "Lake Sherburne at Sherburne MT",
+                    "siteCode": [
+                        {"value": "05015500", "network": "NWIS", "agencyCode": "USGS"}
+                    ],
+                    "timeZoneInfo": {
+                        "defaultTimeZone": {
+                            "zoneOffset": "-07:00",
+                            "zoneAbbreviation": "MST",
+                        },
+                        "daylightSavingsTimeZone": {
+                            "zoneOffset": "-06:00",
+                            "zoneAbbreviation": "MDT",
+                        },
+                        "siteUsesDaylightSavingsTime": True,
+                    },
+                    "geoLocation": {
+                        "geogLocation": {
+                            "srs": "EPSG:4326",
+                            "latitude": 48.8280944,
+                            "longitude": -113.5219833,
+                        },
+                        "localSiteXY": [],
+                    },
+                    "note": [],
+                    "siteType": [],
+                    "siteProperty": [
+                        {"value": "ST", "name": "siteTypeCd"},
+                        {"value": "10010002", "name": "hucCd"},
+                        {"value": "30", "name": "stateCd"},
+                        {"value": "30035", "name": "countyCd"},
+                    ],
+                },
+                "variable": {
+                    "variableCode": [
+                        {
+                            "value": "62614",
+                            "network": "NWIS",
+                            "vocabulary": "NWIS:UnitValues",
+                            "variableID": 51413520,
+                            "default": True,
+                        }
+                    ],
+                    "variableName": "Lake or reservoir water surface elevation above NGVD 1929, ft",
+                    "variableDescription": "Lake or reservoir water surface elevation above NGVD 1929, feet",
+                    "valueType": "Derived Value",
+                    "unit": {"unitCode": "ft"},
+                    "options": {
+                        "option": [
+                            {
+                                "value": "Observation at 24:00",
+                                "name": "Statistic",
+                                "optionCode": "32400",
+                            }
+                        ]
+                    },
+                    "note": [],
+                    "noDataValue": -999999.0,
+                    "variableProperty": [],
+                    "oid": "51413520",
+                },
+                "values": [
+                    {
+                        "value": [
+                            {
+                                "value": "4783.27",
+                                "qualifiers": ["P"],
+                                "dateTime": "2021-06-27T00:00:00.000",
+                            },
+                            {
+                                "value": "4783.70",
+                                "qualifiers": ["P"],
+                                "dateTime": "2021-06-28T00:00:00.000",
+                            },
+                            {
+                                "value": "4784.13",
+                                "qualifiers": ["P"],
+                                "dateTime": "2021-06-29T00:00:00.000",
+                            },
+                        ],
+                        "qualifier": [
+                            {
+                                "qualifierCode": "P",
+                                "qualifierDescription": "Provisional data subject to revision.",
+                                "qualifierID": 0,
+                                "network": "NWIS",
+                                "vocabulary": "uv_rmk_cd",
+                            }
+                        ],
+                        "qualityControlLevel": [],
+                        "method": [{"methodDescription": "", "methodID": 80622}],
+                        "source": [],
+                        "offset": [],
+                        "sample": [],
+                        "censorCode": [],
+                    }
+                ],
+                "name": "USGS:05015500:62614:32400",
+            },
         ],
     },
     "nil": False,

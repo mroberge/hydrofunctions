@@ -58,7 +58,7 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 from __future__ import absolute_import, print_function
 
 __title__ = "hydrofunctions"
-__version__ = "0.2.2rc"
+__version__ = "0.2.2"
 __author__ = "Martin Roberge"
 __email__ = "mroberge@towson.edu"
 __license__ = "MIT"
@@ -81,6 +81,7 @@ from .hydrofunctions import (
     read_json_gzip,
     save_json_gzip,
 )
+from .logging import _start_logging
 from .station import Station, NWIS
 from .validate import (
     check_parameter_string,

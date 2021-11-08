@@ -11,6 +11,8 @@ Welcome to the Hydrofunctions |version| Users Guide!
    notebooks/Selecting_Sites
    notebooks/viewing
    graphing
+   notebooks/Site_File
+   notebooks/Data_Catalog
    notebooks/Peak_Discharge
    notebooks/USGS_Statistics_Service
    contributing
@@ -32,6 +34,7 @@ Example Applications
    notebooks/Hydrofunctions_nested_watersheds
    notebooks/Hydrofunctions_Comparing_Stream_Environments
    notebooks/DailyMean_vs_Instant
+   notebooks/Hysteresis
    notebooks/Draw_Map_Demo
    notebooks/Graphing
    notebooks/Hydrofunctions_Tutorial

@@ -42,6 +42,14 @@ hydrofunctions.hydrofunctions module
     :undoc-members:
     :show-inheritance:
 
+hydrofunctions.logging module
+------------------------------------
+
+.. automodule:: hydrofunctions.logging
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 hydrofunctions.station module
 -----------------------------
 
@@ -50,10 +58,10 @@ hydrofunctions.station module
     :undoc-members:
     :show-inheritance:
 
-hydrofunctions.typing module
-----------------------------
+hydrofunctions.validate module
+------------------------------
 
-.. automodule:: hydrofunctions.typing
+.. automodule:: hydrofunctions.validate
     :members:
     :undoc-members:
     :show-inheritance:
@@ -62,6 +70,14 @@ hydrofunctions.usgs_rdb module
 ------------------------------
 
 .. automodule:: hydrofunctions.usgs_rdb
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+hydrofunctions.waterwatch module
+--------------------------------
+
+.. automodule:: hydrofunctions.waterwatch
     :members:
     :undoc-members:
     :show-inheritance:

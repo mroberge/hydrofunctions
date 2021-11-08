@@ -95,6 +95,7 @@ class TestReadRdb(unittest.TestCase):
         failed_response = mock.Mock(Response)
         failed_response.status_code = 400
         failed_response.text = ""
+        failed_response.url = expected_url
         failed_response.raise_for_status.side_effect = HTTPError()
         mock_get.return_value = failed_response
 
@@ -106,6 +107,7 @@ class TestReadRdb(unittest.TestCase):
         mock_response = mock.Mock(Response)
         mock_response.status_code = 200
         mock_response.text = field_fixture
+        mock_response.url = "expected_url"
         mock_get.return_value = mock_response
         actual = hf.site_file("site")
         self.assertIs(
@@ -124,6 +126,7 @@ class TestReadRdb(unittest.TestCase):
         mock_response = mock.Mock(Response)
         mock_response.status_code = 200
         mock_response.text = field_fixture
+        mock_response.url = "expected_url"
         mock_get.return_value = mock_response
         actual = hf.data_catalog("site")
         self.assertIs(
@@ -138,7 +141,7 @@ class TestReadRdb(unittest.TestCase):
         )
 
     @mock.patch("requests.get")
-    def test_field_meas_request_proper_url(self, mock_get):
+    def test_field_meas_requests_proper_url(self, mock_get):
         sample_site_id = "666"
         expected_url = (
             "https://waterdata.usgs.gov/nwis/measurements?site_no="
@@ -273,7 +276,7 @@ class TestReadRdb(unittest.TestCase):
 
     # ************
     @mock.patch("requests.get")
-    def test_peaks_request_proper_url(self, mock_get):
+    def test_peaks_requests_proper_url(self, mock_get):
         sample_site_id = "666"
         expected_url = (
             "https://nwis.waterdata.usgs.gov/nwis/peak?site_no="

@@ -24,3 +24,5 @@ build-backend = "setuptools.build_meta"
       | blib2to3
       | tests/data
     )/
+    '''
+    

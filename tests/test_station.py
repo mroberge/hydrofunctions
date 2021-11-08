@@ -309,8 +309,7 @@ class TestNWISmethods(unittest.TestCase):
         - create a sub-class of NWIS called MockNWIS.
         - MockNWIS has a different __init__ method that allows you to pass
             in a dataframe and any other initial parameter
-        - all other methods gets inherited from NWIS, so we can test them.
-"""
+        - all other methods gets inherited from NWIS, so we can test them."""
 
     def test_NWIS_df_returns_all_columns(self):
         expected_cols = [
@@ -476,6 +475,35 @@ class TestNWISmethods(unittest.TestCase):
             expected_cols,
             "NWIS.df('stage') should return all of the stage data columns.",
         )
+
+    def test_NWIS_df_q_raises_ValueError_when_no_q(self):
+
+        cols = [
+            "USGS:01541200:00011:00000_qualifiers",
+            "USGS:01541200:00011:00000",
+            "USGS:01541200:00022:00000_qualifiers",
+            "USGS:01541200:00022:00000",
+            "USGS:01541303:00011:00000_qualifiers",
+            "USGS:01541303:00011:00000",
+            "USGS:01541303:00022:00000_qualifiers",
+            "USGS:01541303:00022:00000",
+        ]
+
+        data = [
+            ["test", 5, "test", 5, "test", 5, "test", 5],
+            ["test", 5, "test", 5, "test", 5, "test", 5],
+        ]
+        test_df = pd.DataFrame(data=data, columns=cols)
+        test_nwis = MockNWIS(dataframe=test_df)
+        shortcut_test_parameters = ["q", "discharge", "stage"]
+        for shortcut in shortcut_test_parameters:
+            with self.subTest(shortcut=shortcut):
+                # Pytest does not run unittest sub-tests properly; only the first case fails.
+                with self.assertRaises(
+                    ValueError,
+                    msg=f"Requesting '{shortcut}' when this parameter isn't collected should raise a ValueError.",
+                ):
+                    actual_df = test_nwis.df(shortcut)
 
     def test_NWIS_df_flags_returns_qualifiers_columns(self):
         cols = [
@@ -926,7 +954,7 @@ class TestNWISmethods(unittest.TestCase):
                         "variableFreq": "<Day>",
                         "variableUnit": "ft3/s",
                         "variableDescription": "Discharge, cubic feet per second",
-                        "methodDescription": ""
+                        "methodDescription": "",
                     }
                 },
             }
@@ -1080,7 +1108,32 @@ End:   expected end"""
         expected_filename = "expected_filename.json.gz"
         expected_json = recent_only
         mock_read.return_value = expected_json
-        expected_meta = {'USGS:01541200': {'siteName': 'WB Susquehanna River near Curwensville, PA', 'siteLatLongSrs': {'srs': 'EPSG:4326', 'latitude': 40.9614471, 'longitude': -78.5191906}, 'timeSeries': {'00010': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'deg C', 'variableDescription': 'Temperature, water, degrees Celsius', 'methodID': '118850', 'methodDescription': ''}, '00060': {'variableFreq': '<0 * Minutes>', 'variableUnit': 'ft3/s', 'variableDescription': 'Discharge, cubic feet per second', 'methodID': '118849', 'methodDescription': ''}}}}
+        expected_meta = {
+            "USGS:01541200": {
+                "siteName": "WB Susquehanna River near Curwensville, PA",
+                "siteLatLongSrs": {
+                    "srs": "EPSG:4326",
+                    "latitude": 40.9614471,
+                    "longitude": -78.5191906,
+                },
+                "timeSeries": {
+                    "00010": {
+                        "variableFreq": "<0 * Minutes>",
+                        "variableUnit": "deg C",
+                        "variableDescription": "Temperature, water, degrees Celsius",
+                        "methodID": "118850",
+                        "methodDescription": "",
+                    },
+                    "00060": {
+                        "variableFreq": "<0 * Minutes>",
+                        "variableUnit": "ft3/s",
+                        "variableDescription": "Discharge, cubic feet per second",
+                        "methodID": "118849",
+                        "methodDescription": "",
+                    },
+                },
+            }
+        }
         test_nwis = MockNWIS()
         test_nwis.read(expected_filename)
         mock_read.assert_called_once_with(expected_filename)
@@ -1089,8 +1142,8 @@ End:   expected end"""
             actual_meta,
             expected_meta,
             f"The read function did not parse the json.gz file correctly. It returned"
-            f"type {type(actual_meta)} when it was expected to return type {type(expected_meta)}."
-            )
+            f"type {type(actual_meta)} when it was expected to return type {type(expected_meta)}.",
+        )
 
 
 """

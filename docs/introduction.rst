@@ -122,7 +122,7 @@ methods associated with Pandas, including .plot(), .describe(), and .info() !
 
 Plot the data using Pandas and mathplotlib::
 
-    >>> herring.df('q').plot()
+    >>> harrisburg.df('q').plot()
 
 .. image:: _static/HerringHydrograph.png
         :alt: a stream hydrograph for Herring Run
@@ -135,7 +135,6 @@ To learn more about hydrofunctions, try using::
 
 and::
 
-    >>> dir(response)
+    >>> dir(hf.NWIS)
 
 to list all of the methods available.
-
