@@ -123,4 +123,11 @@ class HydroUserWarning(UserWarning):
             message.
     """
 
+    def __init__(self, msg=""):
+        self.msg = msg
+        logger.error(msg)  # This message will be logged if logging has been started.
+
+    def __str__(self):
+        return self.msg
+
     pass
