@@ -96,14 +96,21 @@ History
 * Added Python 3.9 support.
 * Created a verbose mode that is on by default.
 * Added the flood stage service from the USGS waterwatch (iem)
-* save & read NWIS data in json.gzip files
+* Save & read NWIS data in json.gzip files
 * Added ability to read multiple instrument methods at the same time
-* bugfix: divide by zero error when you request data from many sites
-* bugfix: save_parquet
+* Bugfix: divide by zero error when you request data from many sites
+* Bugfix: save_parquet
 
 0.2.2 (2021-11-06)
 ------------------
 
-* bugfix: logging off by default.
+* Added documentation for the `site_file` and `data_catalog` services
+* Added "What is Hysteresis?" example to User's Guide
+* Minor feature: URL message will print before & after requests are made
+* Added verbose mode to USGS RDB functions
+* Bugfix: `hf.df('q')` returned non-discharge data; fixed & added tests & fixture (dgk)
+* Bugfix: renamed `typing.py` module to `validate.py` to prevent interference with typing
+* Bugfix: HF will raise HydroNoDataError when non-200 response comes back from USGS
+* Bugfix: logging off by default.
 * Added hf._start_logging() to create a log & start logging.
 * HydroExceptions will now create a log message when raised.

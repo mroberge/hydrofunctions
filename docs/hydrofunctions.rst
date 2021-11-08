@@ -42,6 +42,14 @@ hydrofunctions.hydrofunctions module
     :undoc-members:
     :show-inheritance:
 
+hydrofunctions.logging module
+------------------------------------
+
+.. automodule:: hydrofunctions.logging
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 hydrofunctions.station module
 -----------------------------
 
