@@ -7,6 +7,7 @@ This module contains the main functions used in an interactive session.
 -----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
+import logging
 import requests
 import numpy as np
 import pandas as pd
@@ -15,7 +16,6 @@ import gzip
 import pyarrow as pa
 import pyarrow.parquet as pq
 from pandas.tseries.frequencies import to_offset
-import logging
 
 # Change to relative import: from . import exceptions
 # https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/
@@ -25,33 +25,6 @@ from . import validate
 from . import helpers
 
 logger = logging.getLogger(__name__)
-
-
-def _start_logging(loglevel="DEBUG"):
-    """Create a log file and start logging messages.
-
-    Args:
-        loglevel (str):
-            The level of message that should be captured in the log. Valid values
-            are (from lowest to highest):
-            - 'DEBUG': (default) Detailed information, typically of interest only when diagnosing problems.
-            - 'INFO': Confirmation that things are working as expected.
-            - 'WARNING': An indication that something unexpected happened, or indicative of some problem in the near future (e.g. ‘disk space low’). The software is still working as expected.
-            - 'ERROR': Due to a more serious problem, the software has not been able to perform some function.
-            - 'CRITICAL': A serious error, indicating that the program itself may be unable to continue running.
-    """
-    # This code is from Vinay Sajip in the Python.org logging tutorial.
-    # https://docs.python.org/3/howto/logging.html
-    numeric_level = getattr(logging, loglevel.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError("Invalid log level: %s" % loglevel)
-    format = "%(asctime)s — %(name)s — %(levelname)s — %(funcName)s — %(message)s"
-    logging.basicConfig(
-        filename="hydrofunctions_testing.log",
-        level=numeric_level,
-        format=format,
-    )
-    logging.info(f"Log file started. Line format is: {format}")
 
 
 def select_data(nwis_df):
