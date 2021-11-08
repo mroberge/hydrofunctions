@@ -36,13 +36,23 @@ https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packa
 -----
 """
 from __future__ import absolute_import, print_function, division, unicode_literals
+import logging
 import warnings
+
+logger = logging.getLogger(__name__)
 
 
 class HydroException(Exception):
     """This is the base class for all exceptions created for the
     HydroFunctions package. This class is not meant to be raised.
     """
+
+    def __init__(self, msg=""):
+        self.msg = msg
+        logger.error(msg)  # This message will be logged if logging has been started.
+
+    def __str__(self):
+        return self.msg
 
     pass
 
@@ -99,9 +109,10 @@ class HydroUserWarning(UserWarning):
 
         **Usage**::
 
+            import hydrofunctions as hf
             import warnings
             ... code
-            warnings.warn('This is my warning message.', HydroUserWarning)
+            warnings.warn('This is my warning message.', hf.HydroUserWarning)
 
         Note:
             Warnings can be hidden or turned off depending on how the user is
@@ -111,5 +122,12 @@ class HydroUserWarning(UserWarning):
             fail anyway. This will at least give the user a helpful error
             message.
     """
+
+    def __init__(self, msg=""):
+        self.msg = msg
+        logger.error(msg)  # This message will be logged if logging has been started.
+
+    def __str__(self):
+        return self.msg
 
     pass

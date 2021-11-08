@@ -12,7 +12,7 @@ from hydrofunctions import exceptions
 
 
 def raiseHydroNoDataError():
-    raise exceptions.HydroNoDataError("Error!!")
+    raise exceptions.HydroNoDataError("test_exceptions.py raiseHydroNoDataError() ")
 
 
 class TestExceptions(unittest.TestCase):

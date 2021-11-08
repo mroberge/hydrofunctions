@@ -81,6 +81,7 @@ from .hydrofunctions import (
     read_json_gzip,
     save_json_gzip,
 )
+from .logging import _start_logging
 from .station import Station, NWIS
 from .validate import (
     check_parameter_string,

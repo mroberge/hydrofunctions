@@ -25,6 +25,8 @@ import numpy as np
 import pyarrow as pa
 import json
 
+from hydrofunctions.exceptions import HydroNoDataError
+
 print("Pyarrow version: ", pa.__version__)
 
 import hydrofunctions as hf
@@ -495,20 +497,13 @@ class TestHydrofunctions(unittest.TestCase):
         fake.url = "any text"
         self.assertIsNone(hf.nwis_custom_status_codes(fake))
 
-    @unittest.skip(
-        "assertWarns errors on Linux. See https://bugs.python.org/issue29620"
-    )
-    def test_hf_nwis_custom_status_codes_raises_warning_for_non200(self):
+    def test_hf_nwis_custom_status_codes_raises_HydroNoDataError_for_non200(self):
         expected_status_code = 400
         bad_response = fakeResponse(code=expected_status_code)
-        with self.assertWarns(SyntaxWarning) as cm:
+        with self.assertRaises(
+            HydroNoDataError, msg="This should raise a HydroNoDataError."
+        ) as cm:
             hf.nwis_custom_status_codes(bad_response)
-
-    def test_hf_nwis_custom_status_codes_returns_status_for_non200(self):
-        expected_status_code = 400
-        bad_response = fakeResponse(code=expected_status_code)
-        actual = hf.nwis_custom_status_codes(bad_response)
-        self.assertEqual(actual, expected_status_code)
 
     def test_hf_calc_freq_returns_Timedelta_and_60min(self):
         test_index = pd.date_range("2014-12-29", "2015-01-03", freq="60T")
