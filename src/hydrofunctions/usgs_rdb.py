@@ -9,7 +9,7 @@ service, the rating curve service, and the peak discharge service.
 import pandas as pd
 import requests
 from io import StringIO
-from IPython.core import display
+from IPython import display
 from . import exceptions
 
 

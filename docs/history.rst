@@ -114,3 +114,9 @@ History
 * Bugfix: logging off by default.
 * Added hf._start_logging() to create a log & start logging.
 * HydroExceptions will now create a log message when raised.
+
+0.2.3rc (2022-04-16)
+--------------------
+
+* Moved package requirements & dev requirements to setup.cfg
+  
