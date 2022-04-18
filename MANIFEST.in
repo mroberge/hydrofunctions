@@ -1,7 +1,6 @@
 include LICENSE
+include VERSION.txt
 include README.rst
-include pypi_readme.rst
-include requirements.txt
 
 recursive-include tests *
 recursive-exclude * __pycache__
