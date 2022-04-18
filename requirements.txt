@@ -1,6 +1,0 @@
-matplotlib
-numpy>=1.16.0
-pandas
-requests
-IPython
-pyarrow

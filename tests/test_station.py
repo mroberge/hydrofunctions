@@ -212,7 +212,7 @@ class TestNWISinit(unittest.TestCase):
         )
         mock_extract_nwis_df.return_value = (mock_df, "expected dict")
         actual = station.NWIS()
-        mock_extract_nwis_df.assert_called_once_with(expected_json)
+        mock_extract_nwis_df.assert_called_once_with(expected_json, interpolate=False)
 
     @mock.patch("hydrofunctions.hydrofunctions.read_parquet")
     def test_NWIS_init_filename_calls_read_parquet(self, mock_read):

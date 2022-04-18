@@ -89,6 +89,9 @@ class NWIS(Station):
                 today, with a maximum of 999 days accepted.
                 * Either use start_date or period, but not both.
 
+        interpolate (bool):
+            Fill missing values through interpolation. Default False.
+        
         file (str):
             A filename for acting as a cache for the data request. Accepts file
             extensions of '*.json.gz' (default) and '*.parquet'. If this parameter is
@@ -114,6 +117,7 @@ class NWIS(Station):
         bBox=None,
         parameterCd="all",
         period=None,
+        interpolate=False,
         file=None,
         verbose=True,
     ):
@@ -147,7 +151,7 @@ class NWIS(Station):
             )
             try:
                 self.json = self.response.json()
-                self._dataframe, self.meta = hf.extract_nwis_df(self.json)
+                self._dataframe, self.meta = hf.extract_nwis_df(self.json, interpolate=interpolate)
                 self.ok = self.response.ok
                 if file is not None:
                     self.save(file)
