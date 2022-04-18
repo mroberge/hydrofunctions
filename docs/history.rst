@@ -115,8 +115,10 @@ History
 * Added hf._start_logging() to create a log & start logging.
 * HydroExceptions will now create a log message when raised.
 
-0.2.3rc (2022-04-16)
+0.2.3 (2022-04-18)
 --------------------
 
 * Moved package requirements & dev requirements to setup.cfg
+* Create new 'dev' extra_requirements. Install from inside hydrofunctions: `pip install -e .[dev]`
+* Changed default behavior of NWIS & extract_nwis_df to NOT fill missing values by interpolation.
   
