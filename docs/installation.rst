@@ -27,7 +27,7 @@ Why use Anaconda?
 =================
 
 Anaconda is a free, open-source Python distribution. It bundles important
-scientific software like Jupyter notebooks and the Spyder IDE all into one
+scientific software like Jupyter notebooks, VS Code, and the Spyder IDE all into one
 pre-configured, pre-compiled download, along with a huge number of scientific
 libraries (packages). It also includes a tool, `conda`, which manages and
 updates these packages. Conda also creates 'environments', which are isolated
@@ -70,7 +70,7 @@ Safe Anaconda install for people having problems
 for something else, or who had difficulties.*
 
 1. From the command prompt, create a new environment called 'myenv' with
-packages for Python 3.7 and jupyter notebooks::
+packages for Python 3.9 and jupyter notebooks::
 
         > conda create -n myenv python=3.7 jupyternb nb_conda
 
@@ -84,7 +84,7 @@ available::
 3. The active environment will have a star next to it. To activate a
 different environment, such as the one you just created, type::
 
-        > conda activate name_of_environment
+        > activate name_of_environment
 
 
 4. To test that you have the correct version
@@ -112,7 +112,7 @@ following:
       - for a command line interface: `python`
       - for an enhanced command line: `ipython`
       - to use the Spyder IDE: `spyder`
-      - or to use a Jupyter Notebook: `jupyter notebook`
+      - or to use Jupyter Notebook: `jupyter lab`
 
 To use hydrofunctions in your python code, make sure that one of your first
 lines says this::

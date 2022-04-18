@@ -40,7 +40,7 @@ Standards for the ideal pull request
 - Use `Google-style docstrings <https://google.github.io/styleguide/pyguide.html?showone=Comments#Comments>`_
   , described `here <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html>`_.
 - Add tests! Lots of tests! Make sure you test your code!
-- Your code should work for Python 3.6, 3.7, 3.8, & 3.9. This gets tested by the `CI <https://github.com/mroberge/hydrofunctions/actions/workflows/test.yaml>`_
+- Your code should work for Python 3.6, 3.7, 3.8, 3.9, & 3.10. This gets tested by the `CI <https://github.com/mroberge/hydrofunctions/actions/workflows/test.yaml>`_
 
 
 A detailed guide to contributing new code
@@ -53,10 +53,23 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
 #. Fork the `hydrofunctions repo <https://github.com/mroberge/hydrofunctions>`_ on GitHub by clicking the
    'Fork' button near the upper right corner.
 
+#. Open the GitHub page for your fork, and clone it to your local computer where you
+   will be doing your coding. To clone your fork, I like to use GitHub's Desktop tool, 
+   which does a great job of putting most of Git's best features into an easy-to-use GUI.
+
+   Download `GitHub Desktop <https://desktop.github.com>`_.
+
+   There are two ways to clone your files to your local computer:
+
+   - Starting from the GitHub page for your fork: Select the 'Code' button and select 'Open with GitHub Desktop'
+   - or, if you have GitHub Desktop open: File > clone repository...
+
+   These options will set up a local folder on your computer where you can use git while editing
+   your version of hydrofunctions.
+
 #. Install Anaconda 3 if you don't already have it on your system. This includes the
-   latest version of Python, and
-   a package manager, **conda**, which replaces pip and also manages virtual
-   environments, replacing venv, and virtualenv.:
+   latest version of Python, and a package manager, **conda**, which is an alternative to pip that
+   also manages virtual environments, replacing venv, and virtualenv.:
 
    Download Anaconda: https://www.continuum.io/downloads
 
@@ -67,22 +80,16 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
    command line instead of PowerShell, which seems to interfere
    with one of our tools, conda.
 
-#. Create a directory for your development work and change directories into
-   it (I call mine py-dev)::
+#. Create a new conda environment named `my39env`. Include everything we need:
+   python 3.9, git, and the anaconda set of scientific packages::
 
-     > mkdir py-dev
-     > cd py-dev
-
-#. Create a new conda environment named `my36env`. Include everything we need:
-   python 3.6, git, and the anaconda set of scientific packages::
-
-    > conda create -n my36env python=3.6 anaconda git
+    > conda create -n my36env python=3.9 anaconda git
 
 #. List all of your available environments and activate my36env. The active
    environment will have a star next to it::
 
     > conda info -e
-    > activate my36env
+    > activate my39env
 
 #. For kicks, check that you've got the right version of python running, and
    list all of the packages that you have available to you in this environment::
@@ -90,49 +97,42 @@ Ready to contribute? Here's how to set up `hydrofunctions` for local development
     > python --version
     > conda list
 
-#. Conda doesn't install packages located on github or pypi, so we'll use pip to install the source
-   files from the fork you created in your GitHub account. We use the -e flag to install packages
-   in development mode. This creates a src directory with
-   a subdirectory named in the `egg=` part of the url. Now you can edit the source
-   files and have the edits freshly interpreted again when you `import
-   hydrofunctions` during a python session. Additionally, git will create a `.git`
-   directory inside of the hydrofunctions directory. ::
+#. Now we are going to install hydrofunctions using the file from **your** forked version, 
+   instead of the standard version from PyPI. To do this, first move into the directory
+   where you had GitHub Desktop put your clone::
 
-    > pip install -e git+https://github.com/your_github_name/hydrofunctions.git@develop#egg=hydrofunctions
+   > cd GitHub/hydrofunctions
 
-#. Move into the hydrofunctions directory::
-
-    > cd src/hydrofunctions
+#. We'll use pip to install your files in 'develop' mode using the '-e' flag. 
+   Now you can edit the source files and have the edits freshly interpreted again when you
+   `import hydrofunctions` during a python session. The [dev] part tells pip to install all
+   of the extra requirements that you'll need as a developer::
+   
+   > pip install -e .[dev]
 
 #. Run the automatic tests to make sure everything is hunky-dory::
 
-    > python setup.py test
+    > pytest
 
-#. Start your own branch in git::
+#. Before you start improving hydrofunctions with all your fantastic changes, create a new branch.
+   Give it a simple name that explains what your change adds::
 
     > git checkout -b name-of-your-bugfix-or-feature
 
-   Alternatively, use GitHub's Desktop tool, which does a great job of putting most of
-   Git's best features into an easy-to-use GUI.
+   Alternatively, use GitHub's Desktop tool:
 
-   Download `GitHub Desktop <https://desktop.github.com>`_.
-   Add the repository we created in step 8:
+      - Branch > New branch...
 
-        - click on the + pull-down > 'Add';
-        - find the repository `py-dev/src/hydrofunctions`
-        - confirm with 'Add Repository'.
-        - Any changes you make in this directory will appear in this program.
-
-#. Go ahead and make changes to the files now. I like to use Spyder, which you
+#. Go ahead and make changes to the files now. I like to use VS Code or Spyder, which you
    installed already with anaconda::
 
     > spyder
 
 #. After you've made a small change, make sure you didn't break anything by
    running the tests again. I find it easiest to run the tests from the command
-   line::
+   line inside the hydrofunctions directory::
 
-    > python setup.py tests
+    > pytest
 
 #. Before you make too many changes, 'commit' what you've done. Ideally, each
    group of changes that you put into a commit will be logically related to each
@@ -170,7 +170,7 @@ The non-conda version
 
     $ mkvirtualenv hydrofunctions
     $ cd hydrofunctions/
-    $ python setup.py develop
+    $ pip install -e .[dev]
 
 4. Create a branch for local development::
 
@@ -182,9 +182,9 @@ The non-conda version
    testing other Python versions with tox::
 
        $ flake8 hydrofunctions tests
-       $ python setup.py test
+       $ pytest
 
-   or ``$ python -m unittest -v`` or  ``$ py.test`` or ``$ nose2``
+   or ``$ python -m unittest -v``
 
    then::
 

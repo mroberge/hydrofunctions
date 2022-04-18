@@ -68,7 +68,7 @@ past 55 days:
     In  [2]: herring = hf.NWIS('01585200', 'iv', period='P55D')
     Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01585200&period=P55D
 
-Check that the request went smoothly:
+You can check that the request went smoothly:
 
 .. code-block:: ipython
 
@@ -86,9 +86,9 @@ Find out what data we received:
              Start: 2019-05-25 01:05:00+00:00
              End:   2019-07-19 19:05:00+00:00
 
-This tells us the name of our site, and gives a list of the parameters that we
+This tells us the name of our site and gives a list of the parameters that we
 have. For each parameter it lists how frequently the data were collected, and
-it show the common name of the parameter and its units.
+it shows the common name of the parameter and its units.
 
 Create a dataframe using only our discharge data, and list the first five items:
 
@@ -113,7 +113,7 @@ Create a dataframe using only our discharge data, and list the first five items:
     |   2019-05-25 01:25:00+00:00  |                1.57       |
     +------------------------------+---------------------------+
 
-Plot the data using built-in methods from Pandas and mathplotlib:
+If we're using Jupyter Lab, we can plot a graph of the data using built-in methods from Pandas and mathplotlib:
 
 .. code-block:: ipython
 
@@ -122,7 +122,7 @@ Plot the data using built-in methods from Pandas and mathplotlib:
 
 *--a stream hydrograph appears--*
 
-.. image:: _static/HerringHydrograph.png
+.. image:: https://raw.githubusercontent.com/mroberge/hydrofunctions/master/_static/HerringHydrograph.png
    :alt: a stream hydrograph for Herring Run
 
 Learn more:  
