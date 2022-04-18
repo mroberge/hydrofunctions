@@ -412,7 +412,7 @@ def get_nwis_property(nwis_dict, key=None, remove_duplicates=False):
     return vals
 
 
-def extract_nwis_df(nwis_dict, interpolate=True):
+def extract_nwis_df(nwis_dict, interpolate=False):
     """Returns a Pandas dataframe and a metadata dict from the NWIS response
     object or the json dict of the response.
 
@@ -420,6 +420,9 @@ def extract_nwis_df(nwis_dict, interpolate=True):
         nwis_dict (obj):
             the json from a response object as returned by get_nwis().json().
             Alternatively, you may supply the response object itself.
+
+        interpolate (bool):
+            fill missing data values with interpolated values. Default False.
 
     Returns:
         a pandas dataframe.
