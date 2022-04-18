@@ -56,8 +56,12 @@ Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
 """
 from __future__ import absolute_import, print_function
-import importlib.metadata
-__version__ = importlib.metadata.version('hydrofunctions')
+try:
+    from importlib.metadata import version
+except ImportError:
+    from importlib_metadata import version
+
+__version__ = version('hydrofunctions')
 __author__ = "Martin Roberge"
 __author_email__ = "mroberge@towson.edu"
 __url__ = "https://github.com/mroberge/hydrofunctions"
