@@ -1,12 +1,10 @@
-name: Test-Publish on pull-request
+name: Manual Publish Python 🐍 distributions 📦 to PyPI
 
-on:
-  pull_request:
-    branches:
-      - master
+on: [workflow_dispatch]
+
 jobs:
   build-n-publish:
-    name: Build and publish Python 🐍 distributions to TestPyPI
+    name: Manual Build and publish Python 🐍 distributions to PyPI
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -21,8 +19,7 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: |
         python -m build --sdist --wheel --outdir dist/ .
-    - name: Publish distribution 📦 to Test PyPI
+    - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
-        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository_url: https://test.pypi.org/legacy/
+        password: ${{ secrets.PYPI_API_TOKEN }}
