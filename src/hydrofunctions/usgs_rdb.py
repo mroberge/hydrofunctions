@@ -638,7 +638,7 @@ def stats(site, statReportType="daily", verbose=True, **kwargs):
     response = get_usgs_RDB_service(url, headers, params)
     if verbose:
         print(
-            f"Retrieved {params['statReportType']} statistics for site #{site} from {response.url}"
+            f"Retrieved {params['statReportType']} statistics for site #{site} from {url}"
         )
 
     header, outputDF, columns, dtype = read_rdb(response.text)
