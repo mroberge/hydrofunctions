@@ -11,22 +11,18 @@ Basic Usage::
 
     >>> import hydrofunctions as hf
 
-    >>> site = '01570500'
-    >>> harrisburg = hf.NWIS(site, 'iv', period='P10D')
-    Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01570500&period=P10D
-
-    >>> harrisburg.ok
-    True
+    >>> site = '01589440'
+    >>> jones = hf.NWIS(site, 'iv', period='P10D')
+    Requested data from https://waterservices.usgs.gov/nwis/iv/?format=json%2C1.1&sites=01589440&period=P10D
 
 Examine the dataset::
 
-    >>> harrisburg
-    USGS:01570500: Susquehanna River at Harrisburg, PA
-        00045: <30 * Minutes> Precipitation, total, inches
-        00060: <30 * Minutes> Discharge, cubic feet per second
-        00065: <30 * Minutes> Gage height, feet
-    Start: 2019-04-06 00:30:00+00:00
-    End:   2019-04-15 23:00:00+00:00
+    >>> jones
+    USGS:01589440: JONES FALLS AT SORRENTO, MD
+        00060: <15 * Minutes> Discharge, cubic feet per second
+        00065: <15 * Minutes> Gage height, feet
+    Start: 2022-10-27 17:30:00+00:00
+    End:   2022-11-06 17:15:00+00:00
 
 The listing reports each of the parameters collected at the site that was
 requested, how frequently the data are collected, and the name of the parameter
@@ -35,14 +31,14 @@ Time (UTC).
 
 View the first five rows of a dataframe that only contains the discharge data::
 
-    >>> harrisburg.df('discharge').head()
-                               USGS:01570500:00060:00000
+    >>> jones.df('discharge').head()
+                               USGS:01589440:00060:00000
     datetimeUTC
-    2019-04-06 00:30:00+00:00                    44200.0
-    2019-04-06 01:00:00+00:00                    44000.0
-    2019-04-06 01:30:00+00:00                    44000.0
-    2019-04-06 02:00:00+00:00                    43700.0
-    2019-04-06 02:30:00+00:00                    43700.0
+    2022-10-27 17:30:00+00:00                    14.6
+    2022-10-27 17:45:00+00:00                    15.2
+    2022-10-27 18:00:00+00:00                    15.2
+    2022-10-27 18:15:00+00:00                    15.8
+    2022-10-27 18:30:00+00:00                    16.4
 
 Because the .df() method returns a dataframe, you have access to all of the
 methods associated with Pandas, including .plot(), .describe(), and .info() !
