@@ -626,7 +626,7 @@ def extract_nwis_df(nwis_dict, interpolate=False):
 
     if not DF.index.is_unique:
         DF = DF[~DF.index.duplicated(keep="first")]
-    if not DF.index.is_monotonic:
+    if not DF.index.is_monotonic_increasing:
         DF.sort_index(axis=0, inplace=True)
 
     return cleanDF, meta
