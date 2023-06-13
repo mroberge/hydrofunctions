@@ -107,7 +107,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             actual_columns, expected_columns, "column names don't match expected"
         )
         self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_monotonic_increasing, "index is not monotonic increasing.")
 
     def test_hf_extract_nwis_df_parse_JSON15min2day_return_df(self):
         actual_df, actual_dict = hf.extract_nwis_df(JSON15min2day, interpolate=False)
@@ -126,7 +126,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             actual_columns, expected_columns, "column names don't match expected"
         )
         self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_monotonic_increasing, "index is not monotonic increasing.")
 
     def test_hf_extract_nwis_df_parse_mult_flags_return_df(self):
         actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
@@ -145,7 +145,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             actual_columns, expected_columns, "column names don't match expected"
         )
         self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_monotonic_increasing, "index is not monotonic increasing.")
 
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         empty_response = {"value": {"timeSeries": []}}
