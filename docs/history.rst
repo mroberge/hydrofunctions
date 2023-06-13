@@ -122,3 +122,8 @@ History
 * Create new 'dev' extra_requirements. Install from inside hydrofunctions: `pip install -e .[dev]`
 * Changed default behavior of NWIS & extract_nwis_df to NOT fill missing values by interpolation.
   
+0.2.4 (2023-06-13)
+------------------
+
+* Remove support for Python 3.6, add Python 3.10 & 3.11
+* Update to Pandas 2+
