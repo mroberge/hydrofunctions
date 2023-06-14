@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Aug 12 21:55:04 2016
+test_exceptions
+----------------------------------
 
-test_exceptions.py
+Tests for the `exceptions` module.
 """
 import unittest
 import warnings

@@ -127,4 +127,4 @@ History
 
 * Remove support for Python 3.6, add Python 3.10 & 3.11
 * Update to Pandas 2+ (jm)
-* 
+* Update documentation to reflect gauge changes

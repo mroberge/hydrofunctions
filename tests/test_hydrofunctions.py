@@ -1,11 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 test_hydrofunctions
 ----------------------------------
 
-Tests for `hydrofunctions` module.
+Tests for the `hydrofunctions` module.
 """
 from unittest import mock
 import unittest
@@ -283,6 +280,9 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             "Three days including the end of DST should have 3 * 24 * 4 = 288 observations, plus 4 = 292",
         )
 
+    @unittest.skip(
+        "This test is incomplete: It tries to test for timezone errors."
+    )
     def test_hf_extract_nwis_can_find_tz_in_tzfail(self):
         actualDF = hf.extract_nwis_df(tzfail, interpolate=False)
 

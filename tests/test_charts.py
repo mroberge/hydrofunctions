@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """
-test_charts.py
+test_charts
+----------------------------------
 
-Tests for the charts.py module.
+Tests for the `charts` module.
 """
 import unittest
 import matplotlib

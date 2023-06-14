@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
 """
-Created on Wed Mar 20 14:13:44 2019
+fixtures_daily_dupe.py
 
-@author: Marty
+This file contains JSON from the NWIS
+
+This json is from a site that has a duplicated record.
+Also, it has an interesting flag, "Dis", for discontinued.
+hf.NWIS('03107698', "dv", '2017-04-23', '2017-04-29')
 """
-
-# This json is from a site that has a duplicated record.
-# Also, it has an interesting flag, "Dis", for discontinued.
-# hf.NWIS('03107698', "dv", '2017-04-23', '2017-04-29')
 
 daily_dupe = {
     "name": "ns1:timeSeriesResponseType",

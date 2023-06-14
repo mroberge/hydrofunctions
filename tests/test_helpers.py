@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """
-Created on Sun Feb 25 20:07:38 2018
+test_helpers
+----------------------------------
 
-@author: Marty
+Tests for the `helpers` module.
 """
 
 import unittest
