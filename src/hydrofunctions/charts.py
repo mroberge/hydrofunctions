@@ -213,7 +213,7 @@ def cycleplot(
         x_label = " (day # of the year)"
     elif cycle == "annual-week":
         # aggregate into 52 bins to show annual cycles.
-        cycleby = Qseries.index.week
+        cycleby = list(Qseries.index.isocalendar().week)
         x_label = " (week # of the year)"
     elif cycle == "annual-month":
         # aggregate into 12 binds to show annual cycles.
