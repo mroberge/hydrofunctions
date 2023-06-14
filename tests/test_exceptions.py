@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-Created on Fri Aug 12 21:55:04 2016
+test_exceptions
+----------------------------------
 
-test_exceptions.py
+Tests for the `exceptions` module.
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 import warnings
 

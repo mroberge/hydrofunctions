@@ -4,7 +4,7 @@ hydrofunctions.logging
 
 This module contains the tools used for internal diagnostic logging.
 
-Logging is disabled by default. Users can start logging by using the 
+Logging is disabled by default. Users can start logging by using the
 `hf._start_logging()`  function. This will create a file "hydrofunctions_testing.log" in
 the main directory. This function also allows users to set the level of severity that
 will be logged. The default is to capture all messages, including the lowest level
@@ -39,9 +39,9 @@ To create log messages within a module, follow these steps:
     - You can specify the level that will be captured in the log with the `loglevel` parameter.
     - Set level like this: `hf._start_logging('info')`  (Case does not matter)
     - The default is to capture from the lowest level (DEBUG) up
-    - Starting the logging system will create a new file "hydrofunctions_testing.log" if\
-        it doesn't already exist; if it does, it will add new messages at the bottom\
-        under a start up message to the 'root' module.
+    - Starting the logging system will create a new file "hydrofunctions_testing.log"\
+        if it doesn't already exist; if it does, it will add new messages at the\
+        bottom under a start up message to the 'root' module.
 
 4. Read the log.
     - The file, "hydrofunctions_testing.log" will appear in the root directory

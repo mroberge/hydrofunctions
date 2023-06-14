@@ -1,3 +1,9 @@
+"""
+test_waterwatch
+----------------------------------
+
+Tests for the `waterwatch` module.
+"""
 import json
 import unittest
 from unittest import mock

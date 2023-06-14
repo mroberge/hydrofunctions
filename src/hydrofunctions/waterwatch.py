@@ -7,9 +7,9 @@ Description of data services https://waterwatch.usgs.gov/webservices/
 
 Main page: https://waterwatch.usgs.gov
 
-NOTICE (taken from waterwatch.usgs.gov): In January 2020, USGS WaterWatch began 
-operating in maintenance-only mode. Existing tools, features, and web data services are 
-being fully maintained as before, but new tools and enhancements will no longer be 
+NOTICE (taken from waterwatch.usgs.gov): In January 2020, USGS WaterWatch began
+operating in maintenance-only mode. Existing tools, features, and web data services are
+being fully maintained as before, but new tools and enhancements will no longer be
 developed. Please click here for more information or contact USGS WaterWatch if you have
 any questions.
 

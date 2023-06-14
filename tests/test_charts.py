@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-test_charts.py
+test_charts
+----------------------------------
 
-Tests for the charts.py module.
+Tests for the `charts` module.
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 import matplotlib
 import pandas as pd

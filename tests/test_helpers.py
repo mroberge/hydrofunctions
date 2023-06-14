@@ -1,11 +1,10 @@
-# -*- coding: utf-8 -*-
 """
-Created on Sun Feb 25 20:07:38 2018
+test_helpers
+----------------------------------
 
-@author: Marty
+Tests for the `helpers` module.
 """
 
-from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 from IPython.core.display import HTML
 import re

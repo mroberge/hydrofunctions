@@ -1,18 +1,9 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 test_hydrofunctions
 ----------------------------------
 
-Tests for `hydrofunctions` module.
+Tests for the `hydrofunctions` module.
 """
-from __future__ import (
-    absolute_import,
-    print_function,
-    division,
-    unicode_literals,
-)
 from unittest import mock
 import unittest
 import warnings
@@ -107,7 +98,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             actual_columns, expected_columns, "column names don't match expected"
         )
         self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_monotonic_increasing, "index is not monotonic increasing.")
 
     def test_hf_extract_nwis_df_parse_JSON15min2day_return_df(self):
         actual_df, actual_dict = hf.extract_nwis_df(JSON15min2day, interpolate=False)
@@ -126,7 +117,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             actual_columns, expected_columns, "column names don't match expected"
         )
         self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_monotonic_increasing, "index is not monotonic increasing.")
 
     def test_hf_extract_nwis_df_parse_mult_flags_return_df(self):
         actual_df, actual_dict = hf.extract_nwis_df(mult_flags, interpolate=False)
@@ -145,7 +136,7 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             actual_columns, expected_columns, "column names don't match expected"
         )
         self.assertTrue(actual_df.index.is_unique, "index has repeated values.")
-        self.assertTrue(actual_df.index.is_monotonic, "index is not monotonic.")
+        self.assertTrue(actual_df.index.is_monotonic_increasing, "index is not monotonic increasing.")
 
     def test_hf_extract_nwis_raises_exception_when_df_is_empty(self):
         empty_response = {"value": {"timeSeries": []}}
@@ -289,6 +280,9 @@ class TestHydrofunctionsParsing(unittest.TestCase):
             "Three days including the end of DST should have 3 * 24 * 4 = 288 observations, plus 4 = 292",
         )
 
+    @unittest.skip(
+        "This test is incomplete: It tries to test for timezone errors."
+    )
     def test_hf_extract_nwis_can_find_tz_in_tzfail(self):
         actualDF = hf.extract_nwis_df(tzfail, interpolate=False)
 

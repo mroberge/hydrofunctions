@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 fixtures_multiple_methods.py
 

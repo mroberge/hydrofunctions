@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Apr 15 10:24:48 2019
+fixture_recent_only.py
 
-@author: Marty
+This file contains JSON from the NWIS that only contains the most recent measurements
+
+hf.NWIS('01541200')
+https://waterservices.usgs.gov/nwis/dv/?format=json%2C1.1&sites=01541200
+
+This is a request that doesn't specify a starting date or a period, so NWIS
+returns the most recent readings.
+Amusingly, for this site, that means you get a temperature reading from
+1961 as well as discharge from today.
 """
-# hf.NWIS('01541200')
-# https://waterservices.usgs.gov/nwis/dv/?format=json%2C1.1&sites=01541200
-
-# This is a request that doesn't specify a starting date or a period, so NWIS
-# returns the most recent readings.
-# Amuseingly, for this site, that means you get a temperature reading from
-# 1961 as well as discharge from today.
 recent_only = {
     "name": "ns1:timeSeriesResponseType",
     "declaredType": "org.cuahsi.waterml.TimeSeriesResponseType",

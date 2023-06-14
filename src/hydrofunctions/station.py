@@ -7,7 +7,6 @@ organizing and managing data for data collection sites.
 
 -----
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import re
 
 import json
@@ -91,7 +90,7 @@ class NWIS(Station):
 
         interpolate (bool):
             Fill missing values through interpolation. Default False.
-        
+
         file (str):
             A filename for acting as a cache for the data request. Accepts file
             extensions of '*.json.gz' (default) and '*.parquet'. If this parameter is
@@ -121,7 +120,6 @@ class NWIS(Station):
         file=None,
         verbose=True,
     ):
-
         self.ok = False
         if file:
             if len(file.split(".")) == 1:
@@ -151,7 +149,9 @@ class NWIS(Station):
             )
             try:
                 self.json = self.response.json()
-                self._dataframe, self.meta = hf.extract_nwis_df(self.json, interpolate=interpolate)
+                self._dataframe, self.meta = hf.extract_nwis_df(
+                    self.json, interpolate=interpolate
+                )
                 self.ok = self.response.ok
                 if file is not None:
                     self.save(file)
@@ -242,7 +242,9 @@ class NWIS(Station):
                     meta = all_cols
                     break  # If one param is 'all', ignore the other params and deliver everything.
                 elif item == "discharge":
-                    if not np.any(['00060' in x for x in list(self._dataframe.columns)]):
+                    if not np.any(
+                        ["00060" in x for x in list(self._dataframe.columns)]
+                    ):
                         raise ValueError(
                             "The parameter '{param}' is not contained in this dataset.".format(
                                 param=item
@@ -250,7 +252,9 @@ class NWIS(Station):
                         )
                     params = Q_cols | params
                 elif item == "q":
-                    if not np.any(['00060' in x for x in list(self._dataframe.columns)]):
+                    if not np.any(
+                        ["00060" in x for x in list(self._dataframe.columns)]
+                    ):
                         raise ValueError(
                             "The parameter '{param}' is not contained in this dataset.".format(
                                 param=item
@@ -258,7 +262,9 @@ class NWIS(Station):
                         )
                     params = Q_cols | params
                 elif item == "stage":
-                    if not np.any(['00065' in x for x in list(self._dataframe.columns)]):
+                    if not np.any(
+                        ["00065" in x for x in list(self._dataframe.columns)]
+                    ):
                         raise ValueError(
                             "The parameter '{param}' is not contained in this dataset.".format(
                                 param=item
@@ -338,7 +344,8 @@ class NWIS(Station):
                 raise err
         else:
             raise OSError(
-                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+                f"The file type extension '.{extension}' in the file name {file} is "
+                "not recognized by HydroFunctions. Try *.gz or *.parquet instead."
             )
         return self
 

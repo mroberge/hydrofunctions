@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Sep  5 21:13:34 2016
+test_station
+----------------------------------
 
-@author: Marty
+Tests for the `station` module.
 """
-
-from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 from unittest import mock
 import pandas as pd

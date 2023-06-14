@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 fixtures_usgs_rdb.py
 

@@ -6,18 +6,17 @@ This module contains charting functions for Hydrofunctions.
 
 -----
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
+import numpy as np
+import pandas as pd
 
 # Recommended that I use this line to avoid errors in TravisCI
 # See https://matplotlib.org/faq/howto_faq.html
 # Basically, matplotlib usually uses an 'X11 connection' by default; Travis CI
 # does not have this configured, so you need to set your backend explicitly.
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from matplotlib.ticker import NullFormatter
-import numpy as np
-import pandas as pd
 
 
 def flow_duration(
@@ -213,7 +212,7 @@ def cycleplot(
         x_label = " (day # of the year)"
     elif cycle == "annual-week":
         # aggregate into 52 bins to show annual cycles.
-        cycleby = Qseries.index.week
+        cycleby = list(Qseries.index.isocalendar().week)
         x_label = " (week # of the year)"
     elif cycle == "annual-month":
         # aggregate into 12 binds to show annual cycles.
@@ -354,7 +353,8 @@ def cycleplot(
     Nplots = len(compare_list)
     fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
     if Nplots == 1:
-        # If there is only one subplot, it gets returned as a single subplot instead of as a numpy array. In this case, we convert it to an array.
+        # If there is only one subplot, it gets returned as a single subplot instead
+        # of as a numpy array. In this case, we convert it to an array.
         axs = np.array([axs])
 
     for i, item in enumerate(compare_list):

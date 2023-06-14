@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
 #
@@ -20,7 +19,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "hydrofunctions"
-copyright = "2019, Martin Roberge and contributors"
+copyright = "2016-2023 Martin Roberge and contributors"
 author = "Martin Roberge and contributors"
 
 # The short X.Y version

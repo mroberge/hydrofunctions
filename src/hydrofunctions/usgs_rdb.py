@@ -210,14 +210,14 @@ def site_file(site, verbose=True):
     Returns:
         a hydroRDB object or tuple consisting of the header and a pandas
         dataframe. The dataframe will have one row for every site requested; for each
-        site it will provide detailed site characteristics such as watershed area, 
+        site it will provide detailed site characteristics such as watershed area,
         drainage basin HUC code, site latitude, longitude, altitude, and datum; the date
         the site was established, hole depth for wells, and other information. All of
-        the columns are listed in the header; for more information, visit: 
+        the columns are listed in the header; for more information, visit:
         http://waterservices.usgs.gov/rest/Site-Service.html
 
         For information on the data collected at this site (including the start and stop
-        dates for data collection), use the 'data_catalog' function. 
+        dates for data collection), use the 'data_catalog' function.
 
     **Example:**
 
@@ -269,13 +269,13 @@ def data_catalog(site, verbose=True):
     Returns:
         a hydroRDB object or tuple consisting of the header and a pandas
         dataframe.  The dataframe will have one row for every type of data collected at
-        each site requested; for each data parameter it will provide information 
+        each site requested; for each data parameter it will provide information
         including: parameter code, date of first observation, date of last observation,
         and total number of observations. A full description of the data catalog is
-        given in the header; more information is available at: 
+        given in the header; more information is available at:
         http://waterservices.usgs.gov/rest/Site-Service.html
 
-        For information about the site itself, including watershed area and HUC code, 
+        For information about the site itself, including watershed area and HUC code,
         use the 'site_file' function.
 
     **Example:**

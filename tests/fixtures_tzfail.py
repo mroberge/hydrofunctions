@@ -1,3 +1,11 @@
+"""
+fixtures_tzfail.py
+
+This file contains JSON from the NWIS.
+
+Daylight Savings Time started on 2019-03-10...
+"""
+
 tzfail = {
     "name": "ns1:timeSeriesResponseType",
     "declaredType": "org.cuahsi.waterml.TimeSeriesResponseType",

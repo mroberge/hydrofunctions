@@ -9,9 +9,9 @@ jobs:
     name: Build and publish Python 🐍 distributions to TestPyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.x'
     - name: Install pypa/build
@@ -22,7 +22,8 @@ jobs:
       run: |
         python -m build --sdist --wheel --outdir dist/ .
     - name: Publish distribution 📦 to Test PyPI
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
+        verbose: true # help debug if twine fails
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
         repository_url: https://test.pypi.org/legacy/

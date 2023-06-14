@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 """
-Created on Tue Sep  6 11:20:51 2016
+test_validate
+----------------------------------
 
-@author: Marty
-
-test_validate.py
-tests for va;idate.py
+Tests for the `validate` module.
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 from hydrofunctions import validate
 

@@ -6,7 +6,6 @@ This module contains the main functions used in an interactive session.
 
 -----
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import logging
 import requests
 import numpy as np
@@ -177,9 +176,9 @@ def get_nwis(
             NWIS period code. Default is `None`.
                 * Format is "PxxD", where xx is the number of days before today.
                 * Either use start_date or period, but not both.
-        
+
         verbose (bool):
-            If True (default); will print confirmation messages with the url before and 
+            If True (default); will print confirmation messages with the url before and
             after the request is made.
 
     Returns:
@@ -626,7 +625,7 @@ def extract_nwis_df(nwis_dict, interpolate=False):
 
     if not DF.index.is_unique:
         DF = DF[~DF.index.duplicated(keep="first")]
-    if not DF.index.is_monotonic:
+    if not DF.index.is_monotonic_increasing:
         DF.sort_index(axis=0, inplace=True)
 
     return cleanDF, meta
