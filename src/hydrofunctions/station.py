@@ -90,7 +90,7 @@ class NWIS(Station):
 
         interpolate (bool):
             Fill missing values through interpolation. Default False.
-        
+
         file (str):
             A filename for acting as a cache for the data request. Accepts file
             extensions of '*.json.gz' (default) and '*.parquet'. If this parameter is

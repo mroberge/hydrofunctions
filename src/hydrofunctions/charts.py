@@ -7,16 +7,16 @@ This module contains charting functions for Hydrofunctions.
 -----
 """
 import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
+import numpy as np
+import pandas as pd
 
 # Recommended that I use this line to avoid errors in TravisCI
 # See https://matplotlib.org/faq/howto_faq.html
 # Basically, matplotlib usually uses an 'X11 connection' by default; Travis CI
 # does not have this configured, so you need to set your backend explicitly.
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from matplotlib.ticker import NullFormatter
-import numpy as np
-import pandas as pd
 
 
 def flow_duration(
@@ -353,7 +353,8 @@ def cycleplot(
     Nplots = len(compare_list)
     fig, axs = plt.subplots(1, Nplots, figsize=(14, 6), sharey=True, sharex=True)
     if Nplots == 1:
-        # If there is only one subplot, it gets returned as a single subplot instead of as a numpy array. In this case, we convert it to an array.
+        # If there is only one subplot, it gets returned as a single subplot instead
+        # of as a numpy array. In this case, we convert it to an array.
         axs = np.array([axs])
 
     for i, item in enumerate(compare_list):

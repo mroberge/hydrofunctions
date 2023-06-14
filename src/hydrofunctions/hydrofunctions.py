@@ -176,9 +176,9 @@ def get_nwis(
             NWIS period code. Default is `None`.
                 * Format is "PxxD", where xx is the number of days before today.
                 * Either use start_date or period, but not both.
-        
+
         verbose (bool):
-            If True (default); will print confirmation messages with the url before and 
+            If True (default); will print confirmation messages with the url before and
             after the request is made.
 
     Returns:
