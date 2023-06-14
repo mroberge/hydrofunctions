@@ -35,7 +35,6 @@ https://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packa
 
 -----
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import logging
 import warnings
 

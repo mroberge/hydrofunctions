@@ -51,8 +51,6 @@ Learn more about hydrofunctions and the NWIS object with help()::
 Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
 """
-from __future__ import absolute_import, print_function
-
 __version__ = "0.2.4rc1"
 __author__ = "Martin Roberge"
 __author_email__ = "mroberge@towson.edu"

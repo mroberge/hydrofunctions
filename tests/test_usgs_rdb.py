@@ -8,7 +8,6 @@ test_usgs_rdb
 Tests for `usgs_rdb` module.
 
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 from unittest import mock
 import unittest
 

@@ -15,7 +15,6 @@ the normal test suite.
 Nose2 will find these tests, but unittest will not. The continuous integration
 and setup.py will use unittests, and therefore won't find this test.
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 from hydrofunctions import hydrofunctions as hf
 
 

@@ -6,7 +6,6 @@ This module contains charting functions for Hydrofunctions.
 
 -----
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import matplotlib
 
 # Recommended that I use this line to avoid errors in TravisCI

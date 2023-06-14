@@ -4,7 +4,6 @@ test_charts.py
 
 Tests for the charts.py module.
 """
-from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 import matplotlib
 import pandas as pd

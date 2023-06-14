@@ -5,7 +5,6 @@ Created on Sun Feb 25 20:07:38 2018
 @author: Marty
 """
 
-from __future__ import absolute_import, print_function, division, unicode_literals
 import unittest
 from IPython.core.display import HTML
 import re
