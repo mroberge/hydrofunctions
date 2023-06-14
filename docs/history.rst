@@ -125,6 +125,6 @@ History
 0.2.4 (2023-06-14)
 ------------------
 
-* Remove support for Python 3.6, add Python 3.10 & 3.11
+* Remove support for Python 3.6 & 3.7; add Python 3.10 & 3.11
 * Update to Pandas 2+ (jm)
 * Update documentation to reflect gauge changes
