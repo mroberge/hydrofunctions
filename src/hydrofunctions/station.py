@@ -344,7 +344,8 @@ class NWIS(Station):
                 raise err
         else:
             raise OSError(
-                f"The file type extension '.{extension}' in the file name {file} is not recognized by HydroFunctions."
+                f"The file type extension '.{extension}' in the file name {file} is "
+                "not recognized by HydroFunctions. Try *.gz or *.parquet instead."
             )
         return self
 

@@ -49,7 +49,7 @@ Learn more about hydrofunctions and the NWIS object with help()::
 Read more about Hydrofunctions here: https://hydrofunctions.readthedocs.io/
 
 """
-__version__ = "0.2.4rc1"
+__version__ = "0.2.4"
 __author__ = "Martin Roberge"
 __author_email__ = "mroberge@towson.edu"
 __url__ = "https://github.com/mroberge/hydrofunctions"
