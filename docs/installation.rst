@@ -37,7 +37,7 @@ different version of Python than some other piece of software.
 If you want to install Jupyter notebooks at the same time that you install
 hydrofunctions, or if you want to use Python 2 and 3 at the same time, or if
 you had problems when you tried the Easy Install instructions above... then
-`Download and install Anaconda <https://www.continuum.io/downloads>`_.
+`Download and install Anaconda <https://www.anaconda.com/download>`_.
 
 Choose the version of Anaconda that is right for your operating system. I
 advise using the latest version of Python 3.
